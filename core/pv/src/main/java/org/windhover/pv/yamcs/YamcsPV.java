@@ -35,12 +35,12 @@ import org.phoebus.pv.PV;
  *  @author Kay Kasemir, based on similar code in org.csstudio.utility.pv
  */
 @SuppressWarnings("nls")
-public class LocalPV extends PV
+public class YamcsPV extends PV
 {
     private volatile Class<? extends VType> type;
     private final List<String> initial_value;
 
-    protected LocalPV(final String actual_name, final Class<? extends VType> type, final List<String> initial_value) throws Exception
+    protected YamcsPV(final String actual_name, final Class<? extends VType> type, final List<String> initial_value) throws Exception
     {
         super(actual_name);
         this.type = type;

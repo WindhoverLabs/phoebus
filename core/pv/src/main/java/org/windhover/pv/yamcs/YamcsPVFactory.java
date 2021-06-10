@@ -25,17 +25,21 @@ import org.epics.vtype.VType;
 import org.phoebus.pv.PV;
 import org.phoebus.pv.PVFactory;
 import org.phoebus.pv.PVPool;
+import org.yamcs.client.YamcsClient;
 
-/** Factory for creating {@link LocalPV}s
+/** Factory for creating {@link YamcsPV}s
  *  @author Kay Kasemir
  */
 @SuppressWarnings("nls")
 public class YamcsPVFactory implements PVFactory
 {
     final public static String TYPE = "yamcs";
+    
+    private YamcsClient yamcsClient;
+//    private Object 
 
     /** Map of local PVs */
-    private static final Map<String, LocalPV> local_pvs = new HashMap<>();
+    private static final Map<String, YamcsPV> local_pvs = new HashMap<>();
 
     @Override
     public String getType()
@@ -70,14 +74,14 @@ public class YamcsPVFactory implements PVFactory
         final Class<? extends VType> type = ntv[1] == null
                                           ? determineValueType(initial_value)
                                           : parseType(ntv[1]);
-        LocalPV pv;
+        YamcsPV pv;
         // TODO Use ConcurrentHashMap, computeIfAbsent
         synchronized (local_pvs)
         {
             pv = local_pvs.get(actual_name);
             if (pv == null)
             {
-                pv = new LocalPV(actual_name, type, initial_value);
+                pv = new YamcsPV(actual_name, type, initial_value);
                 local_pvs.put(actual_name, pv);
             }
             else
@@ -133,9 +137,9 @@ public class YamcsPVFactory implements PVFactory
 
     /** Remove local PV from pool
      *  To be called by LocalPV when closed
-     *  @param pv {@link LocalPV}
+     *  @param pv {@link YamcsPV}
      */
-    static void releasePV(final LocalPV pv)
+    static void releasePV(final YamcsPV pv)
     {
         synchronized (local_pvs)
         {
@@ -144,7 +148,7 @@ public class YamcsPVFactory implements PVFactory
     }
 
     // For unit test
-    public static Collection<LocalPV> getLocalPVs()
+    public static Collection<YamcsPV> getLocalPVs()
     {
         synchronized (local_pvs)
         {

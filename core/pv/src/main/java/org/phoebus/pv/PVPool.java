@@ -73,6 +73,7 @@ public class PVPool
             for (PVFactory factory : ServiceLoader.load(PVFactory.class))
             {
                 final String type = factory.getType();
+                System.out.println("pv factory type$$$:" + type);
                 logger.log(Level.CONFIG, "PV type " + type + ":// provided by " + factory);
                 factories.put(type, factory);
             }
@@ -85,6 +86,9 @@ public class PVPool
         {
             logger.log(Level.SEVERE, "Cannot initialize PVPool", ex);
         }
+        
+        System.out.println("static PVPool");
+        System.out.println("factories(static block ):" + factories);
     }
 
     /** PV Pool
@@ -101,6 +105,7 @@ public class PVPool
     /** @return Supported PV type prefixes */
     public static Collection<String> getSupportedPrefixes()
     {
+    	System.out.println("factories:" + factories);
         return factories.keySet();
     }
 

@@ -34,6 +34,7 @@ public class Launcher
         LogManager.getLogManager().readConfiguration(Launcher.class.getResourceAsStream("/logging.properties"));
 
         Locations.initialize();
+        System.out.println("DEV Environment!!!");
         // Check for site-specific settings.ini bundled into distribution
         // before potentially adding command-line settings.
         final File site_settings = new File(Locations.install(), "settings.ini");
