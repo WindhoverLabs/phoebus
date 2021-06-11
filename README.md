@@ -95,6 +95,7 @@ has been imported as a maven project into Eclipse(see instructions above):
 4. Set `Working Directory` to `phoebus/phoebus-product/target`.
 5. Set arguments to:
 ```
+--add-opens java.base/jdk.internal.misc=ALL-UNNAMED -Dio.netty.tryReflectionSetAccessible=true 
 -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar path_to_repo/phoebus/phoebus-product/target/product-4.6.6-SNAPSHOT.jar
 ```
 6. Click `Run`. The Eclipse console should output a port number. Write it down; we'll use it for
