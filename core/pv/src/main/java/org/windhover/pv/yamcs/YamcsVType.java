@@ -40,9 +40,8 @@ import org.yamcs.studio.data.vtype.AlarmSeverity;
 import org.yamcs.studio.data.vtype.Display;
 import org.yamcs.studio.data.vtype.NumberFormats;
 import org.yamcs.studio.data.vtype.Time;
-import org.yamcs.studio.data.vtype.VType;
-
-public class YamcsVType implements VType, Alarm, Time, Display {
+import org.epics.vtype.VType;
+public class YamcsVType extends VType implements Alarm, Time, Display {
 
     private ParameterValue pval;
     protected Value value;

@@ -7,10 +7,18 @@
  ******************************************************************************/
 package org.windhover.pv.yamcs;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 import org.epics.vtype.VBoolean;
 import org.epics.vtype.VDouble;
@@ -25,134 +33,189 @@ import org.epics.vtype.VType;
 import org.phoebus.pv.PV;
 import org.phoebus.pv.PVFactory;
 import org.phoebus.pv.PVPool;
+import org.yamcs.client.ParameterSubscription;
 import org.yamcs.client.YamcsClient;
+import org.yamcs.protobuf.ProcessorInfo;
+import org.yamcs.protobuf.SubscribeParametersRequest;
+import org.yamcs.protobuf.YamcsInstance;
+import org.yamcs.protobuf.Yamcs.NamedObjectId;
+import org.yamcs.protobuf.SubscribeParametersRequest.Action;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
-/** Factory for creating {@link YamcsPV}s
- *  @author Kay Kasemir
+/**
+ * Factory for creating {@link YamcsPV}s
+ * 
+ * @author Kay Kasemir
  */
 @SuppressWarnings("nls")
-public class YamcsPVFactory implements PVFactory
-{
-    final public static String TYPE = "yamcs";
-    
-    private YamcsClient yamcsClient;
-//    private Object 
+public class YamcsPVFactory implements PVFactory {
+	final public static String TYPE = "yamcs";
 
-    /** Map of local PVs */
-    private static final Map<String, YamcsPV> local_pvs = new HashMap<>();
+	private YamcsClient yamcsClient = null;
 
-    @Override
-    public String getType()
-    {
-        return TYPE;
-    }
+	private ParameterSubscription yamcsSubscription = null;
 
-    @Override
-    public String getCoreName(final String name)
-    {
-        int sep = name.indexOf('<');
-        if (sep > 0)
-            return name.substring(0, sep);
-        sep = name.indexOf('(');
-        if (sep > 0)
-            return name.substring(0, sep);
-        return name;
-    }
+	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-    @Override
-    public PV createPV(final String name, final String base_name) throws Exception
-    {
-        final String[] ntv = ValueHelper.parseName(base_name);
+	private AtomicBoolean subscriptionDirty = new AtomicBoolean(false);
 
-        // Actual name: loc://the_pv  without <type> or (initial value)
-        final String actual_name = YamcsPVFactory.TYPE + PVPool.SEPARATOR + ntv[0];
+	private Map<NamedObjectId, Set<PV>> pvsById = new LinkedHashMap<>();
 
-        // Info for initial value, null if nothing provided
-        final List<String> initial_value = ValueHelper.splitInitialItems(ntv[2]);
+	private static final Logger log = Logger.getLogger(YamcsPVFactory.class.getName());
 
-        // Determine type from initial value or use given type
-        final Class<? extends VType> type = ntv[1] == null
-                                          ? determineValueType(initial_value)
-                                          : parseType(ntv[1]);
-        YamcsPV pv;
-        // TODO Use ConcurrentHashMap, computeIfAbsent
-        synchronized (local_pvs)
-        {
-            pv = local_pvs.get(actual_name);
-            if (pv == null)
-            {
-                pv = new YamcsPV(actual_name, type, initial_value);
-                local_pvs.put(actual_name, pv);
-            }
-            else
-                pv.checkInitializer(type, initial_value);
-        }
-        return pv;
-    }
+	private YamcsSubscriptionService subscriptionService;
 
-    public static Class<? extends VType> determineValueType(final List<String> items) throws Exception
-    {
-        if (items == null)
-            return VDouble.class;
+	/** Map of local PVs */
+	private static final Map<String, YamcsPV> yamcs_pvs = new HashMap<>();
 
-        if (ValueHelper.haveInitialStrings(items))
-        {
-            if (items.size() == 1)
-                return VString.class;
-            else
-                return VStringArray.class;
-        }
-        else
-        {
-            if (items.size() == 1)
-                return VDouble.class;
-            else
-                return VDoubleArray.class;
-        }
-    }
+	public YamcsPVFactory() {
+		System.out.println("YAMCS Init");
+		yamcsClient = YamcsClient.newBuilder("192.168.2.96", 8090).build();
 
-    public static Class<? extends VType> parseType(final String type) throws Exception
-    {   // Lenient check, ignore case and allow partial match
-        final String lower = type.toLowerCase();
-        if (lower.contains("doublearray"))
-            return VDoubleArray.class;
-        if (lower.contains("double")) // 'VDouble', 'vdouble', 'double'
-            return VDouble.class;
-        if (lower.contains("stringarray"))
-            return VStringArray.class;
-        if (lower.contains("string"))
-            return VString.class;
-        if (lower.contains("enum"))
-            return VEnum.class;
-        if (lower.contains("long"))
-            return VLong.class;
-        if (lower.contains("int"))
-            return VInt.class;
-        if (lower.contains("boolean"))
-            return VBoolean.class;
-        if (lower.contains("table"))
-            return VTable.class;
-        throw new Exception("Local PV cannot handle type '" + type + "'");
-    }
+		if (yamcsClient != null) {
+			yamcsSubscription = yamcsClient.createParameterSubscription();
+		}
 
-    /** Remove local PV from pool
-     *  To be called by LocalPV when closed
-     *  @param pv {@link YamcsPV}
-     */
-    static void releasePV(final YamcsPV pv)
-    {
-        synchronized (local_pvs)
-        {
-            local_pvs.remove(pv.getName());
-        }
-    }
+		System.out.println("YAMCS Init2");
 
-    // For unit test
-    public static Collection<YamcsPV> getLocalPVs()
-    {
-        synchronized (local_pvs)
-        {
-            return local_pvs.values();
-        }
-    }
+		yamcsClient.listInstances().whenComplete((response, exc) -> {
+
+			if (exc == null) {
+				List<ProcessorInfo> processors = new ArrayList<>();
+
+				for (YamcsInstance instance : response) {
+					System.out.println("instance name:" + instance);
+				}
+			}
+		});
+
+		// Periodically check if the subscription needs a refresh
+		// (PVs send individual events, so this bundles them)
+		executor.scheduleWithFixedDelay(() -> {
+			if (subscriptionDirty.getAndSet(false) && yamcsSubscription != null) {
+				Set<NamedObjectId> ids = getRequestedIdentifiers();
+				log.fine(String.format("Modifying subscription to %s", ids));
+				yamcsSubscription.sendMessage(
+						SubscribeParametersRequest.newBuilder().setAction(Action.REPLACE).setSendFromCache(true)
+								.setAbortOnInvalid(false).setUpdateOnExpiration(true).addAllId(ids).build());
+			}
+		}, 500, 500, TimeUnit.MILLISECONDS);
+
+		System.out.println("client status" + yamcsClient.listInstances());
+		
+		subscriptionService = new YamcsSubscriptionService();
+	}
+
+	private Set<NamedObjectId> getRequestedIdentifiers() {
+		return pvsById.entrySet().stream().filter(entry -> !entry.getValue().isEmpty()).map(Entry::getKey)
+				.collect(Collectors.toSet());
+	}
+
+	@Override
+	public String getType() {
+		return TYPE;
+	}
+
+	@Override
+	public String getCoreName(final String name) {
+		int sep = name.indexOf('<');
+		if (sep > 0)
+			return name.substring(0, sep);
+		sep = name.indexOf('(');
+		if (sep > 0)
+			return name.substring(0, sep);
+		return name;
+	}
+
+	@Override
+	public PV createPV(final String name, final String base_name) throws Exception {
+//		final String[] ntv = ValueHelper.parseName(base_name);
+
+		// Actual name: loc://the_pv without <type> or (initial value)
+//		final String actual_name = YamcsPVFactory.TYPE + PVPool.SEPARATOR + ntv[0];
+
+		String actual_name = name;
+
+		// Info for initial value, null if nothing provided
+//		final List<String> initial_value = ValueHelper.splitInitialItems(ntv[2]);
+
+		// Determine type from initial value or use given type
+//		final Class<? extends VType> type = ntv[1] == null ? determineValueType(initial_value) : parseType(ntv[1]);
+		final Class<? extends VType> type = parseType("");
+
+		YamcsPV pv;
+		// TODO Use ConcurrentHashMap, computeIfAbsent
+//		synchronized (yamcs_pvs) {
+//			pv = yamcs_pvs.get(actual_name);
+//			if (pv == null) {
+//				pv = new YamcsPV(actual_name, type);
+//				yamcs_pvs.put(actual_name, pv);
+//			} else
+//				pv.checkInitializer(type, null);
+//		}
+		return new YamcsPV(actual_name, type, yamcsSubscription);
+	}
+
+	public static Class<? extends VType> determineValueType(final List<String> items) throws Exception {
+		if (items == null)
+			return VDouble.class;
+
+		if (ValueHelper.haveInitialStrings(items)) {
+			if (items.size() == 1)
+				return VString.class;
+			else
+				return VStringArray.class;
+		} else {
+			if (items.size() == 1)
+				return VDouble.class;
+			else
+				return VDoubleArray.class;
+		}
+	}
+
+	public static Class<? extends VType> parseType(final String type) throws Exception { // Lenient check, ignore case
+
+// and allow partial match
+
+		return YamcsVType.class;
+//		final String lower = type.toLowerCase();
+//		if (lower.contains("doublearray"))
+//			return VDoubleArray.class;
+//		if (lower.contains("double")) // 'VDouble', 'vdouble', 'double'
+//			return VDouble.class;
+//		if (lower.contains("stringarray"))
+//			return VStringArray.class;
+//		if (lower.contains("string"))
+//			return VString.class;
+//		if (lower.contains("enum"))
+//			return VEnum.class;
+//		if (lower.contains("long"))
+//			return VLong.class;
+//		if (lower.contains("int"))
+//			return VInt.class;
+//		if (lower.contains("boolean"))
+//			return VBoolean.class;
+//		if (lower.contains("table"))
+//			return VTable.class;
+//		throw new Exception("Local PV cannot handle type '" + type + "'");
+	}
+
+	/**
+	 * Remove local PV from pool To be called by LocalPV when closed
+	 * 
+	 * @param pv {@link YamcsPV}
+	 */
+	static void releasePV(final YamcsPV pv) {
+		synchronized (yamcs_pvs) {
+			yamcs_pvs.remove(pv.getName());
+		}
+	}
+
+	// For unit test
+	public static Collection<YamcsPV> getLocalPVs() {
+		synchronized (yamcs_pvs) {
+			return yamcs_pvs.values();
+		}
+	}
 }

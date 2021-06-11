@@ -1,20 +1,20 @@
 package org.windhover.pv.yamcs;
 
-import org.windhover.pv.yamcs.VType;
+import org.phoebus.pv.PV;
 
 public interface Datasource {
 
     boolean supportsPVName(String pvName);
 
-    boolean isConnected(IPV pv);
+    boolean isConnected(PV pv);
 
-    boolean isWriteAllowed(IPV pv);
+    boolean isWriteAllowed(PV pv);
 
-    VType getValue(IPV pv);
+    org.epics.vtype.VType getValue(PV pv);
 
-    void writeValue(IPV pv, Object value, WriteCallback callback);
+    void writeValue(PV pv, Object value, WriteCallback callback);
 
-    void onStarted(IPV pv);
+    void onStarted(PV pv);
 
-    void onStopped(IPV pv);
+    void onStopped(PV pv);
 }

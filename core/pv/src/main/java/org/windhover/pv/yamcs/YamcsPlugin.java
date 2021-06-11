@@ -177,9 +177,9 @@ public class YamcsPlugin {
 			pluginService.dispose();
 		}
 
-		if (PVFactory.SIMPLE_PV_THREAD != null) {
-			PVFactory.SIMPLE_PV_THREAD.shutdown();
-		}
+//		if (PVFactory.SIMPLE_PV_THREAD != null) {
+//			PVFactory.SIMPLE_PV_THREAD.shutdown();
+//		}
 		try {
 			plugin = null;
 			if (yamcsClient != null) {

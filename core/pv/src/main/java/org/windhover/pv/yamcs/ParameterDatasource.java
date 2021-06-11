@@ -12,7 +12,7 @@ import org.yamcs.protobuf.Yamcs.NamedObjectId;
 import org.yamcs.protobuf.Yamcs.Value;
 import org.yamcs.protobuf.Yamcs.Value.Type;
 import org.windhover.pv.yamcs.YamcsPlugin;
-import org.windhover.pv.yamcs.VType;
+import org.phoebus.pv.PV;
 import org.windhover.pv.yamcs.YamcsSubscriptionService;
 
 /**
@@ -23,7 +23,7 @@ public class ParameterDatasource implements Datasource {
     private static final Logger log = Logger.getLogger(ParameterDatasource.class.getName());
     private static final List<String> TRUTHY = Arrays.asList("y", "true", "yes", "1", "1.0");
 
-    private YamcsSubscriptionService yamcsSubscription = YamcsPlugin.getService(YamcsSubscriptionService.class);
+    private YamcsSubscriptionService yamcsSubscription = new YamcsSubscriptionService();
 
     @Override
     public boolean supportsPVName(String pvName) {
@@ -31,17 +31,17 @@ public class ParameterDatasource implements Datasource {
     }
 
     @Override
-    public boolean isConnected(IPV pv) {
+    public boolean isConnected(PV pv) {
         return yamcsSubscription.isSubscriptionAvailable();
     }
 
     @Override
-    public boolean isWriteAllowed(IPV pv) {
+    public boolean isWriteAllowed(PV pv) {
         return isConnected(pv);
     }
 
     @Override
-    public void writeValue(IPV pv, Object value, WriteCallback callback) {
+    public void writeValue(PV pv, Object value, WriteCallback callback) {
         try {
             NamedObjectId id = YamcsSubscriptionService.identityOf(pv.getName());
 
@@ -72,18 +72,19 @@ public class ParameterDatasource implements Datasource {
     }
 
     @Override
-    public VType getValue(IPV pv) {
-        return (VType) yamcsSubscription.getValue(pv.getName());
+    public org.epics.vtype.VType getValue(PV pv) {
+    	System.out.println("ParameterDatasource pv:" + pv);
+        return  yamcsSubscription.getValue(pv.getName());
     }
 
     @Override
-    public void onStarted(IPV pv) {
-        yamcsSubscription.register(pv);
+    public void onStarted(PV pv) {
+//        yamcsSubscription.register(pv);
     }
 
     @Override
-    public void onStopped(IPV pv) {
-        yamcsSubscription.unregister(pv);
+    public void onStopped(PV pv) {
+//        yamcsSubscription.unregister(pv);
     }
 
     private static Value toValue(ParameterTypeInfo ptype, Object value) {
