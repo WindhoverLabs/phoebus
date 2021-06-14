@@ -115,7 +115,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 	}
 
 	/**
-	 * Convert something like yamcs:///cfs/CPD/ci/CI_HkTlm_t.usCmdCnt to
+	 * Convert something like yamcs://cfs/CPD/ci/CI_HkTlm_t.usCmdCnt to
 	 * /cfs/CPD/ci/CI_HkTlm_t.usCmdCnt. Very useful for querying the Yamcs server.
 	 * 
 	 * @param pvName

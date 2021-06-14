@@ -23,11 +23,13 @@ import org.epics.vtype.VInt;
 import org.epics.vtype.VString;
 import org.epics.vtype.VStringArray;
 import org.epics.vtype.VType;
+import org.epics.vtype.VUInt;
 import org.phoebus.core.vtypes.VTypeHelper;
 import org.phoebus.pv.PV;
 import org.phoebus.pv.loc.ValueHelper;
 import org.yamcs.client.ParameterSubscription;
 import org.yamcs.protobuf.Pvalue.ParameterValue;
+import org.yamcs.protobuf.SubscribeParametersRequest;
 import org.yamcs.protobuf.Yamcs.NamedObjectId;
 
 /**
@@ -120,20 +122,22 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 		yamcsSubscription = newYamcsSubscription;
 
 		System.out.println("new YAMCS PV:" + yamcsSubscription.toString());
-
-		yamcsSubscription.addListener(this);
+		
+//		yamcsSubscription.sendMessage(SubscribeParametersRequest.newBuilder().setInstance("yamcs-cfs")
+//		.setProcessor("realtime").setSendFromCache(true).setAbortOnInvalid(false).setUpdateOnExpiration(true)
+//		.addId(null).build());
 
 		double update_seconds = 1;
 		// Limit rate to 100 Hz
 		final long milli = Math.round(Math.max(update_seconds, 0.01) * 1000);
-		task = executor.scheduleAtFixedRate(() -> {
-			try {
-				updateValue();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}, milli, milli, TimeUnit.MILLISECONDS);
+//		task = executor.scheduleAtFixedRate(() -> {
+//			try {
+//				updateValue();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}, milli, milli, TimeUnit.MILLISECONDS);
 
 	}
 
@@ -227,6 +231,25 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 	@Override
 	public void onData(List<ParameterValue> values) {
 		// TODO Auto-generated method stub
+		
+		
+		ArrayList<String> yamcsValues = new ArrayList<String>();
+		
+		System.out.println("pv name:" + this.getName());
+		
+		System.out.println("pv value from yamcs:" + this.getValue(getName()) );
+		yamcsValues.add(Integer.toString( values.get(0).getEngValue().getUint32Value()));
+		VType value = null;
+		try {
+			value = ValueHelper.getInitialValue(yamcsValues, VInt.class);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+//		System.out.println("yamcs sub value:" + yamcsSubscription. );
+
+		this.notifyListenersOfValue(value);
 		System.out.println("values:" + values);
 
 	}
@@ -245,7 +268,7 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 		System.out.println("pv name:" + this.getName());
 		
 		System.out.println("pv value from yamcs:" + this.getValue(getName()) );
-		values.add("12");
+//		values.add("12");
 		VType value = ValueHelper.getInitialValue(values, VInt.class);
 		
 //		System.out.println("yamcs sub value:" + yamcsSubscription. );
