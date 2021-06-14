@@ -102,7 +102,7 @@ public class YamcsPlugin {
 		// before workspace selection, causing
 		// chaos.
 
-		pluginServices.add(new YamcsSubscriptionService());
+//		pluginServices.add(new YamcsSubscriptionService());
 	}
 
 	public static void addListener(YamcsAware listener) {

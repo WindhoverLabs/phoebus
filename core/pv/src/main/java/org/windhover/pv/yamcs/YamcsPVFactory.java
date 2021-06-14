@@ -10,6 +10,7 @@ package org.windhover.pv.yamcs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import org.phoebus.pv.PVPool;
 import org.yamcs.client.ParameterSubscription;
 import org.yamcs.client.YamcsClient;
 import org.yamcs.protobuf.ProcessorInfo;
+import org.yamcs.protobuf.Pvalue.ParameterValue;
 import org.yamcs.protobuf.SubscribeParametersRequest;
 import org.yamcs.protobuf.YamcsInstance;
 import org.yamcs.protobuf.Yamcs.NamedObjectId;
@@ -93,20 +95,47 @@ public class YamcsPVFactory implements PVFactory {
 		// Periodically check if the subscription needs a refresh
 		// (PVs send individual events, so this bundles them)
 		executor.scheduleWithFixedDelay(() -> {
+			System.out.println();
 			if (subscriptionDirty.getAndSet(false) && yamcsSubscription != null) {
 				Set<NamedObjectId> ids = getRequestedIdentifiers();
 				log.fine(String.format("Modifying subscription to %s", ids));
 				yamcsSubscription.sendMessage(
 						SubscribeParametersRequest.newBuilder().setAction(Action.REPLACE).setSendFromCache(true)
 								.setAbortOnInvalid(false).setUpdateOnExpiration(true).addAllId(ids).build());
+				
+				System.out.println("Modifying subscription to:"+ ids);
 			}
+			
+			System.out.println("modifying subscription from factory");			
 		}, 500, 500, TimeUnit.MILLISECONDS);
 
-		System.out.println("client status" + yamcsClient.listInstances());
-		
-		subscriptionService = new YamcsSubscriptionService();
+		System.out.println("client status" + yamcsClient.listInstances());		
+		initProcessor();
+
+//		subscriptionService = new YamcsSubscriptionService();
+	}
+	
+	private void initProcessor() 
+	{
+		Set<NamedObjectId> ids = getRequestedIdentifiers();
+		log.fine(String.format("Subscribing to %s [%s/%s]", ids, "yamcs-cfs", "realtime"));
+//		yamcsSubscription.sendMessage(SubscribeParametersRequest.newBuilder().setInstance("yamcs-cfs")
+//				.setProcessor("real-time").setSendFromCache(true).setAbortOnInvalid(false).setUpdateOnExpiration(true)
+//				.addAllId(ids).build());
 	}
 
+    /**
+     * Async adds a Yamcs PV for receiving updates.
+     */
+    public void register(PV pv) {
+        NamedObjectId id = YamcsSubscriptionService.identityOf(pv.getName());
+        executor.execute(() -> {
+            Set<PV> pvs = pvsById.computeIfAbsent(id, x -> new HashSet<>());
+            pvs.add(pv);
+            subscriptionDirty.set(true);
+        });
+    }
+	
 	private Set<NamedObjectId> getRequestedIdentifiers() {
 		return pvsById.entrySet().stream().filter(entry -> !entry.getValue().isEmpty()).map(Entry::getKey)
 				.collect(Collectors.toSet());
@@ -144,7 +173,9 @@ public class YamcsPVFactory implements PVFactory {
 //		final Class<? extends VType> type = ntv[1] == null ? determineValueType(initial_value) : parseType(ntv[1]);
 		final Class<? extends VType> type = parseType("");
 
-		YamcsPV pv;
+		YamcsPV pv = new YamcsPV(actual_name, type, yamcsSubscription);
+		
+		register(pv);
 		// TODO Use ConcurrentHashMap, computeIfAbsent
 //		synchronized (yamcs_pvs) {
 //			pv = yamcs_pvs.get(actual_name);
@@ -154,7 +185,7 @@ public class YamcsPVFactory implements PVFactory {
 //			} else
 //				pv.checkInitializer(type, null);
 //		}
-		return new YamcsPV(actual_name, type, yamcsSubscription);
+		return pv;
 	}
 
 	public static Class<? extends VType> determineValueType(final List<String> items) throws Exception {
@@ -218,4 +249,5 @@ public class YamcsPVFactory implements PVFactory {
 			return yamcs_pvs.values();
 		}
 	}
+	
 }

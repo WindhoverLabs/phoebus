@@ -23,16 +23,20 @@ public class ParameterDatasource implements Datasource {
     private static final Logger log = Logger.getLogger(ParameterDatasource.class.getName());
     private static final List<String> TRUTHY = Arrays.asList("y", "true", "yes", "1", "1.0");
 
-    private YamcsSubscriptionService yamcsSubscription = new YamcsSubscriptionService();
+//    private YamcsSubscriptionService yamcsSubscription = new YamcsSubscriptionService();
+    private YamcsPV pv;
 
     @Override
     public boolean supportsPVName(String pvName) {
         return true; // This datasource is used as catch-all for anything that other datasources don't support
     }
+    
+    
 
     @Override
     public boolean isConnected(PV pv) {
-        return yamcsSubscription.isSubscriptionAvailable();
+    	 return false;
+//        return yamcsSubscription.isSubscriptionAvailable();
     }
 
     @Override
@@ -74,7 +78,9 @@ public class ParameterDatasource implements Datasource {
     @Override
     public org.epics.vtype.VType getValue(PV pv) {
     	System.out.println("ParameterDatasource pv:" + pv);
-        return  yamcsSubscription.getValue(pv.getName());
+    	
+    	return null;
+//        return  yamcsSubscription.getValue(pv.getName());
     }
 
     @Override

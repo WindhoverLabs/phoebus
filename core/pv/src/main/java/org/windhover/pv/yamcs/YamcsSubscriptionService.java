@@ -122,7 +122,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 	 * @return
 	 */
 	public static String getYamcsPvName(String pvName) {
-		return pvName.substring(8);
+		return pvName.substring(7);
 	}
 
 	@Override
@@ -253,5 +253,13 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 	@FunctionalInterface
 	public static interface ParameterValueListener {
 		void onData(List<ParameterValue> values);
+		
+		
+	}
+
+	@Override
+	public void onData(List<ParameterValue> values) {
+		// TODO Auto-generated method stub
+		
 	}
 }
