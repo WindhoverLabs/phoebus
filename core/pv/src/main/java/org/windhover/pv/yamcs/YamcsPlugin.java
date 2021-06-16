@@ -37,16 +37,17 @@ import org.yamcs.protobuf.SubscribeProcessorsRequest;
 import org.yamcs.protobuf.SubscribeTimeRequest;
 import org.yamcs.protobuf.UserInfo;
 
-import com.google.protobuf.Empty;
-
+/**
+ * Singleton container for yamcs server utilities.
+ * @author lgomez
+ *
+ */
 public class YamcsPlugin {
 
 	public static final String PLUGIN_ID = "org.yamcs.studio.core";
 	public static final String CMD_CONNECT = "org.yamcs.studio.core.ui.connect";
 	private static final Logger log = Logger.getLogger(YamcsPlugin.class.getName());
 	private static final AtomicInteger COMMAND_SEQUENCE = new AtomicInteger(1);
-
-	private static YamcsPlugin plugin;
 
 	private SimpleDateFormat format;
 	private SimpleDateFormat tzFormat;
@@ -63,7 +64,10 @@ public class YamcsPlugin {
 	private ClearanceSubscription clearanceSubscription;
 	private ProcessorSubscription processorSubscription;
 
+	private static YamcsPlugin plugin = new YamcsPlugin();
+
 	private static final ConnectionListener DISCONNECT_NOTIFIER = new ConnectionListener() {
+		
 		@Override
 		public void connected() {
 			// Already handled by YamcsConnector
@@ -96,13 +100,21 @@ public class YamcsPlugin {
 
 	private List<PluginService> pluginServices = new CopyOnWriteArrayList<>();
 
-	public void start()  {
+	public void start() {
 		plugin = this;
 		// Warning to future self: don't access preference store here. It triggers
 		// before workspace selection, causing
 		// chaos.
 
 //		pluginServices.add(new YamcsSubscriptionService());
+	}
+	
+	public void init(String url, int port) 
+	{
+		connect(url, port);
+//		TODO:Eventually all of this should be configurable
+		instance = "yamcs-cfs";
+		processor = ProcessorInfo.newBuilder().setName("realtime").build();
 	}
 
 	public static void addListener(YamcsAware listener) {
@@ -163,8 +175,10 @@ public class YamcsPlugin {
 		if (getUser() == null) {
 			return false;
 		}
+		return false;
 
-		return isSuperuser() || getUser().getSystemPrivilegeList().contains(systemPrivilege);
+//		TODO: Build system does not include getSystemPrivilegeList for some reason 
+//		return isSuperuser() || getUser().getSystemPrivilegeList().contains(systemPrivilege);
 	}
 
 	public static boolean isAuthorizationEnabled() {
@@ -233,8 +247,8 @@ public class YamcsPlugin {
 //			format.setTimeZone(cal.getTimeZone());
 //			return format.format(cal.getTime());
 //		}
-		
-		//dead code
+
+		// dead code
 		return null;
 	}
 
@@ -326,8 +340,8 @@ public class YamcsPlugin {
 //		String productName = Platform.getProduct().getName();
 //		Version productVersion = Platform.getProduct().getDefiningBundle().getVersion();
 //		return productName + " v" + productVersion;
-		
-		//dead code
+
+		// dead code
 		return null;
 	}
 
@@ -372,47 +386,47 @@ public class YamcsPlugin {
 //		setupGlobalProcessorSubscription();
 //
 //		plugin.yamcsClient.addConnectionListener(DISCONNECT_NOTIFIER);
-		
-		//dead code
+
+		// dead code
 	}
 
 	private static void setupGlobalTimeSubscription() {
 		if (plugin.instance != null) {
 			plugin.timeSubscription = getYamcsClient().createTimeSubscription();
-			plugin.timeSubscription.addMessageListener(proto -> {
-				Instant instant = Instant.ofEpochSecond(proto.getSeconds(), proto.getNanos());
-				plugin.listeners.forEach(l -> l.updateTime(instant));
-			});
+//			plugin.timeSubscription.addMessageListener(proto -> {
+//				Instant instant = Instant.ofEpochSecond(proto.getSeconds(), proto.getNanos());
+//				plugin.listeners.forEach(l -> l.updateTime(instant));
+//			});
 			SubscribeTimeRequest.Builder requestb = SubscribeTimeRequest.newBuilder().setInstance(plugin.instance);
 			if (plugin.processor != null) {
 				requestb.setProcessor(plugin.processor.getName());
 			}
-			plugin.timeSubscription.sendMessage(requestb.build());
+//			plugin.timeSubscription.sendMessage(requestb.build());
 		}
 	}
 
 	private static void setupGlobalClearanceSubscription() {
-		plugin.clearanceSubscription = getYamcsClient().createClearanceSubscription();
-		plugin.clearanceSubscription.addMessageListener(info -> {
-			boolean enabled = plugin.processor != null && plugin.processor.getCheckCommandClearance();
-			if (info.hasLevel()) {
-				plugin.listeners.forEach(l -> l.updateClearance(enabled, info.getLevel()));
-			} else {
-				plugin.listeners.forEach(l -> l.updateClearance(enabled, null));
-			}
-		});
-		plugin.clearanceSubscription.sendMessage(Empty.getDefaultInstance());
+//		plugin.clearanceSubscription = getYamcsClient().createClearanceSubscription();
+//		plugin.clearanceSubscription.addMessageListener(info -> {
+//			boolean enabled = plugin.processor != null && plugin.processor.getCheckCommandClearance();
+//			if (info.hasLevel()) {
+//				plugin.listeners.forEach(l -> l.updateClearance(enabled, info.getLevel()));
+//			} else {
+//				plugin.listeners.forEach(l -> l.updateClearance(enabled, null));
+//			}
+//		});
+//		plugin.clearanceSubscription.sendMessage(Empty.getDefaultInstance());
 	}
 
 	private static void setupGlobalProcessorSubscription() {
-		if (plugin.processor != null) {
-			plugin.processorSubscription = getYamcsClient().createProcessorSubscription();
-			plugin.processorSubscription.addMessageListener(info -> {
-				plugin.listeners.forEach(l -> l.changeProcessorInfo(info));
-			});
-			plugin.processorSubscription.sendMessage(SubscribeProcessorsRequest.newBuilder()
-					.setInstance(plugin.instance).setProcessor(plugin.processor.getName()).build());
-		}
+//		if (plugin.processor != null) {
+//			plugin.processorSubscription = getYamcsClient().createProcessorSubscription();
+//			plugin.processorSubscription.addMessageListener(info -> {
+//				plugin.listeners.forEach(l -> l.changeProcessorInfo(info));
+//			});
+//			plugin.processorSubscription.sendMessage(SubscribeProcessorsRequest.newBuilder()
+//					.setInstance(plugin.instance).setProcessor(plugin.processor.getName()).build());
+//		}
 	}
 
 	public static void disconnect(boolean lost) {
@@ -460,5 +474,39 @@ public class YamcsPlugin {
 			listener.changeProcessorInfo(null);
 			listener.updateTime(null);
 		});
+	}
+
+	public static YamcsPlugin getPlugin() {
+		return plugin;
+	}
+
+	/**
+	 * Creates a new YamcsClient and establishes a new connection
+	 * with Yamcs server. Any previously active client connections are closed,
+	 * if there are any.
+	 * @param url
+	 * @param port
+	 */
+	private void connect(String url, int port) {
+		if (yamcsClient != null) {
+			yamcsClient.close();
+		}
+		System.out.println("yamcs connect1");
+		yamcsClient = YamcsClient.newBuilder(url, port).build();
+		System.out.println("yamcs connect2");
+
+		try {
+			System.out.println("yamcs connect3");
+
+			yamcsClient.connectWebSocket();
+			System.out.println("yamcs connect4");
+
+		} catch (ClientException e) {
+			// TODO Auto-generated catch block
+			System.out.println("yamcs connect5");
+			e.printStackTrace();
+		}
+		System.out.println("yamcs connect6");
+
 	}
 }

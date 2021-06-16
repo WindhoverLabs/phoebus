@@ -70,6 +70,8 @@ public class YamcsPVFactory implements PVFactory {
 	private static final Logger log = Logger.getLogger(YamcsPVFactory.class.getName());
 
 	private YamcsSubscriptionService subscriptionService;
+	
+	private YamcsPlugin yamcsPlugin = YamcsPlugin.getPlugin();
 
 	private ArrayList<NamedObjectId> ids = new ArrayList<NamedObjectId>();
 
@@ -78,15 +80,19 @@ public class YamcsPVFactory implements PVFactory {
 
 	public YamcsPVFactory() throws ClientException {
 		System.out.println("YAMCS Init");
-		yamcsClient = YamcsClient.newBuilder("192.168.2.96", 8090).build();
 		
-		yamcsClient.connectWebSocket();
+		yamcsPlugin.init("127.0.0.1", 8090);
+		
+
+		yamcsClient = YamcsPlugin.getYamcsClient();
+		
+		System.out.println("YAMCS Init2");
 
 		if (yamcsClient != null) {
 			yamcsSubscription = yamcsClient.createParameterSubscription();
 		}
 
-		System.out.println("YAMCS Init2");
+		System.out.println("YAMCS Init3");
 
 		yamcsClient.listInstances().whenComplete((response, exc) -> {
 
@@ -106,9 +112,9 @@ public class YamcsPVFactory implements PVFactory {
 			if (subscriptionDirty.getAndSet(false) && yamcsSubscription != null) {
 				Set<NamedObjectId> ids = getRequestedIdentifiers();
 				log.fine(String.format("Modifying subscription to %s", ids));
-				yamcsSubscription.sendMessage(
-						SubscribeParametersRequest.newBuilder().setAction(Action.REPLACE).setSendFromCache(true)
-								.setAbortOnInvalid(false).setUpdateOnExpiration(true).addAllId(ids).build());
+//				yamcsSubscription.sendMessage(
+//						SubscribeParametersRequest.newBuilder().setAction(Action.REPLACE).setSendFromCache(true)
+//								.setAbortOnInvalid(false).setUpdateOnExpiration(true).addAllId(ids).build());
 
 				System.out.println("Modifying subscription to:" + ids);
 			}
