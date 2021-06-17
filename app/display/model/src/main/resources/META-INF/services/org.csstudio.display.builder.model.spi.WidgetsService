@@ -1,1 +1,2 @@
 org.csstudio.display.builder.model.BaseWidgetsService
+org.windhoverlabs.display.model.widgets.WHBaseWidgetsService
