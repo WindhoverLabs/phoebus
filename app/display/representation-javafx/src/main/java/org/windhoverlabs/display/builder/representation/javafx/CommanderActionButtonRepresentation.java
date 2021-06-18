@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package org.csstudio.display.builder.representation.javafx.widgets;
+package org.windhoverlabs.display.builder.representation.javafx;
 
 import static org.csstudio.display.builder.representation.ToolkitRepresentation.logger;
 
@@ -28,12 +28,18 @@ import org.csstudio.display.builder.model.widgets.ActionButtonWidget;
 import org.csstudio.display.builder.representation.javafx.Cursors;
 import org.csstudio.display.builder.representation.javafx.JFXUtil;
 import org.csstudio.display.builder.representation.javafx.Messages;
+import org.csstudio.display.builder.representation.javafx.widgets.GroupRepresentation;
+import org.csstudio.display.builder.representation.javafx.widgets.RegionBaseRepresentation;
+import org.csstudio.display.builder.representation.javafx.widgets.TooltipSupport;
+import org.epics.vtype.VDouble;
+import org.epics.vtype.VType;
 import org.phoebus.framework.macros.MacroHandler;
 import org.phoebus.framework.macros.MacroValueProvider;
 import org.phoebus.ui.javafx.Styles;
 import org.phoebus.ui.javafx.TextUtils;
 import org.phoebus.ui.vtype.FormatOption;
 import org.phoebus.ui.vtype.FormatOptionHandler;
+import org.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget;
 
 import javafx.application.Platform;
 import javafx.geometry.Dimension2D;
@@ -47,9 +53,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 
@@ -58,7 +69,7 @@ import javafx.scene.transform.Translate;
  *  @author Kay Kasemir
  */
 @SuppressWarnings("nls")
-public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, ActionButtonWidget>
+public class CommanderActionButtonRepresentation extends RegionBaseRepresentation<Pane, CommanderCommandActionButtonWidget>
 {
     // Uses a Button if there is only one action,
     // otherwise a MenuButton so that user can select the specific action.
@@ -81,6 +92,17 @@ public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, A
     private volatile String button_text;
     private volatile boolean enabled = true;
     private volatile boolean writable = true;
+    
+    //Had to do this because the ones in GroupRepresentation are scoped to the package
+    static final BorderWidths EDIT_NONE_BORDER = new BorderWidths(0.5, 0.5, 0.5, 0.5, false, false, false, false);
+    static final BorderStrokeStyle EDIT_NONE_DASHED = new BorderStrokeStyle(
+            StrokeType.INSIDE,
+            StrokeLineJoin.MITER,
+            StrokeLineCap.BUTT,
+            10,
+            0,
+            List.of(Double.valueOf(11.11), Double.valueOf(7.7), Double.valueOf(3.3), Double.valueOf(7.7))
+        );
 
     /** Was there ever any transformation applied to the jfx_node?
      *
@@ -105,6 +127,7 @@ public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, A
     private final UntypedWidgetPropertyListener buttonChangedListener = this::buttonChanged;
     private final UntypedWidgetPropertyListener representationChangedListener = this::representationChanged;
     private final WidgetPropertyListener<Boolean> enablementChangedListener = this::enablementChanged;
+    private final UntypedWidgetPropertyListener pvsListener = this::pvsChanged;
 
     @Override
     protected boolean isFilteringEditModeClicks()
@@ -176,7 +199,7 @@ public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, A
         if (actions.isExecutedAsOne()  ||  actions.getActions().size() < 2)
         {
             final Button button = new Button();
-            button.setOnAction(event -> confirm(() ->  handleActions(actions.getActions())));
+            button.setOnAction(event -> sendCommand());
             result = button;
         }
         else
@@ -219,7 +242,7 @@ public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, A
 
         // In edit mode, show dashed border for transparent/invisible widget
         if (toolkit.isEditMode()  &&  model_widget.propTransparent().getValue())
-            result.setBorder(new Border(new BorderStroke(Color.BLACK, GroupRepresentation.EDIT_NONE_DASHED, CornerRadii.EMPTY, GroupRepresentation.EDIT_NONE_BORDER)));
+            result.setBorder(new Border(new BorderStroke(Color.BLACK, EDIT_NONE_DASHED, CornerRadii.EMPTY,EDIT_NONE_BORDER)));
         result.getStyleClass().add("action_button");
         result.setMnemonicParsing(false);
 
@@ -252,6 +275,7 @@ public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, A
 
     private void confirm(final Runnable action)
     {
+    	System.out.println("confirm trigger");
         Platform.runLater(() ->
         {
             // If confirmation is requested..
@@ -273,6 +297,20 @@ public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, A
             action.run();
         });
     }
+    
+    /**
+     * Triggered by button click.
+     * It will gather command arguments(if any) and send the specified
+     * command to commander.
+     */
+    private void sendCommand() 
+    {
+    	System.out.println("sendCommand");
+    	System.out.println("command name:" + model_widget.propCommand().getValue());
+    	System.out.println("pv name :" + model_widget.propPvs().getValue().get(0).pv().getValue());
+    	System.out.println("pv value:" + model_widget.propPvs().getValue().get(0).value().getValue());
+
+    }
 
     /** @return Should 'label' show the PV's current value? */
     private boolean isLabelValue()
@@ -289,7 +327,8 @@ public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, A
         //    while this code will always use current actions
         final StringWidgetProperty text_prop = (StringWidgetProperty)model_widget.propText();
         if (isLabelValue())
-            return FormatOptionHandler.format(model_widget.runtimePropValue().getValue(), FormatOption.DEFAULT, -1, true);
+//            return FormatOptionHandler.format(model_widget.runtimePropValue().getValue(), FormatOption.DEFAULT, -1, true);
+        	return "dummy_pv";
         else if ("$(actions)".equals(text_prop.getSpecification()))
         {
             final List<ActionInfo> actions = model_widget.propActions().getValue().getActions();
@@ -340,6 +379,7 @@ public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, A
         // Keyboard presses are not supressed so check if the widget is enabled
     	System.out.println("$$$$handleAction$$$");
     	//send command to yamcs
+    	model_widget.getPropertyValue("");
     	
         if (! enabled)
             return;
@@ -379,9 +419,10 @@ public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, A
         model_widget.propForegroundColor().addUntypedPropertyListener(buttonChangedListener);
         model_widget.propTransparent().addUntypedPropertyListener(buttonChangedListener);
         model_widget.propActions().addUntypedPropertyListener(buttonChangedListener);
+//        model_widget.propPvs().getValue().get(0).addUntypedPropertyListener(pvsListener);
 
-        if (! toolkit.isEditMode()  &&  isLabelValue())
-            model_widget.runtimePropValue().addUntypedPropertyListener(representationChangedListener);
+//        if (! toolkit.isEditMode()  &&  isLabelValue())
+//            model_widget.runtimePropValue().addUntypedPropertyListener(representationChangedListener);
 
         enablementChanged(null, null, null);
     }
@@ -389,8 +430,8 @@ public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, A
     @Override
     protected void unregisterListeners()
     {
-        if (! toolkit.isEditMode()  &&  isLabelValue())
-            model_widget.runtimePropValue().removePropertyListener(representationChangedListener);
+//        if (! toolkit.isEditMode()  &&  isLabelValue())
+//            model_widget.runtimePropValue().removePropertyListener(representationChangedListener);
         model_widget.propWidth().removePropertyListener(representationChangedListener);
         model_widget.propHeight().removePropertyListener(representationChangedListener);
         model_widget.propText().removePropertyListener(representationChangedListener);
@@ -426,6 +467,17 @@ public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, A
         updateColors();
         dirty_representation.mark();
         toolkit.scheduleUpdate(this);
+    }
+    
+    
+    
+    /** Only details of the existing button need to be updated */
+    private void pvsChanged(final WidgetProperty<?> property, final Object old_value, final Object new_value)
+   {
+    	System.out.println("pvsChanged");
+//        updateColors();
+//        dirty_representation.mark();
+//        toolkit.scheduleUpdate(this);
     }
 
     /** enabled or pv_writable changed */

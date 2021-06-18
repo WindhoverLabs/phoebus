@@ -28,6 +28,8 @@ import org.csstudio.display.builder.model.widgets.plots.StripchartWidget;
 import org.csstudio.display.builder.model.widgets.plots.XYPlotWidget;
 import org.csstudio.display.builder.runtime.WidgetRuntime;
 import org.csstudio.display.builder.runtime.spi.WidgetRuntimesService;
+import org.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget;
+import org.windhoverlabs.display.builder.runtime.CommanderCommandActionButtonWidgetRuntime;
 
 /** SPI for runtimes of base widgets
  *  @author Kay Kasemir
@@ -37,6 +39,7 @@ public class BaseWidgetRuntimes implements WidgetRuntimesService
     @Override
     public Map<String, Supplier<WidgetRuntime<? extends Widget>>> getWidgetRuntimeFactories()
     {
+    	CommanderCommandActionButtonWidget x;
         return Map.ofEntries(
             entry(DisplayModel.WIDGET_TYPE,                          () -> new DisplayRuntime()),
             entry(ArrayWidget.WIDGET_DESCRIPTOR.getType(),           () -> new ArrayWidgetRuntime()),
@@ -51,7 +54,8 @@ public class BaseWidgetRuntimes implements WidgetRuntimesService
             entry(TableWidget.WIDGET_DESCRIPTOR.getType(),           () -> new TableWidgetRuntime()),
             entry(TabsWidget.WIDGET_DESCRIPTOR.getType(),            () -> new TabsWidgetRuntime()),
             entry(DataBrowserWidget.WIDGET_DESCRIPTOR.getType(),     () -> new DataBrowserWidgetRuntime()),
-            entry(XYPlotWidget.WIDGET_DESCRIPTOR.getType(),          () -> new XYPlotWidgetRuntime())
+            entry(XYPlotWidget.WIDGET_DESCRIPTOR.getType(),          () -> new XYPlotWidgetRuntime()),
+            entry(CommanderCommandActionButtonWidget.WIDGET_DESCRIPTOR.getType(), () -> new CommanderCommandActionButtonWidgetRuntime())
         );
     }
 }

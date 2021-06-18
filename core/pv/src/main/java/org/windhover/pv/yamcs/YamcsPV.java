@@ -235,9 +235,9 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 		
 		ArrayList<String> yamcsValues = new ArrayList<String>();
 		
-		System.out.println("pv name:" + this.getName());
+//		System.out.println("pv name:" + this.getName());
 		
-		System.out.println("pv value from yamcs:" + this.getValue(getName()) );
+//		System.out.println("pv value from yamcs:" + this.getValue(getName()) );
 		yamcsValues.add(Integer.toString( values.get(0).getEngValue().getUint32Value()));
 		VType value = null;
 		try {
@@ -250,7 +250,7 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 //		System.out.println("yamcs sub value:" + yamcsSubscription. );
 
 		this.notifyListenersOfValue(value);
-		System.out.println("values:" + values);
+//		System.out.println("values:" + values);
 
 	}
 

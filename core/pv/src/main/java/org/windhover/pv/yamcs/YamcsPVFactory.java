@@ -108,7 +108,7 @@ public class YamcsPVFactory implements PVFactory {
 		// Periodically check if the subscription needs a refresh
 		// (PVs send individual events, so this bundles them)
 		executor.scheduleWithFixedDelay(() -> {
-			System.out.println();
+//			System.out.println();
 			if (subscriptionDirty.getAndSet(false) && yamcsSubscription != null) {
 				Set<NamedObjectId> ids = getRequestedIdentifiers();
 				log.fine(String.format("Modifying subscription to %s", ids));
@@ -116,10 +116,10 @@ public class YamcsPVFactory implements PVFactory {
 //						SubscribeParametersRequest.newBuilder().setAction(Action.REPLACE).setSendFromCache(true)
 //								.setAbortOnInvalid(false).setUpdateOnExpiration(true).addAllId(ids).build());
 
-				System.out.println("Modifying subscription to:" + ids);
+//				System.out.println("Modifying subscription to:" + ids);
 			}
 
-			System.out.println("modifying subscription from factory");
+//			System.out.println("modifying subscription from factory");
 		}, 500, 500, TimeUnit.MILLISECONDS);
 
 		System.out.println("client status" + yamcsClient.listInstances());

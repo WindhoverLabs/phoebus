@@ -417,7 +417,13 @@ public class CommonWidgetProperties
     /** 'text' property: Text to display */
     public static final WidgetPropertyDescriptor<String> propText =
             newStringPropertyDescriptor(WidgetPropertyCategory.WIDGET, "text", Messages.WidgetProperties_Text);
-
+    
+    public static final WidgetPropertyDescriptor<String> propCommandArgument =
+            newStringPropertyDescriptor(WidgetPropertyCategory.WIDGET, "text", "Command Argument");
+    
+    public static final WidgetPropertyDescriptor<String> propCommand =
+            newStringPropertyDescriptor(WidgetPropertyCategory.MISC, "command", "Command");
+    
     /** 'tooltip' property: Text to display in tooltip */
     public static final WidgetPropertyDescriptor<String> propTooltip =
             new WidgetPropertyDescriptor<>(WidgetPropertyCategory.BEHAVIOR, "tooltip", Messages.WidgetProperties_Tooltip)

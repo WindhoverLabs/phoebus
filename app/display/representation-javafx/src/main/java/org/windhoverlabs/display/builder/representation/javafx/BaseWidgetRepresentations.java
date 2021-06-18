@@ -15,6 +15,7 @@ import org.csstudio.display.builder.model.WidgetDescriptor;
 import org.csstudio.display.builder.representation.WidgetRepresentation;
 import org.csstudio.display.builder.representation.WidgetRepresentationFactory;
 import org.csstudio.display.builder.representation.spi.WidgetRepresentationsService;
+import org.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget;
 import org.windhoverlabs.display.model.widgets.WHTextUpdateWidget;
 
 /**
@@ -30,7 +31,7 @@ public class BaseWidgetRepresentations implements WidgetRepresentationsService {
 		
 		System.out.println("BaseWidgetRepresentations");
 
-		return Map.ofEntries(entry(WHTextUpdateWidget.WIDGET_DESCRIPTOR,
-				() -> (WidgetRepresentation) new WHTextUpdateRepresentation()));
+		return Map.ofEntries(entry(WHTextUpdateWidget.WIDGET_DESCRIPTOR,() -> (WidgetRepresentation) new WHTextUpdateRepresentation()),
+							 entry(CommanderCommandActionButtonWidget.WIDGET_DESCRIPTOR,() -> (WidgetRepresentation) new CommanderActionButtonRepresentation()));
 	}
 }
