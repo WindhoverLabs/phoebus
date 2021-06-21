@@ -257,7 +257,7 @@ public class CommanderActionButtonRepresentation extends RegionBaseRepresentatio
 
         // Need to attach TT to the specific button, not the common jfx_node Pane
         TooltipSupport.attach(result, model_widget.propTooltip());
-
+        
         return result;
     }
 
@@ -366,14 +366,19 @@ public class CommanderActionButtonRepresentation extends RegionBaseRepresentatio
         return expanded;
     }
 
-    /** @param actions Actions that the user invoked */
+    /** @param actions Actions that the user invoked
+     * 
+     * */
     private void handleActions(final List<ActionInfo> actions)
     {
         for (ActionInfo action : actions)
             handleAction(action);
     }
 
-    /** @param action Action that the user invoked */
+    /** @param action Action that the user invoked
+     *      * In the context of commander, this means sending a command to the server,
+     * which in turn sends it to the vehicle. 
+     * */
     private void handleAction(ActionInfo action)
     {
         // Keyboard presses are not supressed so check if the widget is enabled
