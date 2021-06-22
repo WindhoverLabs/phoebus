@@ -5,5 +5,5 @@
     <artifactId>app-commander</artifactId>
     <version>4.6.6-SNAPSHOT</version>
   </parent>
-  <artifactId>app-commander-connections</artifactId>
+  <artifactId>app-commander-ui</artifactId>
 </project>

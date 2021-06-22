@@ -1,4 +1,4 @@
-package org.phoebus.applications.commander;
+package org.phoebus.applications.commander.connections;
 
 import java.io.File;
 import java.net.URI;

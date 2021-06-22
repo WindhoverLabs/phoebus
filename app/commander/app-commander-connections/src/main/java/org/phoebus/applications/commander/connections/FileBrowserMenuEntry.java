@@ -1,4 +1,4 @@
-package org.phoebus.applications.commander;
+package org.phoebus.applications.commander.connections;
 
 import org.phoebus.framework.workbench.ApplicationService;
 import org.phoebus.ui.javafx.ImageCache;

@@ -5,13 +5,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package org.phoebus.applications.commander;
+package org.phoebus.applications.commander.connections;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
-import static org.phoebus.applications.commander.ConnectionsManagerController.logger;
+import static org.phoebus.applications.commander.connections.ConnectionsManagerController.logger;
 
 import java.io.File;
 import java.nio.file.ClosedWatchServiceException;
