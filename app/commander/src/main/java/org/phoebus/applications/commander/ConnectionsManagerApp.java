@@ -9,7 +9,7 @@ import org.phoebus.framework.spi.AppInstance;
 import org.phoebus.framework.spi.AppResourceDescriptor;
 
 @SuppressWarnings("nls")
-public class CommanderApp implements AppResourceDescriptor {
+public class ConnectionsManagerApp implements AppResourceDescriptor {
 
     public static final String Name = "commander";
 
@@ -23,7 +23,7 @@ public class CommanderApp implements AppResourceDescriptor {
 
     static
     {
-    	AnnotatedPreferences.initialize(CommanderApp.class, "/filebrowser_preferences.properties");
+    	AnnotatedPreferences.initialize(ConnectionsManagerApp.class, "/filebrowser_preferences.properties");
     }
 
     @Override
@@ -50,6 +50,6 @@ public class CommanderApp implements AppResourceDescriptor {
 
     public AppInstance createWithRoot(final File directory)
     {
-        return new FileBrowser(this, directory);
+        return new ConnectionsManagerController(this, directory);
     }
 }

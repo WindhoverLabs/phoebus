@@ -20,10 +20,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeTableColumn;
 
 @SuppressWarnings("nls")
-public class FileBrowser implements AppInstance
+public class ConnectionsManagerController implements AppInstance
 {
     /** Logger for all file browser code */
-    public static final Logger logger = Logger.getLogger(FileBrowser.class.getPackageName());
+    public static final Logger logger = Logger.getLogger(ConnectionsManagerController.class.getPackageName());
 
     /** Memento tags */
     private static final String DIRECTORY = "directory",
@@ -34,7 +34,7 @@ public class FileBrowser implements AppInstance
 
     private FileBrowserController controller;
 
-    FileBrowser(final AppDescriptor app, final File directory)
+    public ConnectionsManagerController(AppDescriptor app, final File directory)
     {
         this.app = app;
 
@@ -44,7 +44,7 @@ public class FileBrowser implements AppInstance
         try
         {
             final URL fxml = getClass().getResource("Main.fxml");
-            final ResourceBundle bundle = NLS.getMessages(FileBrowser.class);
+            final ResourceBundle bundle = NLS.getMessages(ConnectionsManagerController.class);
             fxmlLoader = new FXMLLoader(fxml, bundle);
             content = (Node) fxmlLoader.load();
             controller = fxmlLoader.getController();
