@@ -27,6 +27,16 @@
       <artifactId>app-commander-ui</artifactId>
       <version>4.6.6-SNAPSHOT</version>
     </dependency>
+      <dependency>
+      <groupId>org.phoebus</groupId>
+      <artifactId>app-commander-core</artifactId>
+      <version>4.6.6-SNAPSHOT</version>
+    </dependency>
+   <dependency>
+      <groupId>org.phoebus</groupId>
+      <artifactId>app-commander-display-model</artifactId>
+      <version>4.6.6-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>org.phoebus</groupId>
       <artifactId>app-probe</artifactId>
