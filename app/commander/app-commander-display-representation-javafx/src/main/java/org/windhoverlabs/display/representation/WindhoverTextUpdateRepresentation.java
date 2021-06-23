@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package org.csstudio.display.builder.representation.javafx.widgets;
+package org.windhoverlabs.display.representation;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +20,8 @@ import org.csstudio.display.builder.model.properties.WidgetColor;
 import org.csstudio.display.builder.model.widgets.PVWidget;
 import org.csstudio.display.builder.model.widgets.TextUpdateWidget;
 import org.csstudio.display.builder.representation.javafx.JFXUtil;
+import org.csstudio.display.builder.representation.javafx.widgets.RegionBaseRepresentation;
+import org.csstudio.display.builder.representation.javafx.widgets.TooltipSupport;
 import org.epics.vtype.VType;
 import org.phoebus.ui.vtype.FormatOptionHandler;
 import org.windhoverlabs.display.model.widgets.WHTextUpdateWidget;

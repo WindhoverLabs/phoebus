@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package org.windhoverlabs.display.builder.representation.javafx;
+package org.windhoverlabs.display.representation;
 
 import static org.csstudio.display.builder.representation.ToolkitRepresentation.logger;
 
