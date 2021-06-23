@@ -27,4 +27,5 @@
   <modules>
   	<module>app-commander-connections</module>
   </modules>
+  <version>0.1</version>
 </project>
