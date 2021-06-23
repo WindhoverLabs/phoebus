@@ -7,7 +7,7 @@ import org.phoebus.ui.spi.MenuEntry;
 import javafx.scene.image.Image;
 
 @SuppressWarnings("nls")
-public class FileBrowserMenuEntry implements MenuEntry
+public class ConnectionsManagerMenuEntry implements MenuEntry
 {
     @Override
     public String getName() {

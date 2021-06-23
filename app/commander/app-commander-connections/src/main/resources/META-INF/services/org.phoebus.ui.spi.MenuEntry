@@ -1,1 +1,2 @@
-org.phoebus.applications.commander.connections.FileBrowserMenuEntry
+#TODO:Add Menu Entries
+org.phoebus.applications.commander.connections.ConnectionsManagerMenuEntry
