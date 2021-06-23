@@ -4,9 +4,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
-import org.windhover.pv.yamcs.YamcsPlugin;
-import org.windhover.yamcs.commanding.CommandParser;
-import org.windhover.yamcs.commanding.CommandParser.ParseResult;
+import org.windhoverlabs.pv.yamcs.YamcsPlugin;
+import org.windhoverlabs.yamcs.commanding.CommandParser;
+import org.windhoverlabs.yamcs.commanding.CommandParser.ParseResult;
 import org.yamcs.client.processor.ProcessorClient;
 import org.yamcs.client.processor.ProcessorClient.CommandBuilder;
 import org.yamcs.protobuf.IssueCommandRequest.Assignment;
