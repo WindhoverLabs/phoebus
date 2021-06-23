@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.phoebus.applications.commander.connections.ConnectionsManagerController">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
    </columnConstraints>
@@ -28,6 +28,7 @@
                       <TableColumn prefWidth="82.0" text="C2" />
                     </columns>
                   </TableView>
+                  <Button layoutX="38.0" layoutY="523.0" mnemonicParsing="false" text="Button" />
                </children>
             </Pane>
          </content>

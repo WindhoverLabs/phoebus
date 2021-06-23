@@ -1,102 +1,71 @@
 package org.phoebus.applications.commander.connections;
 
+import static org.phoebus.applications.commander.connections.ConnectionsManagerInstance.logger;
+
 import java.io.File;
-import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
-import java.util.ResourceBundle;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.phoebus.framework.selection.SelectionService;
+import org.phoebus.framework.spi.AppResourceDescriptor;
+import org.phoebus.framework.util.ResourceParser;
+import org.phoebus.framework.workbench.ApplicationService;
+import org.phoebus.ui.application.ApplicationLauncherService;
+import org.phoebus.ui.application.ContextMenuService;
+import org.phoebus.ui.application.PhoebusApplication;
+import org.phoebus.ui.dialog.DialogHelper;
+import org.phoebus.ui.javafx.ImageCache;
 
-import org.phoebus.framework.nls.NLS;
-import org.phoebus.framework.persistence.Memento;
-import org.phoebus.framework.spi.AppDescriptor;
-import org.phoebus.framework.spi.AppInstance;
-import org.phoebus.ui.docking.DockItem;
-import org.phoebus.ui.docking.DockPane;
-
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableView;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
+import org.phoebus.ui.spi.ContextMenuEntry;
 
+/**
+ * Controller for the commander app
+ *
+ * @lgomez
+ */
 @SuppressWarnings("nls")
-public class ConnectionsManagerController implements AppInstance
-{
-    /** Logger for all file browser code */
-    public static final Logger logger = Logger.getLogger(ConnectionsManagerController.class.getPackageName());
+public class ConnectionsManagerController {
 
-    /** Memento tags */
-    private static final String DIRECTORY = "directory",
-                                SHOW_COLUMN = "show_col",
-                                WIDTH = "col_width";
-
-    private final AppDescriptor app;
-
-    private FileBrowserController controller;
-
-    public ConnectionsManagerController(AppDescriptor app, final File directory)
+    public ConnectionsManagerController()
     {
-        this.app = app;
-
-        final FXMLLoader fxmlLoader;
-
-        Node content;
-        try
-        {
-            final URL fxml = getClass().getResource("Main.fxml");
-            final ResourceBundle bundle = NLS.getMessages(ConnectionsManagerController.class);
-            fxmlLoader = new FXMLLoader(fxml, bundle);
-            content = (Node) fxmlLoader.load();
-            controller = fxmlLoader.getController();
-        }
-        catch (IOException ex)
-        {
-            logger.log(Level.WARNING, "Cannot load UI", ex);
-            content = new Label("Cannot load UI");
-        }
-
-        final DockItem tab = new DockItem(this, content);
-        DockPane.getActiveDockPane().addTab(tab);
-
-        if (controller != null  &&  directory != null)
-            controller.setRoot(directory);
-
-        tab.addClosedNotification(controller::shutdown);
     }
 
-    @Override
-    public AppDescriptor getAppDescriptor()
-    {
-        return app;
+    @FXML
+    public void initialize() {
     }
 
-    @Override
-    public void restore(final Memento memento)
+    /** Call when no longer needed */
+    public void shutdown()
     {
-        memento.getString(DIRECTORY).ifPresent(dir -> controller.setRoot(new File(dir)));
-        int i = 0;
-        for (TreeTableColumn<?,?> col : controller.getView().getColumns())
-        {
-            if (! memento.getBoolean(SHOW_COLUMN+i).orElse(true))
-                col.setVisible(false);
-            memento.getNumber(WIDTH+i).ifPresent(width -> col.setPrefWidth(width.doubleValue()));
-            ++i;
-        }
-    }
-
-    @Override
-    public void save(final Memento memento)
-    {
-        if (controller == null)
-            return;
-        memento.setString(DIRECTORY, controller.getRoot().toString());
-        int i = 0;
-        for (TreeTableColumn<?,?> col : controller.getView().getColumns())
-        {
-            if (! col.isVisible())
-                memento.setBoolean(SHOW_COLUMN+i, false);
-            memento.setNumber(WIDTH+i, col.getWidth());
-            ++i;
-        }
+       System.out.println("shutdown");
     }
 }

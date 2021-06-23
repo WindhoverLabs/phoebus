@@ -11,7 +11,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
-import static org.phoebus.applications.commander.connections.ConnectionsManagerController.logger;
+import static org.phoebus.applications.commander.connections.ConnectionsManagerInstance.logger;
 
 import java.io.File;
 import java.nio.file.ClosedWatchServiceException;

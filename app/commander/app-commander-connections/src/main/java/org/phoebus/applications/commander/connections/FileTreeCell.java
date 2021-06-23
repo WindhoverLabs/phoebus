@@ -1,6 +1,6 @@
 package org.phoebus.applications.commander.connections;
 
-import static org.phoebus.applications.commander.connections.ConnectionsManagerController.logger;
+import static org.phoebus.applications.commander.connections.ConnectionsManagerInstance.logger;
 
 import java.io.File;
 import java.net.URI;

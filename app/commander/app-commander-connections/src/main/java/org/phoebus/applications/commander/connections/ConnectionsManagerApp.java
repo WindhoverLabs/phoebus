@@ -50,6 +50,6 @@ public class ConnectionsManagerApp implements AppResourceDescriptor {
 
     public AppInstance createWithRoot(final File directory)
     {
-        return new ConnectionsManagerController(this, directory);
+        return new ConnectionsManagerInstance(this);
     }
 }
