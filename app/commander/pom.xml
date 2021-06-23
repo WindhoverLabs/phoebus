@@ -26,5 +26,6 @@
   </dependencies>
   <modules>
   	<module>app-commander-connections</module>
+  	<module>app-commander-core</module>
   </modules>
 </project>
