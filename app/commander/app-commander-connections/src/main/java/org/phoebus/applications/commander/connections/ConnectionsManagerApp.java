@@ -11,7 +11,7 @@ import org.phoebus.framework.spi.AppResourceDescriptor;
 @SuppressWarnings("nls")
 public class ConnectionsManagerApp implements AppResourceDescriptor {
 
-    public static final String Name = "commander";
+    public static final String Name = "connections";
 
     public static final String DisplayName = Messages.DisplayName;
 
