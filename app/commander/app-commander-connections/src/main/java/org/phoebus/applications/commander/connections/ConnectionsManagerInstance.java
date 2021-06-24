@@ -57,9 +57,7 @@ public class ConnectionsManagerInstance implements AppInstance
 
         final DockItem tab = new DockItem(this, content);
         DockPane.getActiveDockPane().addTab(tab);
-        
-        System.out.println("controller -->" + controller );
-        
+                 
         tab.addClosedNotification(controller::shutdown);
     }
 
