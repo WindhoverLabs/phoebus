@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.phoebus</groupId>
     <artifactId>app</artifactId>
-    <version>4.6.6-SNAPSHOT</version>
+    <version>4.6.6-SNAPSHOT</version> 
   </parent>
   <dependencies>
     <dependency>
@@ -28,10 +28,32 @@
       <artifactId>app-display-model</artifactId>
       <version>4.6.6-SNAPSHOT</version>
     </dependency>
+      <dependency>
+      <groupId>org.phoebus</groupId>
+      <artifactId>app-display-representation-javafx</artifactId>
+      <version>4.6.6-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.phoebus</groupId>
+      <artifactId>app-display-runtime</artifactId>
+      <version>4.6.6-SNAPSHOT</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.gluonhq/maps -->
+<dependency>
+    <groupId>com.gluonhq</groupId>
+    <artifactId>maps</artifactId>
+    <version>2.0.0-ea+4</version>
+</dependency>
+    
   </dependencies>
   <modules>
   	<module>app-commander-connections</module>
   	<module>app-commander-core</module>
   	<module>app-commander-display-model</module>
+  	<module>app-commander-display-representation-javafx</module>
+  	<module>app-commander-display-runtime</module>
+  	<module>app-commander-mission-planner</module>
   </modules>
+  <version>1.0</version>
+  <groupId>org.windhoverlabs</groupId>
 </project>
