@@ -462,6 +462,16 @@ public class ModelResourceUtil
                 throw new Exception("Cannot open example: '" + example + "'", ex);
             }
         }
+        
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        
+        
+        /**
+         *TODO: Make PR with this fix. Need to investigate further as this "fix" breaks the
+         *loading of displays for the Display representations. 
+         */
+        
+//        return loader.getResourceAsStream(resource_name);
 
         return new FileInputStream(resource_name);
     }
