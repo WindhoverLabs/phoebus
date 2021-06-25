@@ -199,6 +199,7 @@ public class CommanderActionButtonRepresentation extends RegionBaseRepresentatio
         if (actions.isExecutedAsOne()  ||  actions.getActions().size() < 2)
         {
             final Button button = new Button();
+            button.setGraphic(new ImageView("/icons/send.png"));
             button.setOnAction(event -> sendCommand());
             result = button;
         }
