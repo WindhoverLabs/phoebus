@@ -103,7 +103,7 @@ public class CommanderCommandActionButtonWidget extends VisibleWidget
         public WidgetProperty<String> argumentName()  { return getElement(2); }
     };
     
-    /** 'marker' array */
+    /** 'Arguments' array */
     private static final ArrayWidgetProperty.Descriptor<PvArgProperty> propPVs =
         new ArrayWidgetProperty.Descriptor<>(WidgetPropertyCategory.MISC, "argument", "Arguments",
                                              (widget, index) -> new PvArgProperty(widget, "Argument " + index),
@@ -260,6 +260,7 @@ public class CommanderCommandActionButtonWidget extends VisibleWidget
     public CommanderCommandActionButtonWidget()
     {
         super(WIDGET_DESCRIPTOR.getType(), DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        System.out.println("resource location:" + CommanderCommandActionButtonWidget.class.getResource("widget_models/classes.bcf"));
     }
 
     /** org.csstudio.opibuilder.widgets.ActionButton used 2.0.0 */

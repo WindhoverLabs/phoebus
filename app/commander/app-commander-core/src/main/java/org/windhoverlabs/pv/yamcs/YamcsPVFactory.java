@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 /**
  * Factory for creating {@link YamcsPV}s
  * 
- * @author Kay Kasemir
+ * @author Lorenzo Gomez
  */
 @SuppressWarnings("nls")
 public class YamcsPVFactory implements PVFactory {
@@ -81,9 +81,8 @@ public class YamcsPVFactory implements PVFactory {
 	public YamcsPVFactory() throws ClientException {
 		System.out.println("YAMCS Init");
 		
-		yamcsPlugin.init("127.0.0.1", 8090);
+		yamcsPlugin.init("192.168.2.96", 8090);
 		
-
 		yamcsClient = YamcsPlugin.getYamcsClient();
 		
 		System.out.println("YAMCS Init2");

@@ -5,8 +5,7 @@
     <artifactId>app-commander</artifactId>
     <version>4.6.6-SNAPSHOT</version>
   </parent>
-  <artifactId>app-commander-ui</artifactId>
-  
+  <artifactId>app-commander-ui</artifactId> 
   <profiles>
   <!-- profile for and the website from the .rst files -->
   <profile>

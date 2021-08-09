@@ -16,6 +16,7 @@ import org.phoebus.ui.docking.DockPane;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
@@ -30,12 +31,17 @@ import com.gluonhq.attach.util.Services;
 
 import com.gluonhq.maps.MapPoint;
 
+/**
+ * 
+ * @author lgomez
+ *
+ */
 @SuppressWarnings("nls")
 public class MissionMapInstance implements AppInstance
 {
     private static final int DEFAULT_ZOOM = 3;
-    private static final double DEFAULT_LAT = 50.0;
-    private static final double DEFAULT_LONG = 4.0;
+    private static final double DEFAULT_LAT = 29.40647409433943 ;
+    private static final double DEFAULT_LONG = -95.02559307928686;
     /** Logger for all file browser code */
     public static final Logger logger = Logger.getLogger(MissionMapInstance.class.getPackageName());
 
@@ -47,6 +53,7 @@ public class MissionMapInstance implements AppInstance
     private MapPoint mapPoint;
     private final AppDescriptor app;
     private MissionMapController controller;
+    private MapView map;
 
     public MissionMapInstance(AppDescriptor app)
     {
@@ -71,15 +78,25 @@ public class MissionMapInstance implements AppInstance
         final DockItem tab = new DockItem(this, content);
         DockPane.getActiveDockPane().addTab(tab);
         
-        MapView map = new MapView();
+        map = new MapView();
         map.addLayer(positionLayer());
+        map.setCenter(DEFAULT_LAT, DEFAULT_LONG);
         map.setZoom(DEFAULT_ZOOM);
         
 //        TODO:Not sure if we should add the map to this SubScene.
         SubScene scene;
         scene = new SubScene(map, 1000, 700);
         GridPane rootPane = (GridPane) content;
-        rootPane.add(map, 0, 0);
+        rootPane.add(scene, 0, 0);
+        
+        Button setPositionButton = new Button("Position");
+        
+        setPositionButton.onActionProperty().set(e ->
+        {
+        	System.out.println("Fire");
+        });
+        
+        rootPane.add(setPositionButton, 1,0);
                 
         tab.addClosedNotification(controller::shutdown);
     }
@@ -102,6 +119,7 @@ public class MissionMapInstance implements AppInstance
                     positionProperty.addListener(e -> {
                         Position pos = positionProperty.get();
                         mapPoint.update(pos.getLatitude(), pos.getLongitude());
+                        System.out.println("current position-->"+ pos);
                     });
                     return answer;
                 })
@@ -129,5 +147,11 @@ public class MissionMapInstance implements AppInstance
     public void save(final Memento memento)
     {
     	System.out.println("save");
+    }
+    
+    //TODO: Implement
+    private void initMapControls() 
+    {
+    	
     }
 }
