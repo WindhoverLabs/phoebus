@@ -255,27 +255,17 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 	}
 
 	public void updateValue() throws Exception {
-		System.out.println("updateValue..");
+		ArrayList<String> values = new ArrayList<String>();	
 
-//		this.notifyListenersOfValue(new  org.epics.vtype.VInt());
-
-//		org.epics.vtype.VInt.toVType(32);
-
-//		VType value = org.epics.vtype.VInt.of(32, Alarm, null, null);
-
-		ArrayList<String> values = new ArrayList<String>();
-		
-		System.out.println("pv name:" + this.getName());
-		
-		System.out.println("pv value from yamcs:" + this.getValue(getName()) );
-//		values.add("12");
 		VType value = ValueHelper.getInitialValue(values, VInt.class);
 		
-//		System.out.println("yamcs sub value:" + yamcsSubscription. );
-
 		this.notifyListenersOfValue(value);
 	}
 
+	public void updateValue(VType value) throws Exception {
+		this.notifyListenersOfValue(value);
+	}
+	
 	public void onInvalidIdentification(NamedObjectId id) {
 		System.out.println("onInvalidIdentification:" + id);
 	}

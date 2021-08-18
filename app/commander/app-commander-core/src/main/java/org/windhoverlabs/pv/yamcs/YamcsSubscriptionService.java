@@ -1,5 +1,6 @@
 package org.windhoverlabs.pv.yamcs;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,7 +19,10 @@ import org.yamcs.protobuf.Pvalue.ParameterValue;
 import org.yamcs.protobuf.SubscribeParametersRequest;
 import org.yamcs.protobuf.SubscribeParametersRequest.Action;
 import org.yamcs.protobuf.Yamcs.NamedObjectId;
+import org.epics.vtype.VInt;
+import org.epics.vtype.VType;
 import org.phoebus.pv.PV;
+import org.phoebus.pv.loc.ValueHelper;
 
 /**
  * Keeps track of {@link IPV} registration state and takes care of establishing
@@ -37,7 +41,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 	private Set<ParameterValueListener> parameterValueListeners = new HashSet<>();
 
 	public YamcsSubscriptionService(ParameterSubscription newSubscriprion) {
-		
+
 		subscription = newSubscriprion;
 
 		// Periodically check if the subscription needs a refresh
@@ -163,17 +167,18 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
 	}
 
-    /**
-     * Async adds a Yamcs PV for receiving updates.
-     */
-    public void register(YamcsPV pv) {
-        NamedObjectId id = identityOf(pv.getName());
+	/**
+	 * Async adds a Yamcs PV for receiving updates.
+	 */
+	public void register(YamcsPV pv) {
+		NamedObjectId id = identityOf(pv.getName());
         executor.execute(() -> {
             Set<YamcsPV> pvs = pvsById.computeIfAbsent(id, x -> new HashSet<>());
             pvs.add(pv);
             subscriptionDirty.set(true);
         });
-    }
+
+	}
 
 //    /**
 //     * Async removes a Yamcs PV from receiving updates.
@@ -253,13 +258,31 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 	@FunctionalInterface
 	public static interface ParameterValueListener {
 		void onData(List<ParameterValue> values);
-		
-		
+
 	}
 
 	@Override
 	public void onData(List<ParameterValue> values) {
 		// TODO Auto-generated method stub
+		ArrayList<String> yamcsValues = new ArrayList<String>();
+				
+		yamcsValues.add(Integer.toString( values.get(0).getEngValue().getUint32Value()));
+		VType value = null;
+		try {
+			value = ValueHelper.getInitialValue(yamcsValues, VInt.class);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
+		for (ParameterValue p : values) {
+			try {
+				pvsById.get(p).iterator().next().updateValue(value);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			};
+		}
+
 	}
 }
