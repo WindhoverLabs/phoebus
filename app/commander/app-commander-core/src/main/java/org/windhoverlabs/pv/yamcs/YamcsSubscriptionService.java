@@ -19,8 +19,15 @@ import org.yamcs.protobuf.Pvalue.ParameterValue;
 import org.yamcs.protobuf.SubscribeParametersRequest;
 import org.yamcs.protobuf.SubscribeParametersRequest.Action;
 import org.yamcs.protobuf.Yamcs.NamedObjectId;
+import org.epics.vtype.VBoolean;
+import org.epics.vtype.VDouble;
+import org.epics.vtype.VFloat;
 import org.epics.vtype.VInt;
+import org.epics.vtype.VLong;
+import org.epics.vtype.VString;
 import org.epics.vtype.VType;
+import org.epics.vtype.VUInt;
+import org.epics.vtype.VULong;
 import org.phoebus.pv.PV;
 import org.phoebus.pv.loc.ValueHelper;
 
@@ -172,11 +179,11 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 	 */
 	public void register(YamcsPV pv) {
 		NamedObjectId id = identityOf(pv.getName());
-        executor.execute(() -> {
-            Set<YamcsPV> pvs = pvsById.computeIfAbsent(id, x -> new HashSet<>());
-            pvs.add(pv);
-            subscriptionDirty.set(true);
-        });
+		executor.execute(() -> {
+			Set<YamcsPV> pvs = pvsById.computeIfAbsent(id, x -> new HashSet<>());
+			pvs.add(pv);
+			subscriptionDirty.set(true);
+		});
 
 	}
 
@@ -261,23 +268,100 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
 	}
 
+	/**
+	 * create a VType from a yamcs ParameterValue object.
+	 * 
+	 * @param parameter
+	 * @return
+	 */
+	private VType getVType(ParameterValue parameter) {
+		ArrayList<String> yamcsValues = new ArrayList<String>();
+
+		Class<? extends VType> valueType = null;
+		VType value = null;
+
+		switch (parameter.getEngValue().getType()) {
+		case AGGREGATE:
+			// TODO Implement
+			break;
+		case ARRAY:
+			// TODO Implement
+			break;
+		case BINARY:
+			// TODO Implement
+			break;
+		case BOOLEAN:{
+			yamcsValues.add(Boolean.toString(parameter.getEngValue().getBooleanValue()));
+			valueType = VBoolean.class;
+			break;
+		}
+		case DOUBLE:{
+			yamcsValues.add(Double.toString(parameter.getEngValue().getDoubleValue()));
+			valueType = VDouble.class;
+			break;
+		}
+		case ENUMERATED:
+			// TODO Implement
+			break;
+		case FLOAT: {
+			yamcsValues.add(Float.toString(parameter.getEngValue().getFloatValue()));
+			valueType = VFloat.class;
+			break;
+		}
+		case NONE:
+			// TODO Implement
+			break;
+		case SINT32: {
+			yamcsValues.add(Integer.toString(parameter.getEngValue().getUint32Value()));
+			valueType = VInt.class;
+			break;
+		}
+		case SINT64: {
+			yamcsValues.add(Long.toString(parameter.getEngValue().getSint64Value()));
+			valueType = VLong.class;
+			break;
+		}
+		case STRING: {
+			yamcsValues.add(parameter.getEngValue().getStringValue());
+			valueType = VString.class;
+			break;
+		}
+		case TIMESTAMP:
+			break;
+		case UINT32: {
+			yamcsValues.add(Integer.toString(parameter.getEngValue().getUint32Value()));
+			valueType = VUInt.class;
+			break;
+		}
+		case UINT64: {
+			yamcsValues.add(Long.toString(parameter.getEngValue().getUint64Value()));
+			valueType = VULong.class;
+			break;
+		}
+		default:
+			break;
+
+		}
+
+		if (!yamcsValues.isEmpty()) {
+			try {
+				value = ValueHelper.getInitialValue(yamcsValues, valueType);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		return value;
+	}
+
 	@Override
 	public void onData(List<ParameterValue> values) {
-		// TODO Auto-generated method stub
-		ArrayList<String> yamcsValues = new ArrayList<String>();
-				
-		yamcsValues.add(Integer.toString( values.get(0).getEngValue().getUint32Value()));
-		VType value = null;
-		try {
-			value = ValueHelper.getInitialValue(yamcsValues, VInt.class);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		// TODO
+
 		for (ParameterValue p : values) {
 			try {
-				pvsById.get(p).iterator().next().updateValue(value);
+				pvsById.get(p).iterator().next().updateValue(getVType(p));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
