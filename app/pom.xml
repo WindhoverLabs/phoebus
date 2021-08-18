@@ -32,5 +32,6 @@
     <module>trends</module>
     <module>utility</module>
     <module>commander</module>
+    <module>imageviewer</module>
   </modules>
 </project>

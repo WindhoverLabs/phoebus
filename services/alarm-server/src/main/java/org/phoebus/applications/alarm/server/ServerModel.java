@@ -177,6 +177,13 @@ class ServerModel
                     {
                         // Get node_config as JSON map to check for "pv" key
                         final Object json = JsonModelReader.parseJsonText(node_config);
+
+                        // Ignore 'delete' messages because they don't update the config
+                        // and would result in superfluous PV stop() and re-start().
+                        // The follow-up message with config == null will actually delete the AlarmServerPV
+                        if (JsonModelReader.isConfigDeletion(json))
+                            continue;
+
                         AlarmTreeItem<?> node = findNode(path);
 
                         // New node? Create it.
@@ -447,8 +454,9 @@ class ServerModel
      */
     private int countAlarmPVs(final AlarmTreeItem<?> item)
     {
+        // Only count enabled items
         if (item instanceof AlarmServerPV)
-            return item.getState().severity.isActive() ? 1 : 0;
+            return ((AlarmServerPV) item).isEnabled() &&  item.getState().severity.isActive() ? 1 : 0;
         int active = 0;
         for (AlarmTreeItem<?> child : item.getChildren())
             if (child.getState().severity.isActive())
