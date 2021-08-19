@@ -278,7 +278,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 		ArrayList<String> yamcsValues = new ArrayList<String>();
 
 		Class<? extends VType> valueType = null;
-		VType value = null;
+		YamcsVType value = null;
 
 		switch (parameter.getEngValue().getType()) {
 		case AGGREGATE:
@@ -345,7 +345,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
 		if (!yamcsValues.isEmpty()) {
 			try {
-				value = ValueHelper.getInitialValue(yamcsValues, valueType);
+				value = (YamcsVType) ValueHelper.getInitialValue(yamcsValues, valueType);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
