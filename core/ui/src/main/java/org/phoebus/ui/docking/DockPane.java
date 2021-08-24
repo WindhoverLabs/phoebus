@@ -9,6 +9,7 @@ package org.phoebus.ui.docking;
 
 import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -378,6 +379,60 @@ public class DockPane extends TabPane
         autoHideTabs();
         super.layoutChildren();
     }
+    
+    
+    private ArrayList<DockItem> getAllDockItems(SplitDock split) throws Exception
+    {
+    	ArrayList<DockItem> tabs = new ArrayList<DockItem>();
+    	
+    	for(Node node : split.getItems()) 
+    	{
+    		if(node instanceof DockPane) {
+    			for(DockItem t : ((DockPane)node).getDockItems()) 
+    			{
+    				tabs.add(t);
+    			}
+    		}
+    		else if(node instanceof SplitDock) {
+    			List<DockItem> subTabs = getAllDockItems((SplitDock)node);
+    			for(DockItem t: subTabs) 
+    			{
+    				tabs.add(t);
+    			}
+    		}
+    		else{
+    			throw new IllegalArgumentException("Items of SplitDock  should be either SplitDock or DockPane");
+    		}
+    			
+    	}
+    	
+    	return tabs;
+    }
+    
+    private ArrayList<DockItem> getAllNestedDockItems()
+    {
+    	ArrayList<DockItem> dockItems = new ArrayList<DockItem>();
+    	
+    	if(dock_parent instanceof SplitDock) {
+        	try {
+        		dockItems.addAll(getAllDockItems((SplitDock)dock_parent));
+        	}
+        	catch(Exception e) {
+        		logger.log(Level.WARNING, "Failed to get nested DockItems.");
+        	}
+    	}
+    	
+    	else if(dock_parent instanceof BorderPane) {
+    		dockItems.addAll(this.getDockItems());
+    	}
+    	
+    	return dockItems;
+    }
+    
+    private int getAllNestedDockItemsCount() 
+    {
+    	return getAllNestedDockItems().size();
+    }
 
     /** Called when number of tabs changed */
     private void handleTabChanges()
@@ -391,20 +446,6 @@ public class DockPane extends TabPane
         // change in unforeseen ways
         if (getTabs().isEmpty())
         {
-        	// When we split windows, we need to access the scene that was stored in
-        	// split function since the Pane becomes scene-less.
-        	if(getRootScene() != null) {
-        		if(dock_parent != null) {    
-        			if(dock_parent instanceof SplitDock) {
-        				SplitDock parent = (SplitDock) dock_parent;
-        				if(parent.getItems().isEmpty()) {
-                			if(getRootScene().getWindow() != null) {
-                				((Stage)getRootScene().getWindow()).close();	
-                			}
-        				}
-        			}
-        		}
-        	}
             Platform.runLater(this::mergeEmptyAnonymousSplit);
         }
         else
@@ -618,7 +659,7 @@ public class DockPane extends TabPane
             setDockParent(split);
 
             new_pane.setDockParent(split);
-
+            
             // Place that new split in the border pane
             parent.setCenter(split);
         }
@@ -683,6 +724,20 @@ public class DockPane extends TabPane
     {
         final Scene scene = getScene();
         if(scene == null){
+        	// When we split windows, we need to access the scene that was stored in
+        	// split function since the Pane becomes scene-less.
+        	if(getAllNestedDockItems().isEmpty()) {
+	        	if(getRootScene() != null) {
+	        		if(dock_parent != null) {    
+	        			if(dock_parent instanceof SplitDock) {
+	        				SplitDock parent = (SplitDock) dock_parent;
+	                			if(getRootScene().getWindow() != null) {
+	                				((Stage)getRootScene().getWindow()).close();
+	        				}
+	        			}
+	        		}
+	        	}
+        	}
             return;
         }
         final Object id = scene.getWindow().getProperties().get(DockStage.KEY_ID);
