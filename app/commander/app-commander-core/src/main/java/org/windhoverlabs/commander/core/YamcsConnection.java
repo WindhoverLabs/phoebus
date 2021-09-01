@@ -35,7 +35,6 @@ public class YamcsConnection extends Connection<YamcsInstance> {
 	@Override
 	public void connect() {
 		yamcsClient = YamcsClient.newBuilder(url, port).build();
-
 	}
 
 	@Override

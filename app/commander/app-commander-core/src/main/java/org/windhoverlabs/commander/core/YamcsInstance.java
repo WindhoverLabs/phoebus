@@ -2,9 +2,15 @@ package org.windhoverlabs.commander.core;
 
 import org.yamcs.client.ParameterSubscription;
 
+/**
+ * Data model for a yamcs instance.
+ * @author lgomez
+ *
+ */
 public class YamcsInstance implements Instance {
-	private ParameterSubscription yamcsSubscription = null;
 	private InstanceState currentState;
+	private String instanceName;
+	private ParameterSubscription yamcsSubscription = null;
 	
 	@Override
 	public void activate() {
@@ -22,6 +28,10 @@ public class YamcsInstance implements Instance {
 	public InstanceState getInstanceState() {
 		// TODO Auto-generated method stub
 		return currentState;
+	}
+
+	public ParameterSubscription getYamcsSubscription() {
+		return yamcsSubscription;
 	}
 
 }
