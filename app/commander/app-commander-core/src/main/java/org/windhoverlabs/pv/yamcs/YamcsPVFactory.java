@@ -107,7 +107,6 @@ public class YamcsPVFactory implements PVFactory {
 		// Periodically check if the subscription needs a refresh
 		// (PVs send individual events, so this bundles them)
 		executor.scheduleWithFixedDelay(() -> {
-//			System.out.println();
 			if (subscriptionDirty.getAndSet(false) && yamcsSubscription != null) {
 				Set<NamedObjectId> ids = getRequestedIdentifiers();
 				log.fine(String.format("Modifying subscription to %s", ids));
@@ -115,28 +114,15 @@ public class YamcsPVFactory implements PVFactory {
 //						SubscribeParametersRequest.newBuilder().setAction(Action.REPLACE).setSendFromCache(true)
 //								.setAbortOnInvalid(false).setUpdateOnExpiration(true).addAllId(ids).build());
 
-//				System.out.println("Modifying subscription to:" + ids);
 			}
 
-//			System.out.println("modifying subscription from factory");
 		}, 500, 500, TimeUnit.MILLISECONDS);
-
-		System.out.println("client status" + yamcsClient.listInstances());
 		initProcessor();
-
-//		subscriptionService = new YamcsSubscriptionService();
 	}
 
 	private void initProcessor() {
-		System.out.println("initProcessor1");
 		Set<NamedObjectId> ids = getRequestedIdentifiers();
-		System.out.println("initProcessor2");
 		log.fine(String.format("Subscribing to %s [%s/%s]", ids, "yamcs-cfs", "realtime"));
-		System.out.println("initProcessor3");
-		SubscribeParametersRequest request = SubscribeParametersRequest.newBuilder().setInstance("yamcs-cfs")
-				.setProcessor("realtime").setSendFromCache(true).setAbortOnInvalid(false).setUpdateOnExpiration(true)
-				.addAllId(ids).build();
-		System.out.println("initProcessor4");
 
 		Builder builder = SubscribeParametersRequest.newBuilder();
 
@@ -153,14 +139,6 @@ public class YamcsPVFactory implements PVFactory {
 		System.out.println("initProcessor9");
 
 		System.out.println("ids:" + ids);
-
-//		builder = builder.addId(ids.);
-
-		// Something's wrong here. I think, for some reason, the instance/processor is
-		// null.
-//		yamcsSubscription.sendMessage(SubscribeParametersRequest.newBuilder().setInstance("yamcs-cfs")
-//				.setProcessor("realtime").setSendFromCache(true).setAbortOnInvalid(false).setUpdateOnExpiration(true)
-//				.addAllId(ids).build());
 	}
 
 	/**
@@ -179,38 +157,6 @@ public class YamcsPVFactory implements PVFactory {
 		});
 
 		ids.add(id);
-
-		System.out.println("ids on register:" + ids);
-
-		Builder builder = SubscribeParametersRequest.newBuilder().setInstance("yamcs-cfs");
-
-		System.out.println("builder1:" + builder);
-
-		builder = builder.setProcessor("realtime");
-
-		System.out.println("builder2:" + builder);
-
-		builder = builder.setSendFromCache(true);
-
-		System.out.println("builder3:" + builder);
-
-		builder = builder.setAbortOnInvalid(false);
-
-		System.out.println("builder4:" + builder);
-
-		builder = builder.setUpdateOnExpiration(true);
-
-		System.out.println("builder5:" + builder);
-
-		System.out.println("ids.get(0)----->" + ids.get(0));
-
-		System.out.println("yamcs value-->" + yamcsSubscription.get(id));
-
-		System.out.println("build:");
-
-//		builder.build();
-
-//		yamcsSubscription.getValue("");
 
 		try {
 			yamcsSubscription.sendMessage(SubscribeParametersRequest.newBuilder().setInstance("yamcs-cfs")
