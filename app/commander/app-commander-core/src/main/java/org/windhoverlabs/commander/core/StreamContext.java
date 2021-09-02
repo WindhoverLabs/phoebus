@@ -7,8 +7,10 @@ import java.util.List;
  * @author lgomez
  *
  */
-public abstract class Connection<T extends Instance> {
-protected List<T> instances = null;
+public abstract class StreamContext<T extends Stream> {
+protected List<T> streams = null;
+protected List<CommanderPlugin> plugins;
+// TODO: Not sure if these functions make sense for this interface.
 public abstract void connect();
 public abstract void disconnect();
 }

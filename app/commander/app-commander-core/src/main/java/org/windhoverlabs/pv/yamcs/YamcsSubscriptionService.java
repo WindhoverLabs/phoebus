@@ -30,12 +30,13 @@ import org.epics.vtype.VUInt;
 import org.epics.vtype.VULong;
 import org.phoebus.pv.PV;
 import org.phoebus.pv.loc.ValueHelper;
+import org.windhoverlabs.commander.core.CommanderPlugin;
 
 /**
  * Keeps track of {@link IPV} registration state and takes care of establishing
  * or re-establishing a bundled parameter subscription against Yamcs.
  */
-public class YamcsSubscriptionService implements YamcsAware, ParameterSubscription.Listener, PluginService {
+public class YamcsSubscriptionService implements YamcsAware, ParameterSubscription.Listener, CommanderPlugin {
 
 	private static final Logger log = Logger.getLogger(YamcsSubscriptionService.class.getName());
 
@@ -204,7 +205,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 //    }
 
 	@Override
-	public void dispose() {
+	public void destroy() {
 		YamcsPlugin.removeListener(this);
 		executor.shutdown();
 	}
@@ -354,6 +355,9 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
 		return value;
 	}
+	
+	public void init() {}
+//	public void destroy() {}
 
 	@Override
 	public void onData(List<ParameterValue> values) {

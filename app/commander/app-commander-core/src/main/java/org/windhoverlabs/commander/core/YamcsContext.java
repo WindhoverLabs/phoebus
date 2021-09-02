@@ -2,6 +2,7 @@ package org.windhoverlabs.commander.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.windhoverlabs.pv.yamcs.MissionDatabase;
 import org.yamcs.client.ParameterSubscription;
@@ -12,11 +13,13 @@ import org.yamcs.client.YamcsClient;
  * @author lgomez
  *
  */
-public class YamcsConnection extends Connection<YamcsInstance> {
+public class YamcsContext extends StreamContext<YamcsStream> {
 	private String url;
 	private int port;
 	private YamcsClient yamcsClient;
-	private HashMap<YamcsInstance, MissionDatabase> instanceDBMap;
+	private  List<YamcsConnnection> list;
+	private HashMap<YamcsStream, MissionDatabase> instanceDBMap;
+	
 	
 	public String getUrl() {
 		return url;
@@ -26,10 +29,10 @@ public class YamcsConnection extends Connection<YamcsInstance> {
 		return port;
 	}
 
-	public YamcsConnection(String newUrl, int newPort) {
+	public YamcsContext(String newUrl, int newPort) {
 		url = newUrl;
 		port = newPort;
-		instances = new ArrayList<YamcsInstance>();
+		streams = new ArrayList<YamcsStream>();
 	}
 
 	@Override
