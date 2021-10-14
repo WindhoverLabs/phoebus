@@ -176,6 +176,7 @@ public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, A
         if (actions.isExecutedAsOne()  ||  actions.getActions().size() < 2)
         {
             final Button button = new Button();
+            button.setGraphic(new ImageView(model_widget.propIconFile().getValue()));
             button.setOnAction(event -> confirm(() ->  handleActions(actions.getActions())));
             result = button;
         }

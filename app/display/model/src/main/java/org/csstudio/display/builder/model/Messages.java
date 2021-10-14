@@ -217,6 +217,7 @@ public class Messages
     public static String WidgetProperties_HourColor;
     public static String WidgetProperties_HourTickMarkColor;
     public static String WidgetProperties_HourTickMarkVisible;
+    public static String WidgetProperties_Icon;
     public static String WidgetProperties_Increment;
     public static String WidgetProperties_InitialIndex;
     public static String WidgetProperties_Insets;

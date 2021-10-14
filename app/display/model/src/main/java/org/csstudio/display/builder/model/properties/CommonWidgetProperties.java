@@ -474,6 +474,10 @@ public class CommonWidgetProperties
     /** 'file' property: File to display */
     public static final WidgetPropertyDescriptor<String> propFile =
             newFilenamePropertyDescriptor(WidgetPropertyCategory.WIDGET, "file", Messages.WidgetProperties_File);
+    
+    /** 'icon' property: File to display */
+    public static final WidgetPropertyDescriptor<String> propIconFile =
+            newFilenamePropertyDescriptor(WidgetPropertyCategory.DISPLAY, "icon", Messages.WidgetProperties_Icon);
 
     /** 'points' property: Points to display */
     public static final WidgetPropertyDescriptor<Points> propPoints =

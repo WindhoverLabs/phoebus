@@ -11,8 +11,10 @@ import static org.csstudio.display.builder.model.properties.CommonWidgetProperti
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propConfirmDialog;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propConfirmMessage;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propEnabled;
+import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propFile;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propFont;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propForegroundColor;
+import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propIconFile;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propPassword;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propRotationStep;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propText;
@@ -231,6 +233,7 @@ public class ActionButtonWidget extends PVWidget
     private volatile WidgetProperty<Boolean> confirm_dialog;
     private volatile WidgetProperty<String> confirm_message;
     private volatile WidgetProperty<String> password;
+    private volatile WidgetProperty<String> icon;
 
     public ActionButtonWidget()
     {
@@ -262,6 +265,7 @@ public class ActionButtonWidget extends PVWidget
         properties.add(confirm_dialog = propConfirmDialog.createProperty(this, false));
         properties.add(confirm_message = propConfirmMessage.createProperty(this, "Are your sure you want to do this?"));
         properties.add(password = propPassword.createProperty(this, ""));
+        properties.add(icon = propIconFile.createProperty(this, ""));
     }
 
     @Override
@@ -336,5 +340,11 @@ public class ActionButtonWidget extends PVWidget
     public WidgetProperty<String> propPassword()
     {
         return password;
+    }
+    
+    /** @return 'password' property */
+    public WidgetProperty<String> propIconFile()
+    {
+        return icon;
     }
 }
