@@ -9,12 +9,14 @@ package org.csstudio.display.builder.representation.javafx.widgets;
 
 import static org.csstudio.display.builder.representation.ToolkitRepresentation.logger;
 
+import java.io.File;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 
 import org.csstudio.display.builder.model.DirtyFlag;
+import org.csstudio.display.builder.model.DisplayModel;
 import org.csstudio.display.builder.model.UntypedWidgetPropertyListener;
 import org.csstudio.display.builder.model.WidgetProperty;
 import org.csstudio.display.builder.model.WidgetPropertyListener;
@@ -22,6 +24,7 @@ import org.csstudio.display.builder.model.properties.ActionInfo;
 import org.csstudio.display.builder.model.properties.ActionInfos;
 import org.csstudio.display.builder.model.properties.OpenDisplayActionInfo;
 import org.csstudio.display.builder.model.properties.WritePVActionInfo;
+import org.csstudio.display.builder.model.util.ModelResourceUtil;
 import org.csstudio.display.builder.model.properties.RotationStep;
 import org.csstudio.display.builder.model.properties.StringWidgetProperty;
 import org.csstudio.display.builder.model.widgets.ActionButtonWidget;
@@ -52,6 +55,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
+
+
 
 /** Creates JavaFX item for model widget
  *  @author Megan Grodowitz
@@ -153,6 +158,28 @@ public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, A
             base.arm();
         }
     }
+    
+    private String resolveImageFile (String imageFileName ) {
+
+        try {
+
+            String expandedFileName = MacroHandler.replace(model_widget.getMacrosOrProperties(), imageFileName);
+
+            // Resolve new image file relative to the source widget model (not 'top'!).
+            // Get the display model from the widget tied to this representation.
+            final DisplayModel widgetModel = model_widget.getDisplayModel();
+
+            // Resolve the image path using the parent model file path.
+            return ModelResourceUtil.resolveResource(widgetModel, expandedFileName);
+
+        } catch ( Exception ex ) {
+
+            logger.log(Level.WARNING, String.format("Failure resolving image path: %s", imageFileName), ex);
+
+            return null;
+        }
+    }
+
 
 //    private int calls = 0;
 
@@ -176,7 +203,18 @@ public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, A
         if (actions.isExecutedAsOne()  ||  actions.getActions().size() < 2)
         {
             final Button button = new Button();
-            button.setGraphic(new ImageView(model_widget.propIconFile().getValue()));
+            
+            String image_path = null;
+            try{
+            	image_path = resolveImageFile(model_widget.propIconFile().getValue());
+            	
+            	Image image = new Image(ModelResourceUtil.openResourceStream(image_path));
+            	button.setGraphic(new ImageView(image));
+            }
+            catch(Exception e) {
+                logger.log(Level.WARNING, String.format("Failure resolving image path(new): %s", image_path), e);
+            }
+            
             button.setOnAction(event -> confirm(() ->  handleActions(actions.getActions())));
             result = button;
         }
