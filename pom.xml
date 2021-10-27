@@ -35,6 +35,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <skipITTests>true</skipITTests>
+    <commander.core.pv.version>0.1.0</commander.core.pv.version>
+    <commander.core.version>0.1.0</commander.core.version>
   </properties>
   <build>
     <plugins>
