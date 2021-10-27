@@ -48,7 +48,6 @@
   </dependencies>
   <modules>
   	<module>app-commander-connections</module>
-  	<module>app-commander-core</module>
   	<module>app-commander-display-model</module>
   	<module>app-commander-display-representation-javafx</module>
   	<module>app-commander-display-runtime</module>
