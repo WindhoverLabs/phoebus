@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>org.windhoverlabs</groupId>
 	<artifactId>commander-core-pv</artifactId>
-	<version>${commander.core.pv.version}</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.yamcs</groupId>
