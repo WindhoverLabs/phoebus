@@ -7,25 +7,25 @@ import org.yamcs.client.ParameterSubscription;
  * @author lgomez
  *
  */
-public class YamcsStream implements Stream {
-	private StreamState currentState;
+public class YamcsStream implements Node {
+	private NodeState currentState;
 	private String instanceName;
 	private ParameterSubscription yamcsSubscription = null;
 	
 	@Override
 	public void activate() {
 		//TODO Implementation
-		currentState = StreamState.ACTIVE;
+		currentState = NodeState.ACTIVE;
 	}
 
 	@Override
 	public void deactivate() {
 		//TODO Implementation
-		currentState = StreamState.ACTIVE;
+		currentState = NodeState.ACTIVE;
 	}
 
 	@Override
-	public StreamState getStreamState() {
+	public NodeState getStreamState() {
 		// TODO Auto-generated method stub
 		return currentState;
 	}

@@ -7,7 +7,7 @@ import java.util.List;
  * @author lgomez
  *
  */
-public abstract class StreamContext<T extends Stream> {
+public abstract class StreamContext<T extends Node> {
 protected List<T> streams = null;
 protected List<CommanderPlugin> plugins;
 // TODO: Not sure if these functions make sense for this interface.

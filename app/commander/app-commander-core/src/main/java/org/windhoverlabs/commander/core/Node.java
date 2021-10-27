@@ -6,8 +6,8 @@ package org.windhoverlabs.commander.core;
  *A stream is usually a namespace for data coming from some type of Connection.
  *@apiNote Not sure if the Stream should just be a Node.
  */
-public interface Stream {
+public interface Node {
 public void activate();
 public void deactivate();
-public StreamState getStreamState();
+public NodeState getStreamState();
 }

@@ -1,5 +1,5 @@
 package org.windhoverlabs.commander.core;
 
-public enum StreamState {
+public enum NodeState {
 ACTIVE, INACTIVE, UNAVAILABLE;
 }
