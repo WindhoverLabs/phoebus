@@ -1,4 +1,4 @@
-package org.phoebus.applications.commander.connections;
+package com.windhoverlabs.commander.applications.connections;
 
 import java.io.File;
 import java.io.IOException;

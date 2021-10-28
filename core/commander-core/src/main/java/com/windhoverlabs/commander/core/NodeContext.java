@@ -7,8 +7,8 @@ import java.util.List;
  * @author lgomez
  *
  */
-public abstract class StreamContext<T extends Node> {
-protected List<T> streams = null;
+public abstract class NodeContext<T extends Node> {
+protected List<T> nodes = null;
 protected List<CommanderPlugin> plugins;
 // TODO: Not sure if these functions make sense for this interface.
 public abstract void connect();

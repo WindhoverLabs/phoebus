@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
-package org.phoebus.applications.commander.connections;
+package com.windhoverlabs.commander.applications.connections;
 
 import org.phoebus.framework.nls.NLS;
 

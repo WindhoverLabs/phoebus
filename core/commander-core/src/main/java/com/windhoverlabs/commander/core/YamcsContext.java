@@ -12,12 +12,12 @@ import org.yamcs.client.YamcsClient;
  * @author lgomez
  *
  */
-public class YamcsContext extends StreamContext<YamcsStream> {
+public class YamcsContext extends NodeContext<YamcsNode> {
 	private String url;
 	private int port;
 	private YamcsClient yamcsClient;
 	private  List<YamcsConnnection> list;
-	private HashMap<YamcsStream, MissionDatabase> instanceDBMap;
+	private HashMap<YamcsNode, MissionDatabase> instanceDBMap;
 	
 	
 	public String getUrl() {
@@ -31,7 +31,7 @@ public class YamcsContext extends StreamContext<YamcsStream> {
 	public YamcsContext(String newUrl, int newPort) {
 		url = newUrl;
 		port = newPort;
-		streams = new ArrayList<YamcsStream>();
+		nodes = new ArrayList<YamcsNode>();
 	}
 
 	@Override

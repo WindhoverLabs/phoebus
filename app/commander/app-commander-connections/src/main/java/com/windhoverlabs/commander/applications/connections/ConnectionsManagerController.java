@@ -1,6 +1,6 @@
-package org.phoebus.applications.commander.connections;
+package com.windhoverlabs.commander.applications.connections;
 
-import static org.phoebus.applications.commander.connections.ConnectionsManagerInstance.logger;
+import static com.windhoverlabs.commander.applications.connections.ConnectionsManagerInstance.logger;
 
 import java.io.File;
 import java.net.URI;

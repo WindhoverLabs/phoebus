@@ -7,7 +7,7 @@ import org.yamcs.client.ParameterSubscription;
  * @author lgomez
  *
  */
-public class YamcsStream implements Node {
+public class YamcsNode implements Node {
 	private NodeState currentState;
 	private String instanceName;
 	private ParameterSubscription yamcsSubscription = null;

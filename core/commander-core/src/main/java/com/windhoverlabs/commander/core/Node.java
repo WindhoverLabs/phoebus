@@ -3,8 +3,8 @@ package com.windhoverlabs.commander.core;
 /**
  * @author lgomez
  *
- *A stream is usually a namespace for data coming from some type of Connection.
- *@apiNote Not sure if the Stream should just be a Node.
+ *A node is usually a namespace for data coming from some type of Connection.
+ *
  */
 public interface Node {
 public void activate();
