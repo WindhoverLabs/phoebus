@@ -1,2 +1,2 @@
 #TODO:Add Menu Entries
-org.phoebus.applications.commander.connections.ConnectionsManagerMenuEntry
+com.windhoverlabs.commander.applications.connections.ConnectionsManagerMenuEntry
