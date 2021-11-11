@@ -63,7 +63,7 @@ public class ConnectionsManagerInstance implements AppInstance
 	private Node loadGUI() throws IOException {
 		final FXMLLoader fxmlLoader;
 		Node content;
-		final URL fxml = getClass().getResource("Main.fxml");
+		final URL fxml = getClass().getResource("ConnectionsManager.fxml");
 		final ResourceBundle bundle = NLS.getMessages(ConnectionsManagerInstance.class);
 		fxmlLoader = new FXMLLoader(fxml, bundle);
 		content = (Node) fxmlLoader.load();

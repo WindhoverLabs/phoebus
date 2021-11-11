@@ -4,6 +4,8 @@ import static com.windhoverlabs.commander.applications.connections.ConnectionsMa
 
 import org.phoebus.ui.javafx.ImageCache;
 
+import com.windhoverlabs.commander.core.YamcsContext;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -20,7 +22,7 @@ import javafx.scene.image.ImageView;
 @SuppressWarnings("nls")
 public class ConnectionsManagerController {
     @FXML
-    TreeTableView<Object> serverConnectionsTableView;
+    TreeTableView<YamcsContext> serverConnectionsTableView;
 
 	public ConnectionsManagerController() {
 	}
