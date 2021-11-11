@@ -19,6 +19,11 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeTableColumn;
 
+/**
+ * 
+ * @author lgomez
+ *
+ */
 @SuppressWarnings("nls")
 public class ConnectionsManagerInstance implements AppInstance
 {

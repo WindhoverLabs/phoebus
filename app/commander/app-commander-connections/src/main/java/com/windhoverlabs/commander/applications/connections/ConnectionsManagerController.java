@@ -29,14 +29,17 @@ public class ConnectionsManagerController {
 	public void initialize() {
 	}
 
-	Image addProperties = ImageCache.getImage(ConnectionsManagerApp.class, "/icons/server_connection.png");
+	Image addserverConnectionImmage = ImageCache.getImage(ConnectionsManagerApp.class, "/icons/add_server_connection.png");
+	Image removeServerConnectionImage = ImageCache.getImage(ConnectionsManagerApp.class, "/icons/delete.png");
+	Image activateImage = ImageCache.getImage(ConnectionsManagerApp.class, "/icons/activate.png");
+	Image deactivateImage = ImageCache.getImage(ConnectionsManagerApp.class, "/icons/delete.png");
 
 	@FXML
 	public void createContextMenu() {
 		
 		final ContextMenu contextMenu = new ContextMenu();
 		// Add property to channel
-		MenuItem addServerConnection = new MenuItem("Add Connection", new ImageView(addProperties));
+		MenuItem addServerConnection = new MenuItem("Add Connection", new ImageView(addserverConnectionImmage));
 		addServerConnection.setOnAction(e -> {
 
 			// get the list of server connections?
@@ -62,6 +65,18 @@ public class ConnectionsManagerController {
 		);
 		
 		contextMenu.getItems().add(addServerConnection);
+		
+		MenuItem removeServerConnection = new MenuItem("Remove Connection", new ImageView(removeServerConnectionImage));
+		
+		contextMenu.getItems().add(removeServerConnection);
+		
+		MenuItem activateServerConnection = new MenuItem("Activate Connection", new ImageView(activateImage));
+		
+		contextMenu.getItems().add(activateServerConnection);
+		
+		MenuItem deactivateServerConnection = new MenuItem("Deactivate Connection", new ImageView(deactivateImage));
+		
+		contextMenu.getItems().add(deactivateServerConnection);
 		
 		serverConnectionsTableView.setContextMenu(contextMenu);
 
