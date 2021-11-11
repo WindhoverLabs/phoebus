@@ -27,7 +27,8 @@ public class LogbookQueryUtil {
         AUTHOR("owner"),
         TITLE("title"),
         LEVEL("level"),
-        PROPERTIES("properties");
+        PROPERTIES("properties"),
+        SORT("sort");
 
         // The human readable name of the query key
         private final String name;
@@ -43,6 +44,7 @@ public class LogbookQueryUtil {
             lookupTable.put("title", Keys.TITLE);
             lookupTable.put("level", Keys.LEVEL);
             lookupTable.put("properties", Keys.PROPERTIES);
+            lookupTable.put("sort", Keys.SORT);
         }
 
         Keys(String name) {
@@ -66,7 +68,7 @@ public class LogbookQueryUtil {
      */
     public static Map<String, String> parseQueryURI(URI query) {
         if (Strings.isNullOrEmpty(query.getQuery())) {
-            return Collections.emptyMap();
+            return new HashMap<>();
         } else {
             return Arrays.asList(query.getQuery().split("&")).stream()
                     .collect(Collectors.toMap(new KeyParser(), new ValueParser()));
@@ -82,7 +84,7 @@ public class LogbookQueryUtil {
      */
     public static Map<String, String> parseQueryString(String query) {
         if (Strings.isNullOrEmpty(query)) {
-            return Collections.emptyMap();
+            return new HashMap<>();
         } else {
             return Arrays.asList(query.split("&")).stream()
                     .collect(Collectors.toMap(new KeyParser(), new ValueParser()));
@@ -99,7 +101,7 @@ public class LogbookQueryUtil {
      */
     public static Map<String, String> parseHumanReadableQueryString(String query) {
         if (Strings.isNullOrEmpty(query)) {
-            return Collections.emptyMap();
+            return new HashMap<>();
         } else {
             return Arrays.asList(query.split("&")).stream()
                     .collect(Collectors.toMap(new KeyParser(), new SimpleValueParser()));
@@ -163,5 +165,29 @@ public class LogbookQueryUtil {
                 return "*";
             }
         }
+    }
+
+    /**
+     * In case <code>query</code> contains the "sort" query parameter (e.g. added manually by user), it will
+     * be removed. Then - if <code>sortAscending=true</code> - "&sort=ASC" is appended last.
+     * @param query
+     * @param sortAscending
+     * @return A query string that will determine sort order.
+     */
+    public static String addSortOrder(String query, boolean sortAscending){
+        Map<String, String> queryParams = LogbookQueryUtil.parseHumanReadableQueryString(query);
+        if(queryParams.containsKey("sort")){ // In case user did add sort=...
+            queryParams.remove("sort");
+        }
+        if(sortAscending){
+            queryParams.put("sort", "up");
+        }
+        else{
+            queryParams.put("sort", "down");
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        queryParams.keySet().stream().forEach(key -> stringBuilder.append(key + "=" + queryParams.get(key) + "&"));
+        String queryString = stringBuilder.toString();
+        return queryString.substring(0, queryString.length() - 1); // Remove trailing '&' char
     }
 }
