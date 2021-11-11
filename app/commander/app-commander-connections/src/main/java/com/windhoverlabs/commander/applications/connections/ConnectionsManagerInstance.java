@@ -1,6 +1,5 @@
 package com.windhoverlabs.commander.applications.connections;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,7 +16,6 @@ import org.phoebus.ui.docking.DockPane;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.TreeTableColumn;
 
 /**
  * 
@@ -48,11 +46,7 @@ public class ConnectionsManagerInstance implements AppInstance
         Node content;
         try
         {
-            final URL fxml = getClass().getResource("Main.fxml");
-            final ResourceBundle bundle = NLS.getMessages(ConnectionsManagerInstance.class);
-            fxmlLoader = new FXMLLoader(fxml, bundle);
-            content = (Node) fxmlLoader.load();
-            controller = fxmlLoader.getController();
+        	content = loadGUI();
         }
         catch (IOException ex)
         {
@@ -65,6 +59,18 @@ public class ConnectionsManagerInstance implements AppInstance
                  
         tab.addClosedNotification(controller::shutdown);
     }
+
+	private Node loadGUI() throws IOException {
+		final FXMLLoader fxmlLoader;
+		Node content;
+		final URL fxml = getClass().getResource("Main.fxml");
+		final ResourceBundle bundle = NLS.getMessages(ConnectionsManagerInstance.class);
+		fxmlLoader = new FXMLLoader(fxml, bundle);
+		content = (Node) fxmlLoader.load();
+		controller = fxmlLoader.getController();
+		
+		return content;
+	}
 
     @Override
     public AppDescriptor getAppDescriptor()
