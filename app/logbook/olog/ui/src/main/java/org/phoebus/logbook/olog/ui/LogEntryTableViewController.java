@@ -3,8 +3,8 @@ package org.phoebus.logbook.olog.ui;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -20,11 +20,13 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
@@ -38,6 +40,8 @@ import org.phoebus.logbook.Property;
 import org.phoebus.logbook.olog.ui.LogbookQueryUtil.Keys;
 import org.phoebus.olog.es.api.model.LogGroupProperty;
 import org.phoebus.ui.dialog.DialogHelper;
+import org.phoebus.ui.dialog.ExceptionDetailsErrorDialog;
+import org.phoebus.ui.javafx.ImageCache;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,14 +72,17 @@ public class LogEntryTableViewController extends LogbookSearchController {
     // elements related to the table view of the log entires
     @FXML
     private TreeView<LogEntry> treeView;
-
     @FXML
     private LogEntryDisplayController logEntryDisplayController;
-
     @FXML
-    private Node topLevelNode;
+    private ProgressIndicator progressIndicator;
     @FXML
     private AdvancedSearchViewController advancedSearchViewController;
+
+    @FXML
+    private ImageView searchDescendingImageView;
+    @FXML
+    private ImageView searchAscendingImageView;
 
     // Model
     List<LogEntry> logEntries;
@@ -91,7 +98,6 @@ public class LogEntryTableViewController extends LogbookSearchController {
      * List of selected log entries
      */
     private ObservableList<LogEntry> selectedLogEntries = FXCollections.observableArrayList();
-
     private Logger logger = Logger.getLogger(LogEntryTableViewController.class.getName());
 
     /**
@@ -103,15 +109,14 @@ public class LogEntryTableViewController extends LogbookSearchController {
         setClient(logClient);
     }
 
+    private SimpleBooleanProperty searchInProgress = new SimpleBooleanProperty(false);
+    private SimpleBooleanProperty sortAscending = new SimpleBooleanProperty(false);
 
     @FXML
     public void initialize() {
 
         searchParameters = FXCollections.observableHashMap();
 
-        LogbookQueryUtil.parseQueryString(LogbookUIPreferences.default_logbook_query).entrySet().stream().forEach(entry -> {
-            searchParameters.put(Keys.findKey(entry.getKey()), entry.getValue());
-        });
         advancedSearchViewController.setSearchParameters(searchParameters);
 
         query.setText(searchParameters.entrySet().stream()
@@ -161,6 +166,14 @@ public class LogEntryTableViewController extends LogbookSearchController {
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().add(groupSelectedEntries);
         treeView.setContextMenu(contextMenu);
+
+        progressIndicator.visibleProperty().bind(searchInProgress);
+        searchInProgress.addListener((observable, oldValue, newValue) -> {
+            treeView.setDisable(newValue.booleanValue());
+        });
+
+        searchDescendingImageView.setImage(ImageCache.getImage(LogEntryTableViewController.class, "/icons/arrow_down.png"));
+        searchAscendingImageView.setImage(ImageCache.getImage(LogEntryTableViewController.class, "/icons/arrow_up.png"));
     }
 
     // Keeps track of when the animation is active. Multiple clicks will be ignored
@@ -180,9 +193,10 @@ public class LogEntryTableViewController extends LogbookSearchController {
                     resize.setText(">");
                     moving.set(false);
                 });
+                query.disableProperty().set(false);
             } else {
                 Duration cycleDuration = Duration.millis(400);
-                double width = ViewSearchPane.getWidth() / 3;
+                double width = ViewSearchPane.getWidth() / 2.5;
                 KeyValue kv = new KeyValue(advancedSearchViewController.getPane().minWidthProperty(), width);
                 KeyValue kv2 = new KeyValue(advancedSearchViewController.getPane().prefWidthProperty(), width);
                 Timeline timeline = new Timeline(new KeyFrame(cycleDuration, kv, kv2));
@@ -191,6 +205,8 @@ public class LogEntryTableViewController extends LogbookSearchController {
                     resize.setText("<");
                     moving.set(false);
                 });
+                query.disableProperty().set(true);
+                advancedSearchViewController.updateSearchParamsFromQueryString(query.getText());
             }
         }
     }
@@ -205,10 +221,33 @@ public class LogEntryTableViewController extends LogbookSearchController {
     }
 
     @FXML
-    public void search() {
+    public void searchDescending(){
+        sortAscending.set(false);
+        search();
+    }
+
+    @FXML
+    public void searchAscending(){
+        sortAscending.set(true);
+        search();
+    }
+
+    private void search() {
         // parse the various time representations to Instant
         treeView.getSelectionModel().clearSelection();
-        super.search(LogbookQueryUtil.parseQueryString(query.getText()));
+        // Determine sort order
+        String searchStringWithSortOrder = null;
+        try {
+            searchStringWithSortOrder = LogbookQueryUtil.addSortOrder(query.getText(), sortAscending.get());
+        } catch (Exception ex) { // Parsing query may throw exception, e.g. search parameter specified multiple times.
+            logger.log(Level.INFO, "Unable to construct search query", ex);
+            ExceptionDetailsErrorDialog.openError("Unable to construct search query", ex.getMessage(), ex);
+            return;
+        }
+        query.textProperty().set(searchStringWithSortOrder);
+        searchInProgress.set(true);
+        super.search(LogbookQueryUtil.parseQueryString(searchStringWithSortOrder),
+                (inProgress) -> searchInProgress.set(inProgress));
     }
 
     @Override
@@ -230,7 +269,7 @@ public class LogEntryTableViewController extends LogbookSearchController {
     private void refresh() {
         if (logEntries != null) {
             ObservableList<TreeItem<LogEntry>> tree =
-                    LogEntryTreeHelper.createTree(logEntries);
+                    LogEntryTreeHelper.createTree(logEntries, sortAscending.get());
             rootItem.getChildren().setAll(tree);
             treeView.getSelectionModel().selectFirst();
         }
