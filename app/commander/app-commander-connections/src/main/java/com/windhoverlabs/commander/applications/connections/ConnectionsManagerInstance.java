@@ -41,7 +41,6 @@ public class ConnectionsManagerInstance implements AppInstance
     {
         this.app = app;
 
-        final FXMLLoader fxmlLoader;
 
         Node content;
         try
