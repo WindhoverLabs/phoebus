@@ -35,5 +35,12 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-base</artifactId>
+			<version>16</version>
+		</dependency>
+
+
 	</dependencies>
 </project>
