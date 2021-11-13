@@ -17,9 +17,9 @@
       <TreeTableView fx:id="serverConnectionsTableView" editable="true" onMouseClicked="#createContextMenu" prefHeight="400.0" prefWidth="464.0">
         <columns>
           <TreeTableColumn fx:id="serverColumn" prefWidth="120.0" text="Server URL" />
-          <TreeTableColumn prefWidth="115.0" text="User" />
-            <TreeTableColumn prefWidth="75.0" text="Status" />
-            <TreeTableColumn prefWidth="75.0" text="Processor" />
+          <TreeTableColumn fx:id="userColumn" prefWidth="115.0" text="User" />
+            <TreeTableColumn fx:id="statusColumn" prefWidth="75.0" text="Status" />
+            <TreeTableColumn fx:id="processorColumn" prefWidth="75.0" text="Processor" />
         </columns>
       </TreeTableView>
    </children>

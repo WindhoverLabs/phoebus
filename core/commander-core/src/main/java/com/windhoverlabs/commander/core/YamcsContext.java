@@ -2,14 +2,7 @@ package com.windhoverlabs.commander.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
-import org.yamcs.client.ParameterSubscription;
 import org.yamcs.client.YamcsClient;
-
-import javafx.beans.InvalidationListener;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 
 /**
  * 
@@ -20,7 +13,7 @@ public class YamcsContext extends NodeContext<YamcsNode>  {
 	private YamcsClient yamcsClient;
 	private  YamcsConnection connection;
 	private HashMap<YamcsNode, MissionDatabase> instanceDBMap;
-	String User;
+
 	private ArrayList<YamcsNode> nodes;
 	
 	public String getUrl() {
@@ -32,9 +25,13 @@ public class YamcsContext extends NodeContext<YamcsNode>  {
 	}
 
 	public YamcsContext(String newUrl, int newPort, String newUser) {
-		connection = new YamcsConnection(newUrl, newPort);
+		connection = new YamcsConnection(newUrl, newPort, newUser);
 		nodes = new ArrayList<YamcsNode>();
-		User = newUser;
+	}
+	
+	public YamcsContext(YamcsConnection newConnection) {
+		connection = newConnection;
+		nodes = new ArrayList<YamcsNode>();
 	}
 
 	@Override
@@ -45,7 +42,6 @@ public class YamcsContext extends NodeContext<YamcsNode>  {
 	@Override
 	public void disconnect() {
 		// TODO Auto-generated method stub
-		
 	}
 
 //	@Override

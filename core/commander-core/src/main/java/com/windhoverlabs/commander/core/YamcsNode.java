@@ -12,6 +12,11 @@ public class YamcsNode implements Node {
 	private String instanceName;
 	private ParameterSubscription yamcsSubscription = null;
 	
+	public YamcsNode(String newName) 
+	{
+		
+	}
+	
 	@Override
 	public void activate() {
 		//TODO Implementation
