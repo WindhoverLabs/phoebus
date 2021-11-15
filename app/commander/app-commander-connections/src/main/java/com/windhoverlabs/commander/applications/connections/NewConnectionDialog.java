@@ -1,7 +1,11 @@
 package com.windhoverlabs.commander.applications.connections;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.phoebus.ui.autocomplete.PVAutocompleteMenu;
 import com.windhoverlabs.commander.core.YamcsConnection;
+import com.windhoverlabs.commander.core.YamcsConnection.YamcsConnectionStatus;
 
 import javafx.application.Platform;
 import javafx.scene.control.ButtonType;
@@ -42,12 +46,24 @@ public class NewConnectionDialog extends Dialog<YamcsConnection> {
 		// Initial focus on name
 		Platform.runLater(() -> serverUrl.requestFocus());
 
-		setResultConverter(button -> button == ButtonType.OK
-				? new YamcsConnection(serverUrl.getText(), Integer.parseInt(port.getText()), user.getText())
-				: null);
+			setResultConverter(button -> {
+				YamcsConnection newConnection = null;
+				if (button == ButtonType.OK) {
+					try {
+					newConnection = new YamcsConnection(serverUrl.getText(), Integer.parseInt(port.getText()),
+							user.getText());
+					newConnection.setStatus(YamcsConnectionStatus.Connected);
+					}
+					catch (NumberFormatException e) {
+						Logger.getLogger(getClass().getName()).log(Level.WARNING, "Cannot format string to integer", e);
+					}
+				}
+				
+				return newConnection;
+			});
 
 		// Initial setting
-		updateAutocompletion();
+//		updateAutocompletion();
 	}
 
 	private void addServerUrlField() {
@@ -70,8 +86,8 @@ public class NewConnectionDialog extends Dialog<YamcsConnection> {
 		GridPane.setHgrow(user, Priority.ALWAYS);
 		layout.add(user, 1, 2);
 	}
-	
-	//TODO:PLEASE. Make a decision on policy before releasing this to users.
+
+	// TODO:PLEASE. Make a decision on policy before releasing this to users.
 	private void addPasswordField() {
 		layout.add(new Label("password:"), 0, 3);
 		password.setTooltip(new Tooltip("Password, if necessary."));

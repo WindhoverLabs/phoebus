@@ -9,13 +9,18 @@ import org.yamcs.client.YamcsClient;
  * @author lgomez
  *
  */
-public class YamcsContext extends NodeContext<YamcsNode>  {
+public class YamcsContext extends NodeContext<YamcsNode> {
 	private YamcsClient yamcsClient;
-	private  YamcsConnection connection;
+	private YamcsConnection connection;
+
+	public YamcsConnection getConnection() {
+		return connection;
+	}
+
 	private HashMap<YamcsNode, MissionDatabase> instanceDBMap;
 
 	private ArrayList<YamcsNode> nodes;
-	
+
 	public String getUrl() {
 		return connection.getUrl();
 	}
@@ -28,10 +33,13 @@ public class YamcsContext extends NodeContext<YamcsNode>  {
 		connection = new YamcsConnection(newUrl, newPort, newUser);
 		nodes = new ArrayList<YamcsNode>();
 	}
-	
+
 	public YamcsContext(YamcsConnection newConnection) {
 		connection = newConnection;
 		nodes = new ArrayList<YamcsNode>();
+	}
+
+	public YamcsContext() {
 	}
 
 	@Override

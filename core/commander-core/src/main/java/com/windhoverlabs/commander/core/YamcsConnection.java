@@ -1,9 +1,24 @@
 package com.windhoverlabs.commander.core;
 
 public class YamcsConnection {
+
+	public enum YamcsConnectionStatus {
+		Connected, Disconnected;
+	};
+
 	private String url;
 	private int port;
 	private String user;
+	private String password;
+	private YamcsConnectionStatus status;
+
+	public YamcsConnectionStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(YamcsConnectionStatus newStatus) {
+		this.status = newStatus;
+	}
 
 	public String getUser() {
 		return user;
@@ -28,17 +43,22 @@ public class YamcsConnection {
 	public void setPort(int port) {
 		this.port = port;
 	}
-	
+
 	public YamcsConnection(String newUrl, int newPort, String newUser) {
 		url = newUrl;
 		port = newPort;
 		user = newUser;
-		
+
 	}
-	
-	public String toString()
-	{
-		return String.format("%s:%d\n"
-				+ "User:%s", url, port, user);
+
+	public YamcsConnection(String newUrl, int newPort, String newUser, String newPassword) {
+		url = newUrl;
+		port = newPort;
+		user = newUser;
+		password = newPassword;
+	}
+
+	public String toString() {
+		return String.format("%s:%d\n", url, port);
 	}
 }

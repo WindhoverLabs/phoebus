@@ -11,14 +11,18 @@ import org.phoebus.ui.javafx.ImageCache;
 import com.windhoverlabs.commander.core.YamcsConnection;
 import com.windhoverlabs.commander.core.YamcsContext;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableColumn.CellDataFeatures;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Callback;
 
 /**
  * Controller for the Connections Manager App
@@ -34,9 +38,9 @@ public class ConnectionsManagerController {
 	@FXML
 	TreeTableColumn<YamcsContext, String> userColumn;
 	@FXML
+	TreeTableColumn<YamcsContext, String> statusColumn;
+	@FXML
 	TreeTableColumn<YamcsContext, String> processorColumn;
-
-	YamcsContext yamcsContext = new YamcsContext("localhost", 8090, "John");
 
 	public ConnectionsManagerController() {
 	}
@@ -51,48 +55,20 @@ public class ConnectionsManagerController {
 	Image activateImage = ImageCache.getImage(ConnectionsManagerApp.class, "/icons/activate.png");
 	Image deactivateImage = ImageCache.getImage(ConnectionsManagerApp.class, "/icons/delete.png");
 
-	@FXML
+	@FXML	YamcsContext yamcsContext = new YamcsContext("localhost", 8090, "John");
+
 	public void createContextMenu() {
 
-		TreeItem<YamcsContext> connection = new TreeItem<YamcsContext>(new YamcsContext("localhost", 8090, "John"));
+		YamcsContext newContext = new YamcsContext();
+		TreeItem<YamcsContext> connectionTreeItem = new TreeItem<YamcsContext>(newContext);
 
-//		TreeItem audi1 = new TreeItem(new Car("Audi", "A1"));
-//
-//		audi.getChildren().add(audi1);
-//		audi.getChildren().add(audi2);
-//		audi.getChildren().add(audi3);
-
-//		cars.getChildren().add(audi);
-//		cars.getChildren().add(mercedes);
-
-		serverConnectionsTableView.setRoot(connection);
-
-//		serverConnectionsTableView.getTreeItem(0).setValue(new YamcsContext("localhost", 8090, "John"));
-
-//		serverColumn.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
-//					public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
-//						// p.getValue() returns the TreeItem<Person> instance for a particular
-//						// TreeTableView row,
-//						// p.getValue().getValue() returns the Person instance inside the
-//						// TreeItem<Person>
-//						return new ReadOnlyObjectWrapper<String>(p.getValue().getValue().getUrl());
-//					}
-//
-//				});
-//
-//		userColumn.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
-//			public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
-//				// p.getValue() returns the TreeItem<Person> instance for a particular
-//				// TreeTableView row,
-//				// p.getValue().getValue() returns the Person instance inside the
-//				// TreeItem<Person>
-//				return new ReadOnlyObjectWrapper<String>(p.getValue().getValue().getUser());
-//			}
-//
-//		});
+		if (serverConnectionsTableView.getRoot() == null) {
+			serverConnectionsTableView.setRoot(connectionTreeItem);
+			serverConnectionsTableView.setShowRoot(false);
+		}
 
 		final ContextMenu contextMenu = new ContextMenu();
-		// Add property to channel
+		// Add property to channelTreeItem
 		MenuItem addServerConnection = new MenuItem("Add Connection", new ImageView(addserverConnectionImmage));
 		addServerConnection.setOnAction(e -> {
 			NewConnectionDialog dialog = null;
@@ -102,12 +78,22 @@ public class ConnectionsManagerController {
 			if (newConnection == null)
 				return;
 
-			System.out.println("new connection:" + newConnection.toString());
-		}
+			YamcsContext newChildContext = new YamcsContext(newConnection);
+			TreeItem<YamcsContext> childYamcsContextTreeItem = new TreeItem<YamcsContext>(newChildContext);
 
-		);
+			initCellValueFactories();
+
+			serverConnectionsTableView.getRoot().getChildren().add(childYamcsContextTreeItem);
+
+		});
 
 		MenuItem removeServerConnection = new MenuItem("Remove Connection", new ImageView(removeServerConnectionImage));
+
+		removeServerConnection.setOnAction(e -> {
+			//TODO
+
+		});
+
 		MenuItem activateServerConnection = new MenuItem("Activate Connection", new ImageView(activateImage));
 		MenuItem deactivateServerConnection = new MenuItem("Deactivate Connection", new ImageView(deactivateImage));
 
@@ -118,6 +104,44 @@ public class ConnectionsManagerController {
 
 		serverConnectionsTableView.setContextMenu(contextMenu);
 
+	}
+
+	private void initCellValueFactories() {
+		serverColumn
+				.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
+					public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
+						// p.getValue() returns the TreeItem<Person> instance for a particular
+						// TreeTableView row,
+						// p.getValue().getValue() returns the Person instance inside the
+						// TreeItem<Person>
+						return new ReadOnlyObjectWrapper<String>(p.getValue().getValue().getConnection().toString());
+					}
+
+				});
+
+		userColumn.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
+				// p.getValue() returns the TreeItem<Person> instance for a particular
+				// TreeTableView row,
+				// p.getValue().getValue() returns the Person instance inside the
+				// TreeItem<Person>
+				return new ReadOnlyObjectWrapper<String>(p.getValue().getValue().getConnection().getUser().toString());
+			}
+
+		});
+
+		statusColumn
+				.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
+					public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
+						// p.getValue() returns the TreeItem<Person> instance for a particular
+						// TreeTableView row,
+						// p.getValue().getValue() returns the Person instance inside the
+						// TreeItem<Person>
+						return new ReadOnlyObjectWrapper<String>(
+								p.getValue().getValue().getConnection().getStatus().toString());
+					}
+
+				});
 	}
 
 	/** Call when no longer needed */
