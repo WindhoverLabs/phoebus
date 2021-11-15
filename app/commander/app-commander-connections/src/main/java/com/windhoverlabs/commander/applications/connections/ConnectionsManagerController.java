@@ -55,7 +55,7 @@ public class ConnectionsManagerController {
 	Image activateImage = ImageCache.getImage(ConnectionsManagerApp.class, "/icons/activate.png");
 	Image deactivateImage = ImageCache.getImage(ConnectionsManagerApp.class, "/icons/delete.png");
 
-	@FXML	YamcsContext yamcsContext = new YamcsContext("localhost", 8090, "John");
+	YamcsContext yamcsContext = new YamcsContext("localhost", 8090, "John");
 
 	public void createContextMenu() {
 
@@ -90,8 +90,10 @@ public class ConnectionsManagerController {
 		MenuItem removeServerConnection = new MenuItem("Remove Connection", new ImageView(removeServerConnectionImage));
 
 		removeServerConnection.setOnAction(e -> {
-			//TODO
-
+			// TODO
+			serverConnectionsTableView.selectionModelProperty().getValue().getSelectedItems().forEach(item -> {
+				serverConnectionsTableView.getRoot().getChildren().remove(item);
+			});
 		});
 
 		MenuItem activateServerConnection = new MenuItem("Activate Connection", new ImageView(activateImage));
