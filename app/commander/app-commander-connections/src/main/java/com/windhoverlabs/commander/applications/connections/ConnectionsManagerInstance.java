@@ -3,6 +3,7 @@ package com.windhoverlabs.commander.applications.connections;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,41 +24,43 @@ import javafx.scene.control.Label;
  *
  */
 @SuppressWarnings("nls")
-public class ConnectionsManagerInstance implements AppInstance
-{
-    /** Logger for all file browser code */
-    public static final Logger logger = Logger.getLogger(ConnectionsManagerInstance.class.getPackageName());
+public class ConnectionsManagerInstance implements AppInstance {
+	/** Logger for all file browser code */
+	public static final Logger logger = Logger.getLogger(ConnectionsManagerInstance.class.getPackageName());
 
-    /** Memento tags */
-    private static final String DIRECTORY = "directory",
-                                SHOW_COLUMN = "show_col",
-                                WIDTH = "col_width";
+	/** Memento tags */
+	private static final String DIRECTORY = "directory", SHOW_COLUMN = "show_col", WIDTH = "col_width";
 
-    private final AppDescriptor app;
+	static ConnectionsManagerInstance INSTANCE = null;
 
-    private ConnectionsManagerController controller;
+	private final AppDescriptor app;
 
-    public ConnectionsManagerInstance(AppDescriptor app)
-    {
-        this.app = app;
+	private ConnectionsManagerController controller;
 
+	private DockItem tab = null;
 
-        Node content;
-        try
+	public ConnectionsManagerInstance(AppDescriptor app) {
+		this.app = app;
+
+		Node content;
+		try {
+			content = loadGUI();
+		} catch (IOException ex) {
+			logger.log(Level.WARNING, "Cannot load UI", ex);
+			content = new Label("Cannot load UI");
+		}
+
+		tab = new DockItem(this, content);
+		DockPane.getActiveDockPane().addTab(tab);
+		
+		
+        tab.addCloseCheck(() ->
         {
-        	content = loadGUI();
-        }
-        catch (IOException ex)
-        {
-            logger.log(Level.WARNING, "Cannot load UI", ex);
-            content = new Label("Cannot load UI");
-        }
+            INSTANCE = null;
+            return CompletableFuture.completedFuture(true);
+        });
 
-        final DockItem tab = new DockItem(this, content);
-        DockPane.getActiveDockPane().addTab(tab);
-                 
-        tab.addClosedNotification(controller::shutdown);
-    }
+	}
 
 	private Node loadGUI() throws IOException {
 		final FXMLLoader fxmlLoader;
@@ -67,25 +70,26 @@ public class ConnectionsManagerInstance implements AppInstance
 		fxmlLoader = new FXMLLoader(fxml, bundle);
 		content = (Node) fxmlLoader.load();
 		controller = fxmlLoader.getController();
-		
+
 		return content;
 	}
 
-    @Override
-    public AppDescriptor getAppDescriptor()
-    {
-        return app;
-    }
+	@Override
+	public AppDescriptor getAppDescriptor() {
+		return app;
+	}
 
-    @Override
-    public void restore(final Memento memento)
-    {
-    	System.out.println("restore");
-    }
+	@Override
+	public void restore(final Memento memento) {
+		System.out.println("restore");
+	}
 
-    @Override
-    public void save(final Memento memento)
-    {
-    	System.out.println("save");
-    }
+	@Override
+	public void save(final Memento memento) {
+		System.out.println("save");
+	}
+
+	public void raise() {
+		tab.select();
+	}
 }

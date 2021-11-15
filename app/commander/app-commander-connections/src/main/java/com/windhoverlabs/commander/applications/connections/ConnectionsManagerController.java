@@ -87,21 +87,29 @@ public class ConnectionsManagerController {
 
 		});
 
-		MenuItem removeServerConnection = new MenuItem("Remove Connection", new ImageView(removeServerConnectionImage));
+		MenuItem removeServerConnection = null;
 
-		removeServerConnection.setOnAction(e -> {
-			// TODO
-			serverConnectionsTableView.selectionModelProperty().getValue().getSelectedItems().forEach(item -> {
-				serverConnectionsTableView.getRoot().getChildren().remove(item);
+		if (serverConnectionsTableView.selectionModelProperty().getValue().getSelectedItems().size() > 0) {
+
+			removeServerConnection = new MenuItem("Remove Connection", new ImageView(removeServerConnectionImage));
+
+			removeServerConnection.setOnAction(e -> {
+				// TODO
+				serverConnectionsTableView.selectionModelProperty().getValue().getSelectedItems().forEach(item -> {
+					serverConnectionsTableView.getRoot().getChildren().remove(item);
+				});
 			});
-		});
+
+		}
 
 		MenuItem activateServerConnection = new MenuItem("Activate Connection", new ImageView(activateImage));
 		MenuItem deactivateServerConnection = new MenuItem("Deactivate Connection", new ImageView(deactivateImage));
 
 		contextMenu.getItems().add(addServerConnection);
-		contextMenu.getItems().add(removeServerConnection);
 		contextMenu.getItems().add(deactivateServerConnection);
+		if (removeServerConnection != null) {
+			contextMenu.getItems().add(removeServerConnection);
+		}
 		contextMenu.getItems().add(activateServerConnection);
 
 		serverConnectionsTableView.setContextMenu(contextMenu);
@@ -112,10 +120,6 @@ public class ConnectionsManagerController {
 		serverColumn
 				.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
 					public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
-						// p.getValue() returns the TreeItem<Person> instance for a particular
-						// TreeTableView row,
-						// p.getValue().getValue() returns the Person instance inside the
-						// TreeItem<Person>
 						return new ReadOnlyObjectWrapper<String>(p.getValue().getValue().getConnection().toString());
 					}
 
@@ -123,10 +127,7 @@ public class ConnectionsManagerController {
 
 		userColumn.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
 			public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
-				// p.getValue() returns the TreeItem<Person> instance for a particular
-				// TreeTableView row,
-				// p.getValue().getValue() returns the Person instance inside the
-				// TreeItem<Person>
+//				p.getValue().getChildren().get(0).
 				return new ReadOnlyObjectWrapper<String>(p.getValue().getValue().getConnection().getUser().toString());
 			}
 
@@ -139,6 +140,7 @@ public class ConnectionsManagerController {
 						// TreeTableView row,
 						// p.getValue().getValue() returns the Person instance inside the
 						// TreeItem<Person>
+						p.getValue().getChildren().add(null);
 						return new ReadOnlyObjectWrapper<String>(
 								p.getValue().getValue().getConnection().getStatus().toString());
 					}
@@ -148,6 +150,7 @@ public class ConnectionsManagerController {
 
 	/** Call when no longer needed */
 	public void shutdown() {
+		
 		System.out.println("shutdown");
 	}
 }
