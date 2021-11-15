@@ -43,7 +43,6 @@ public class NewConnectionDialog extends Dialog<YamcsConnection> {
 
 		layout.setPrefWidth(600);
 
-		// Initial focus on name
 		Platform.runLater(() -> serverUrl.requestFocus());
 
 			setResultConverter(button -> {
@@ -55,15 +54,13 @@ public class NewConnectionDialog extends Dialog<YamcsConnection> {
 					newConnection.setStatus(YamcsConnectionStatus.Connected);
 					}
 					catch (NumberFormatException e) {
-						Logger.getLogger(getClass().getName()).log(Level.WARNING, "Cannot format string to integer", e);
+						Logger		// Initial focus on name
+.getLogger(getClass().getName()).log(Level.WARNING, "Cannot format string to integer", e);
 					}
 				}
 				
 				return newConnection;
 			});
-
-		// Initial setting
-//		updateAutocompletion();
 	}
 
 	private void addServerUrlField() {
@@ -93,11 +90,5 @@ public class NewConnectionDialog extends Dialog<YamcsConnection> {
 		password.setTooltip(new Tooltip("Password, if necessary."));
 		GridPane.setHgrow(password, Priority.ALWAYS);
 		layout.add(password, 1, 3);
-	}
-
-	/** Add or remove PV name completion support based on type_pv */
-	private void updateAutocompletion() {
-		// Always OK to detach
-		PVAutocompleteMenu.INSTANCE.detachField(serverUrl);
 	}
 }
