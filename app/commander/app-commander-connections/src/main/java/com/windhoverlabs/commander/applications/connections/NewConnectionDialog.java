@@ -8,12 +8,16 @@ import com.windhoverlabs.commander.core.YamcsConnection;
 import com.windhoverlabs.commander.core.YamcsConnection.YamcsConnectionStatus;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
@@ -27,6 +31,9 @@ public class NewConnectionDialog extends Dialog<YamcsConnection> {
 	final GridPane layout = new GridPane();
 
 	public NewConnectionDialog() {
+
+		ButtonType testConnectionButtonType = new ButtonType("Test Connection", ButtonData.OTHER);
+
 		layout.setColumnIndex(layout, null);
 		// layout.setGridLinesVisible(true);
 		layout.setHgap(5);
@@ -38,29 +45,43 @@ public class NewConnectionDialog extends Dialog<YamcsConnection> {
 		addPasswordField();
 
 		getDialogPane().setContent(layout);
-		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL, testConnectionButtonType);
+
+		Button testConnectionButton = (Button) getDialogPane().lookupButton(testConnectionButtonType);
+
+		testConnectionButton.addEventFilter(ActionEvent.ACTION, event -> {
+			// Test Connection Logic?
+			
+			System.out.println("Clicked on button");
+			// to prevent the dialog to close
+			event.consume();
+		});
+
 		setResizable(true);
+
+		this.getResultConverter();
+
+		setResultConverter(button -> button == ButtonType.OK ? null : null);
 
 		layout.setPrefWidth(600);
 
 		Platform.runLater(() -> serverUrl.requestFocus());
 
-			setResultConverter(button -> {
-				YamcsConnection newConnection = null;
-				if (button == ButtonType.OK) {
-					try {
+		setResultConverter(button -> {
+			YamcsConnection newConnection = null;
+			if (button == ButtonType.OK) {
+				try {
 					newConnection = new YamcsConnection(serverUrl.getText(), Integer.parseInt(port.getText()),
 							user.getText());
 					newConnection.setStatus(YamcsConnectionStatus.Connected);
-					}
-					catch (NumberFormatException e) {
-						Logger		// Initial focus on name
-.getLogger(getClass().getName()).log(Level.WARNING, "Cannot format string to integer", e);
-					}
+				} catch (NumberFormatException e) {
+					Logger // Initial focus on name
+							.getLogger(getClass().getName()).log(Level.WARNING, "Cannot format string to integer", e);
 				}
-				
-				return newConnection;
-			});
+			}
+
+			return newConnection;
+		});
 	}
 
 	private void addServerUrlField() {
