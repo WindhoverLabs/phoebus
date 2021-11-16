@@ -2,10 +2,6 @@ package com.windhoverlabs.commander.applications.connections;
 
 import static com.windhoverlabs.commander.applications.connections.ConnectionsManagerInstance.logger;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-import org.phoebus.framework.nls.NLS;
 import org.phoebus.ui.javafx.ImageCache;
 
 import com.windhoverlabs.commander.core.YamcsConnection;
@@ -47,6 +43,13 @@ public class ConnectionsManagerController {
 
 	@FXML
 	public void initialize() {
+		//TODO:Might help fix the issue when sorting an empty table.
+//		serverConnectionsTableView.setOnSort(event -> {
+//			System.out.println("%%%%%%%%%%%%%%" + serverConnectionsTableView.getSelectionModel().getSelectedIndices());
+//			if (serverConnectionsTableView.getSelectionModel().getSelectedIndices().size() > 1)
+//				serverConnectionsTableView.getSelectionModel().clearSelection();
+//		});
+
 	}
 
 	Image addserverConnectionImmage = ImageCache.getImage(ConnectionsManagerApp.class,
@@ -55,10 +58,7 @@ public class ConnectionsManagerController {
 	Image activateImage = ImageCache.getImage(ConnectionsManagerApp.class, "/icons/activate.png");
 	Image deactivateImage = ImageCache.getImage(ConnectionsManagerApp.class, "/icons/delete.png");
 
-	YamcsContext yamcsContext = new YamcsContext("localhost", 8090, "John");
-
 	public void createContextMenu() {
-
 		YamcsContext newContext = new YamcsContext();
 		TreeItem<YamcsContext> connectionTreeItem = new TreeItem<YamcsContext>(newContext);
 
@@ -88,29 +88,32 @@ public class ConnectionsManagerController {
 		});
 
 		MenuItem removeServerConnection = null;
+		MenuItem activateServerConnection = null;
 
-		if (serverConnectionsTableView.selectionModelProperty().getValue().getSelectedItems().size() > 0) {
+		contextMenu.getItems().add(addServerConnection);
+
+		if (serverConnectionsTableView.selectionModelProperty().getValue().getSelectedItems().size() > 0
+				&& serverConnectionsTableView.getRoot().getChildren().size() > 0) {
+
+			activateServerConnection = new MenuItem("Activate Connection", new ImageView(activateImage));
+			MenuItem deactivateServerConnection = new MenuItem("Deactivate Connection", new ImageView(deactivateImage));
 
 			removeServerConnection = new MenuItem("Remove Connection", new ImageView(removeServerConnectionImage));
+
+			System.out.println("if statement*******************");
 
 			removeServerConnection.setOnAction(e -> {
 				// TODO
 				serverConnectionsTableView.selectionModelProperty().getValue().getSelectedItems().forEach(item -> {
+					
 					serverConnectionsTableView.getRoot().getChildren().remove(item);
 				});
 			});
 
-		}
-
-		MenuItem activateServerConnection = new MenuItem("Activate Connection", new ImageView(activateImage));
-		MenuItem deactivateServerConnection = new MenuItem("Deactivate Connection", new ImageView(deactivateImage));
-
-		contextMenu.getItems().add(addServerConnection);
-		contextMenu.getItems().add(deactivateServerConnection);
-		if (removeServerConnection != null) {
 			contextMenu.getItems().add(removeServerConnection);
+			contextMenu.getItems().add(activateServerConnection);
+			contextMenu.getItems().add(deactivateServerConnection);
 		}
-		contextMenu.getItems().add(activateServerConnection);
 
 		serverConnectionsTableView.setContextMenu(contextMenu);
 
@@ -127,7 +130,6 @@ public class ConnectionsManagerController {
 
 		userColumn.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
 			public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
-//				p.getValue().getChildren().get(0).
 				return new ReadOnlyObjectWrapper<String>(p.getValue().getValue().getConnection().getUser().toString());
 			}
 
@@ -136,10 +138,7 @@ public class ConnectionsManagerController {
 		statusColumn
 				.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
 					public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
-						// p.getValue() returns the TreeItem<Person> instance for a particular
-						// TreeTableView row,
-						// p.getValue().getValue() returns the Person instance inside the
-						// TreeItem<Person>
+						// TODO Fetch nodes from server and add them as children
 						p.getValue().getChildren().add(null);
 						return new ReadOnlyObjectWrapper<String>(
 								p.getValue().getValue().getConnection().getStatus().toString());
@@ -150,7 +149,7 @@ public class ConnectionsManagerController {
 
 	/** Call when no longer needed */
 	public void shutdown() {
-		
+
 		System.out.println("shutdown");
 	}
 }
