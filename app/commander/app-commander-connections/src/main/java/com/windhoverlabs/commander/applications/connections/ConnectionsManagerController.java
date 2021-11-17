@@ -84,9 +84,9 @@ public class ConnectionsManagerController {
 				return;
 
 			YamcsContext newChildContext = new YamcsContext(newConnection);
-			
+
 			generateNodes(5, newChildContext);
-			
+
 			TreeItem<YamcsContext> childYamcsContextTreeItem = new TreeItem<YamcsContext>(newChildContext);
 
 			initCellValueFactories();
@@ -138,8 +138,8 @@ public class ConnectionsManagerController {
 				.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
 					public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
 						if (p.getValue().isLeaf()) {
-							p.getValue().getParent().getChildren().indexOf(p.getValue());
-							return new ReadOnlyObjectWrapper<String>("Node");
+
+							return new ReadOnlyObjectWrapper<String>(p.getValue().getValue().getNodes().get(p.getValue().getParent().getChildren().indexOf(p.getValue())).getInstanceName() );
 						} else {
 							return new ReadOnlyObjectWrapper<String>(
 									p.getValue().getValue().getConnection().toString());
