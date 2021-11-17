@@ -2,15 +2,19 @@ package com.windhoverlabs.commander.applications.connections;
 
 import static com.windhoverlabs.commander.applications.connections.ConnectionsManagerInstance.logger;
 
+import java.util.ArrayList;
+
 import org.phoebus.ui.javafx.ImageCache;
 
 import com.windhoverlabs.commander.core.YamcsConnection;
 import com.windhoverlabs.commander.core.YamcsContext;
+import com.windhoverlabs.commander.core.YamcsNode;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
@@ -43,7 +47,8 @@ public class ConnectionsManagerController {
 
 	@FXML
 	public void initialize() {
-		//TODO:Might help fix the issue when sorting an empty table.
+		serverConnectionsTableView.setPlaceholder(new Label("Right-click to add connections."));
+		// TODO:Might help fix the issue when sorting an empty table.
 //		serverConnectionsTableView.setOnSort(event -> {
 //			System.out.println("%%%%%%%%%%%%%%" + serverConnectionsTableView.getSelectionModel().getSelectedIndices());
 //			if (serverConnectionsTableView.getSelectionModel().getSelectedIndices().size() > 1)
@@ -79,11 +84,20 @@ public class ConnectionsManagerController {
 				return;
 
 			YamcsContext newChildContext = new YamcsContext(newConnection);
+			
+			generateNodes(5, newChildContext);
+			
 			TreeItem<YamcsContext> childYamcsContextTreeItem = new TreeItem<YamcsContext>(newChildContext);
 
 			initCellValueFactories();
 
 			serverConnectionsTableView.getRoot().getChildren().add(childYamcsContextTreeItem);
+
+			for (YamcsNode node : newChildContext.getNodes()) {
+				serverConnectionsTableView.getRoot().getChildren()
+						.get(serverConnectionsTableView.getRoot().getChildren().size() - 1).getChildren()
+						.add(new TreeItem<YamcsContext>(newChildContext));
+			}
 
 		});
 
@@ -105,7 +119,7 @@ public class ConnectionsManagerController {
 			removeServerConnection.setOnAction(e -> {
 				// TODO
 				serverConnectionsTableView.selectionModelProperty().getValue().getSelectedItems().forEach(item -> {
-					
+
 					serverConnectionsTableView.getRoot().getChildren().remove(item);
 				});
 			});
@@ -123,7 +137,13 @@ public class ConnectionsManagerController {
 		serverColumn
 				.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
 					public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
-						return new ReadOnlyObjectWrapper<String>(p.getValue().getValue().getConnection().toString());
+						if (p.getValue().isLeaf()) {
+							p.getValue().getParent().getChildren().indexOf(p.getValue());
+							return new ReadOnlyObjectWrapper<String>("Node");
+						} else {
+							return new ReadOnlyObjectWrapper<String>(
+									p.getValue().getValue().getConnection().toString());
+						}
 					}
 
 				});
@@ -139,7 +159,9 @@ public class ConnectionsManagerController {
 				.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
 					public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
 						// TODO Fetch nodes from server and add them as children
-						p.getValue().getChildren().add(null);
+//						p.getValue().getChildren().add(p.getValue());
+
+//						p.getValue().getChildren()
 						return new ReadOnlyObjectWrapper<String>(
 								p.getValue().getValue().getConnection().getStatus().toString());
 					}
@@ -151,5 +173,12 @@ public class ConnectionsManagerController {
 	public void shutdown() {
 
 		System.out.println("shutdown");
+	}
+
+	private void generateNodes(int n, YamcsContext context) {
+		for (int i = 0; i < n; i++) {
+			// Eventually these nodes will be queried from the server
+			context.addNode("SampleNode" + Integer.toString(i));
+		}
 	}
 }

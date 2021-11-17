@@ -10,11 +10,15 @@ import org.yamcs.client.ParameterSubscription;
 public class YamcsNode implements Node {
 	private NodeState currentState;
 	private String instanceName;
+	public String getInstanceName() {
+		return instanceName;
+	}
+
 	private ParameterSubscription yamcsSubscription = null;
 	
 	public YamcsNode(String newName) 
 	{
-		
+		instanceName = newName;
 	}
 	
 	@Override

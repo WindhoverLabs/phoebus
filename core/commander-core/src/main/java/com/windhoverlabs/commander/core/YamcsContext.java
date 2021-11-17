@@ -21,6 +21,14 @@ public class YamcsContext extends NodeContext<YamcsNode> {
 
 	private ArrayList<YamcsNode> nodes;
 
+	public void setNodes(ArrayList<YamcsNode> nodes) {
+		this.nodes = nodes;
+	}
+
+	public ArrayList<YamcsNode> getNodes() {
+		return nodes;
+	}
+
 	public String getUrl() {
 		return connection.getUrl();
 	}
@@ -40,6 +48,10 @@ public class YamcsContext extends NodeContext<YamcsNode> {
 	}
 
 	public YamcsContext() {
+	}
+
+	public void addNode(String name) {
+		nodes.add(new YamcsNode(name));
 	}
 
 	@Override

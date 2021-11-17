@@ -12,7 +12,7 @@ import org.phoebus.framework.spi.AppInstance;
 @SuppressWarnings("nls")
 public class ConnectionsManagerApp implements AppDescriptor {
 
-    public static final String Name = "connections";
+    public static final String Name = "Connections";
 
     public static final String DisplayName = Messages.DisplayName;
 
