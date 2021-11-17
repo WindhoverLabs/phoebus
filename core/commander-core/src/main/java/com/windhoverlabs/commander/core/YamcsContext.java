@@ -2,6 +2,8 @@ package com.windhoverlabs.commander.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import org.yamcs.client.YamcsClient;
 
 /**
@@ -19,13 +21,12 @@ public class YamcsContext extends NodeContext<YamcsNode> {
 
 	private HashMap<YamcsNode, MissionDatabase> instanceDBMap;
 
-	private ArrayList<YamcsNode> nodes;
 
 	public void setNodes(ArrayList<YamcsNode> nodes) {
 		this.nodes = nodes;
 	}
 
-	public ArrayList<YamcsNode> getNodes() {
+	public List<YamcsNode> getNodes() {
 		return nodes;
 	}
 
@@ -74,7 +75,7 @@ public class YamcsContext extends NodeContext<YamcsNode> {
 //		// TODO Auto-generated method stub
 //		
 //	}
-//
+//YamcsNode
 //	@Override
 //	public void removeListener(InvalidationListener listener) {
 //		// TODO Auto-generated method stub

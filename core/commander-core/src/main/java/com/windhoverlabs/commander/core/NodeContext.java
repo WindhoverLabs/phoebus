@@ -3,7 +3,7 @@ package com.windhoverlabs.commander.core;
 import java.util.List;
 
 /**
- * A NodeContext is a link to the ground system in the outside world. A YAMCS server is example of this.
+ * A NodeContext is a link to the ground system in the outside world. A YAMCS server is an example of this.
  * @author lgomez
  *
  */

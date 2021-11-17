@@ -106,15 +106,12 @@ public class ConnectionsManagerController {
 
 		contextMenu.getItems().add(addServerConnection);
 
-		if (serverConnectionsTableView.selectionModelProperty().getValue().getSelectedItems().size() > 0
-				&& serverConnectionsTableView.getRoot().getChildren().size() > 0) {
+		if (isSelectionServerTreeItem()) {
 
 			activateServerConnection = new MenuItem("Activate Connection", new ImageView(activateImage));
 			MenuItem deactivateServerConnection = new MenuItem("Deactivate Connection", new ImageView(deactivateImage));
 
 			removeServerConnection = new MenuItem("Remove Connection", new ImageView(removeServerConnectionImage));
-
-			System.out.println("if statement*******************");
 
 			removeServerConnection.setOnAction(e -> {
 				// TODO
@@ -133,13 +130,27 @@ public class ConnectionsManagerController {
 
 	}
 
+	private boolean isSelectionServerTreeItem() {
+		return serverConnectionsTableView.selectionModelProperty().getValue().getSelectedItems().size() > 0
+				&& serverConnectionsTableView.getRoot().getChildren().size() > 0
+				&& !serverConnectionsTableView.selectionModelProperty().getValue().getSelectedItems().get(0).isLeaf();
+	}
+
+	private boolean isSelectionNodeTreeItem() {
+		return serverConnectionsTableView.selectionModelProperty().getValue().getSelectedItems().size() > 0
+				&& serverConnectionsTableView.getRoot().getChildren().size() > 0
+				&& serverConnectionsTableView.selectionModelProperty().getValue().getSelectedItems().get(0).isLeaf();
+	}
+
 	private void initCellValueFactories() {
 		serverColumn
 				.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
 					public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
 						if (p.getValue().isLeaf()) {
 
-							return new ReadOnlyObjectWrapper<String>(p.getValue().getValue().getNodes().get(p.getValue().getParent().getChildren().indexOf(p.getValue())).getInstanceName() );
+							return new ReadOnlyObjectWrapper<String>(p.getValue().getValue().getNodes()
+									.get(p.getValue().getParent().getChildren().indexOf(p.getValue()))
+									.getInstanceName());
 						} else {
 							return new ReadOnlyObjectWrapper<String>(
 									p.getValue().getValue().getConnection().toString());
@@ -150,7 +161,12 @@ public class ConnectionsManagerController {
 
 		userColumn.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
 			public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
-				return new ReadOnlyObjectWrapper<String>(p.getValue().getValue().getConnection().getUser().toString());
+				if (p.getValue().isLeaf()) {
+					return new ReadOnlyObjectWrapper<String>("");
+				} else {
+					return new ReadOnlyObjectWrapper<String>(
+							p.getValue().getValue().getConnection().getUser().toString());
+				}
 			}
 
 		});
@@ -159,11 +175,27 @@ public class ConnectionsManagerController {
 				.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
 					public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
 						// TODO Fetch nodes from server and add them as children
-//						p.getValue().getChildren().add(p.getValue());
+						if (p.getValue().isLeaf()) {
+							return new ReadOnlyObjectWrapper<String>("");
+						} else {
+							return new ReadOnlyObjectWrapper<String>(
+									p.getValue().getValue().getConnection().getStatus().toString());
+						}
+					}
 
-//						p.getValue().getChildren()
-						return new ReadOnlyObjectWrapper<String>(
-								p.getValue().getValue().getConnection().getStatus().toString());
+				});
+
+		processorColumn
+				.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
+					public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
+						// TODO Fetch nodes from server and add them as children
+						System.out.println(processorColumn);
+						if (p.getValue().isLeaf()) {
+							return new ReadOnlyObjectWrapper<String>(p.getValue().getValue().getNodes()
+									.get(p.getValue().getParent().getChildren().indexOf(p.getValue())).getProcessor());
+						} else {
+							return new ReadOnlyObjectWrapper<String>("");
+						}
 					}
 
 				});
@@ -179,6 +211,7 @@ public class ConnectionsManagerController {
 		for (int i = 0; i < n; i++) {
 			// Eventually these nodes will be queried from the server
 			context.addNode("SampleNode" + Integer.toString(i));
+			context.getNodes().get(i).setProcessor("SampleProcessor" + Integer.toString(i));
 		}
 	}
 }

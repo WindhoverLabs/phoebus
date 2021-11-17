@@ -33,6 +33,8 @@ public class NewConnectionDialog extends Dialog<YamcsConnection> {
 	public NewConnectionDialog() {
 
 		ButtonType testConnectionButtonType = new ButtonType("Test Connection", ButtonData.OTHER);
+		
+		ButtonType connectButtonType = new ButtonType("Connect", ButtonData.OK_DONE);
 
 		layout.setColumnIndex(layout, null);
 		// layout.setGridLinesVisible(true);
@@ -45,7 +47,7 @@ public class NewConnectionDialog extends Dialog<YamcsConnection> {
 		addPasswordField();
 
 		getDialogPane().setContent(layout);
-		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL, testConnectionButtonType);
+		getDialogPane().getButtonTypes().addAll(connectButtonType, ButtonType.CANCEL, testConnectionButtonType);
 
 		Button testConnectionButton = (Button) getDialogPane().lookupButton(testConnectionButtonType);
 
@@ -53,7 +55,7 @@ public class NewConnectionDialog extends Dialog<YamcsConnection> {
 			// Test Connection Logic?
 			
 			System.out.println("Clicked on button");
-			// to prevent the dialog to close
+			// to prevent the dialog from closing
 			event.consume();
 		});
 
@@ -61,7 +63,6 @@ public class NewConnectionDialog extends Dialog<YamcsConnection> {
 
 		this.getResultConverter();
 
-		setResultConverter(button -> button == ButtonType.OK ? null : null);
 
 		layout.setPrefWidth(600);
 
@@ -69,7 +70,7 @@ public class NewConnectionDialog extends Dialog<YamcsConnection> {
 
 		setResultConverter(button -> {
 			YamcsConnection newConnection = null;
-			if (button == ButtonType.OK) {
+			if (button.getButtonData() == ButtonData.OK_DONE) {
 				try {
 					newConnection = new YamcsConnection(serverUrl.getText(), Integer.parseInt(port.getText()),
 							user.getText());
@@ -105,7 +106,7 @@ public class NewConnectionDialog extends Dialog<YamcsConnection> {
 		layout.add(user, 1, 2);
 	}
 
-	// TODO:PLEASE. Make a decision on policy before releasing this to users.
+	// TODO PLEASE. Make a decision on policy before releasing this to users.
 	private void addPasswordField() {
 		layout.add(new Label("password:"), 0, 3);
 		password.setTooltip(new Tooltip("Password, if necessary."));
