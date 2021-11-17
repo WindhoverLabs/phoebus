@@ -16,6 +16,7 @@ public class YamcsNode implements Node {
 
 	public YamcsNode(String newName) {
 		instanceName = newName;
+		currentState = NodeState.ACTIVE;
 	}
 
 	public String getProcessor() {
@@ -39,11 +40,11 @@ public class YamcsNode implements Node {
 	@Override
 	public void deactivate() {
 		// TODO Implementation
-		currentState = NodeState.ACTIVE;
+		currentState = NodeState.INACTIVE;
 	}
 
 	@Override
-	public NodeState getStreamState() {
+	public NodeState getState() {
 		// TODO Auto-generated method stub
 		return currentState;
 	}

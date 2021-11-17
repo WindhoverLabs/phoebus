@@ -9,5 +9,5 @@ package com.windhoverlabs.commander.core;
 public interface Node {
 public void activate();
 public void deactivate();
-public NodeState getStreamState();
+public NodeState getState();
 }

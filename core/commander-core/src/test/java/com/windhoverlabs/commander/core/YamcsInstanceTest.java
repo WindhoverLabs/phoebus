@@ -14,7 +14,7 @@ public class YamcsInstanceTest {
 		YamcsNode newInstance = new YamcsNode("");
 		newInstance.activate();
 		
-		assertThat(newInstance.getStreamState(), equalTo(NodeState.ACTIVE));
+		assertThat(newInstance.getState(), equalTo(NodeState.ACTIVE));
 	}
 
 }
