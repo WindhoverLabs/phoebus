@@ -50,6 +50,7 @@ public class ConnectionsManagerController {
 	@FXML
 	public void initialize() {
 		serverConnectionsTableView.setPlaceholder(new Label("Right-click to add connections."));
+		initCellValueFactories();//			generateNodes(5, newChildContext);
 		// TODO: Might help fix the issue when sorting an empty table.
 //		serverConnectionsTableView.setOnSort(event -> {
 //			if (serverConnectionsTableView.getSelectionModel().getSelectedIndices().size() > 1)
@@ -65,17 +66,21 @@ public class ConnectionsManagerController {
 	Image deactivateImage = ImageCache.getImage(ConnectionsManagerApp.class, "/icons/delete.png");
 
 	public void createContextMenu() {
+		System.out.println("1");
 		YamcsContext newContext = new YamcsContext();
 		TreeItem<YamcsContext> connectionTreeItem = new TreeItem<YamcsContext>(newContext);
+//		System.out.println("2");
 
 		if (serverConnectionsTableView.getRoot() == null) {
 			serverConnectionsTableView.setRoot(connectionTreeItem);
 			serverConnectionsTableView.setShowRoot(false);
 		}
-
+		
+//		System.out.println("3");
 		final ContextMenu contextMenu = new ContextMenu();
 		// Add property to channelTreeItem
 		MenuItem addServerConnection = new MenuItem("Add Connection", new ImageView(addserverConnectionImmage));
+//		System.out.println("4");
 		addServerConnection.setOnAction(e -> {
 			NewConnectionDialog dialog = null;
 			dialog = new NewConnectionDialog();
@@ -85,12 +90,12 @@ public class ConnectionsManagerController {
 				return;
 
 			YamcsContext newChildContext = new YamcsContext(newConnection);
-
-			generateNodes(5, newChildContext);
+			
+			newChildContext.connect();
 
 			TreeItem<YamcsContext> childYamcsContextTreeItem = new TreeItem<YamcsContext>(newChildContext);
 
-			initCellValueFactories();
+			System.out.println("Add Server Connection");
 
 			serverConnectionsTableView.getRoot().getChildren().add(childYamcsContextTreeItem);
 
@@ -136,7 +141,8 @@ public class ConnectionsManagerController {
 
 			});
 
-			deactivateNodeMenuItem.setOnAction(e -> {
+			deactivateNodeMenuItem.setOnAction(e -> {//			generateNodes(5, newChildContext);
+				
 				serverConnectionsTableView.selectionModelProperty().getValue().getSelectedItems().forEach(item -> {
 					item.getValue().getNodes().get(item.getParent().getChildren().indexOf(item)).deactivate();
 				});
@@ -167,8 +173,9 @@ public class ConnectionsManagerController {
 		serverColumn
 				.setCellValueFactory(new Callback<CellDataFeatures<YamcsContext, String>, ObservableValue<String>>() {
 					public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
-						if (p.getValue().isLeaf()) {
-
+						
+						if (p.getValue().isLeaf() && p.getValue().getChildren().size()==0) {
+							System.out.println("Leaf branch");
 							return new ReadOnlyObjectWrapper<String>(p.getValue().getValue().getNodes()
 									.get(p.getValue().getParent().getChildren().indexOf(p.getValue()))
 									.getInstanceName());
@@ -226,13 +233,5 @@ public class ConnectionsManagerController {
 	/** Call when no longer needed */
 	public void shutdown() {
 		System.out.println("shutdown");
-	}
-
-	private void generateNodes(int n, YamcsContext context) {
-		for (int i = 0; i < n; i++) {
-			// Eventually these nodes will be queried from the server
-			context.addNode("SampleNode" + Integer.toString(i));
-			context.getNodes().get(i).setProcessor("SampleProcessor" + Integer.toString(i));
-		}
 	}
 }

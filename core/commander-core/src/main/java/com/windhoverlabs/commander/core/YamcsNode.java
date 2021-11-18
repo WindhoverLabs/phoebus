@@ -1,6 +1,7 @@
 package com.windhoverlabs.commander.core;
 
 import org.yamcs.client.ParameterSubscription;
+import org.yamcs.protobuf.YamcsInstance;
 
 /**
  * Data model for a yamcs instance.
@@ -11,11 +12,25 @@ import org.yamcs.client.ParameterSubscription;
 public class YamcsNode implements Node {
 	private NodeState currentState;
 	private String instanceName;
+	private YamcsInstance instance;
+	public YamcsInstance getInstance() {
+		return instance;
+	}
+
+	public void setInstance(YamcsInstance instance) {
+		instanceName = instance.getName();
+		this.instance = instance;
+	}
+
 	private String processor;
 	private ParameterSubscription yamcsSubscription = null;
 
 	public YamcsNode(String newName) {
 		instanceName = newName;
+		currentState = NodeState.ACTIVE;
+	}
+
+	public YamcsNode() {
 		currentState = NodeState.ACTIVE;
 	}
 

@@ -14,7 +14,7 @@
       <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <TreeTableView fx:id="serverConnectionsTableView" editable="true" onMouseClicked="#createContextMenu" prefHeight="400.0" prefWidth="464.0">
+      <TreeTableView fx:id="serverConnectionsTableView" editable="true" onContextMenuRequested="#createContextMenu" prefHeight="400.0" prefWidth="464.0">
         <columns>
           <TreeTableColumn fx:id="serverColumn" prefWidth="120.0" text="Server URL" />
           <TreeTableColumn fx:id="userColumn" prefWidth="115.0" text="User" />

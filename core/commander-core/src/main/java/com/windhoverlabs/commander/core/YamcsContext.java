@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.yamcs.client.ClientException;
 import org.yamcs.client.YamcsClient;
+import org.yamcs.protobuf.ProcessorInfo;
+import org.yamcs.protobuf.YamcsInstance;
 
 /**
  * 
@@ -20,7 +23,6 @@ public class YamcsContext extends NodeContext<YamcsNode> {
 	}
 
 	private HashMap<YamcsNode, MissionDatabase> instanceDBMap;
-
 
 	public void setNodes(ArrayList<YamcsNode> nodes) {
 		this.nodes = nodes;
@@ -57,7 +59,39 @@ public class YamcsContext extends NodeContext<YamcsNode> {
 
 	@Override
 	public void connect() {
+		if (yamcsClient != null) {
+			yamcsClient.close();
+		}
+		System.out.println("yamcs connect1");
 		yamcsClient = YamcsClient.newBuilder(connection.getUrl(), connection.getPort()).build();
+
+		yamcsClient.listInstances().whenComplete((response, exc) -> {
+
+			if (exc == null) {
+				List<ProcessorInfo> processors = new ArrayList<>();
+
+				for (YamcsInstance instance : response) {
+					YamcsNode newNode = new YamcsNode();
+					newNode.setInstance(instance);
+					nodes.add(newNode);
+					System.out.println("instance name:" + instance);
+				}
+			}
+		});
+
+		try {
+			System.out.println("yamcs connect3");
+
+			yamcsClient.connectWebSocket();
+			System.out.println("yamcs connect4");
+
+		} catch (ClientException e) {
+			// TODO Auto-generated catch block
+			System.out.println("yamcs connect5");
+			e.printStackTrace();
+		}
+		System.out.println("yamcs connect6");
+
 	}
 
 	@Override
