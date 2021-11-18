@@ -171,7 +171,6 @@ public class ConnectionsManagerController {
 					public ObservableValue<String> call(CellDataFeatures<YamcsContext, String> p) {
 						
 						if (p.getValue().isLeaf() && p.getValue().getChildren().size()==0) {
-							System.out.println("Leaf branch");
 							return new ReadOnlyObjectWrapper<String>(p.getValue().getValue().getNodes()
 									.get(p.getValue().getParent().getChildren().indexOf(p.getValue()))
 									.getInstanceName());
