@@ -50,7 +50,7 @@ public class ConnectionsManagerController {
 	@FXML
 	public void initialize() {
 		serverConnectionsTableView.setPlaceholder(new Label("Right-click to add connections."));
-		initCellValueFactories();//			generateNodes(5, newChildContext);
+		initCellValueFactories();
 		// TODO: Might help fix the issue when sorting an empty table.
 //		serverConnectionsTableView.setOnSort(event -> {
 //			if (serverConnectionsTableView.getSelectionModel().getSelectedIndices().size() > 1)
@@ -69,18 +69,14 @@ public class ConnectionsManagerController {
 		System.out.println("1");
 		YamcsContext newContext = new YamcsContext();
 		TreeItem<YamcsContext> connectionTreeItem = new TreeItem<YamcsContext>(newContext);
-//		System.out.println("2");
 
 		if (serverConnectionsTableView.getRoot() == null) {
 			serverConnectionsTableView.setRoot(connectionTreeItem);
 			serverConnectionsTableView.setShowRoot(false);
 		}
 		
-//		System.out.println("3");
 		final ContextMenu contextMenu = new ContextMenu();
-		// Add property to channelTreeItem
 		MenuItem addServerConnection = new MenuItem("Add Connection", new ImageView(addserverConnectionImmage));
-//		System.out.println("4");
 		addServerConnection.setOnAction(e -> {
 			NewConnectionDialog dialog = null;
 			dialog = new NewConnectionDialog();
