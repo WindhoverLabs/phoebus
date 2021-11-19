@@ -17,6 +17,8 @@ import org.yamcs.protobuf.YamcsInstance;
 public class YamcsContext extends NodeContext<YamcsNode> {
 	private YamcsClient yamcsClient;
 	private YamcsConnection connection;
+	
+	private NodeType type = NodeType.YAMCS;
 
 	public YamcsConnection getConnection() {
 		return connection;
@@ -97,6 +99,12 @@ public class YamcsContext extends NodeContext<YamcsNode> {
 	@Override
 	public void disconnect() {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	protected NodeContext createContext(NodeType t) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 //	@Override
