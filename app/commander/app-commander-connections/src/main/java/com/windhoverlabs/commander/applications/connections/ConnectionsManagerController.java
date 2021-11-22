@@ -51,12 +51,12 @@ public class ConnectionsManagerController {
 //			}
 //		}
 
-		TreeItem<NodeContext> connectionTreeItem = new TreeItem<NodeContext>(newContext);
+		TreeItem<YamcsContext> connectionTreeItem = new TreeItem<YamcsContext>(newContext);
 
 		if (contextTree.getRoot() == null) {
-			contextTree.setRoot(connectionTreeItem);
+//			contextTree.setRoot(connectionTreeItem);
 		}
-		contextTree.setCellFactory(cell -> new ContextCellModel<NodeContext>("YAMCS", true));
+		contextTree.setCellFactory(cell -> new ContextCellModel<YamcsContext>("YAMCS", true));
 
 	}
 
