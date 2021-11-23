@@ -41,6 +41,9 @@ import org.yamcs.protobuf.ProcessorInfo;
 import org.yamcs.protobuf.Pvalue.ParameterValue;
 import org.yamcs.protobuf.SubscribeParametersRequest;
 import org.yamcs.protobuf.YamcsInstance;
+
+import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
+
 import org.yamcs.protobuf.Yamcs.NamedObjectId;
 import org.yamcs.protobuf.SubscribeParametersRequest.Action;
 import org.yamcs.protobuf.SubscribeParametersRequest.Builder;
@@ -57,41 +60,29 @@ import java.util.stream.Collectors;
 public class YamcsPVFactory implements PVFactory {
 	final public static String TYPE = "yamcs";
 
-	//TODO:Need one of these per each server.
+	// TODO:Need one of these per each server.
 	private YamcsClient yamcsClient = null;
-
 	private ParameterSubscription yamcsSubscription = null;
-
 	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
 	private AtomicBoolean subscriptionDirty = new AtomicBoolean(false);
-
 	private Map<NamedObjectId, Set<PV>> pvsById = new LinkedHashMap<>();
-
-	private static final Logger log = Logger.getLogger(YamcsPVFactory.class.getName());	
-
+	private static final Logger log = Logger.getLogger(YamcsPVFactory.class.getName());
 	private ArrayList<NamedObjectId> ids = new ArrayList<NamedObjectId>();
 
 	/** Map of local PVs */
 	private static final Map<String, YamcsPV> yamcs_pvs = new HashMap<>();
 
 	public YamcsPVFactory() throws ClientException {
-		
+
 		yamcsClient = YamcsPlugin.getYamcsClient();
-		
-		System.out.println("YAMCS Init2");
 
 		if (yamcsClient != null) {
 			yamcsSubscription = yamcsClient.createParameterSubscription();
 		}
 
-		System.out.println("YAMCS Init3");
-
 		yamcsClient.listInstances().whenComplete((response, exc) -> {
 
 			if (exc == null) {
-				List<ProcessorInfo> processors = new ArrayList<>();
-
 				for (YamcsInstance instance : response) {
 					System.out.println("instance name:" + instance);
 				}
@@ -111,41 +102,15 @@ public class YamcsPVFactory implements PVFactory {
 			}
 
 		}, 500, 500, TimeUnit.MILLISECONDS);
-		initProcessor();
-	}
-
-	private void initProcessor() {
-		Set<NamedObjectId> ids = getRequestedIdentifiers();
-		log.fine(String.format("Subscribing to %s [%s/%s]", ids, "yamcs-cfs", "realtime"));
-
-		Builder builder = SubscribeParametersRequest.newBuilder();
-
-		builder = builder.setInstance("yamcs-cfs");
-		System.out.println("initProcessor5");
-		builder = builder.setProcessor("realtime");
-		System.out.println("initProcessor6");
-		builder = builder.setSendFromCache(true);
-		System.out.println("initProcessor7");
-		builder = builder.setAbortOnInvalid(false);
-		System.out.println("initProcessor8");
-		builder = builder.setUpdateOnExpiration(true);
-
-		System.out.println("initProcessor9");
-
-		System.out.println("ids:" + ids);
 	}
 
 	/**
 	 * Async adds a Yamcs PV for receiving updates.
 	 */
 	public void register(PV pv, String instance) {
-		System.out.println("register pv:" + pv);
 		NamedObjectId id = YamcsSubscriptionService.identityOf(YamcsSubscriptionService.getYamcsPvName(pv.getName()));
 		executor.execute(() -> {
 			Set<PV> pvs = pvsById.computeIfAbsent(id, x -> new HashSet<>());
-
-			System.out.println("pvs in register callback:" + pvs);
-
 			pvs.add(pv);
 			subscriptionDirty.set(true);
 		});
@@ -190,7 +155,7 @@ public class YamcsPVFactory implements PVFactory {
 		final Class<? extends VType> type = parseType("");
 
 		YamcsPV pv = new YamcsPV(actual_name, type, yamcsSubscription);
-		
+
 		String instanceName = "yamcs-cfs";
 
 		yamcsSubscription.addListener(pv);
@@ -225,31 +190,8 @@ public class YamcsPVFactory implements PVFactory {
 		}
 	}
 
-	public static Class<? extends VType> parseType(final String type) throws Exception { // Lenient check, ignore case
-
-// and allow partial match
-
+	public static Class<? extends VType> parseType(final String type) throws Exception {
 		return YamcsVType.class;
-//		final String lower = type.toLowerCase();
-//		if (lower.contains("doublearray"))
-//			return VDoubleArray.class;
-//		if (lower.contains("double")) // 'VDouble', 'vdouble', 'double'
-//			return VDouble.class;
-//		if (lower.contains("stringarray"))
-//			return VStringArray.class;
-//		if (lower.contains("string"))
-//			return VString.class;
-//		if (lower.contains("enum"))
-//			return VEnum.class;
-//		if (lower.contains("long"))
-//			return VLong.class;
-//		if (lower.contains("int"))
-//			return VInt.class;
-//		if (lower.contains("boolean"))
-//			return VBoolean.class;
-//		if (lower.contains("table"))
-//			return VTable.class;
-//		throw new Exception("Local PV cannot handle type '" + type + "'");
 	}
 
 	/**
@@ -269,10 +211,18 @@ public class YamcsPVFactory implements PVFactory {
 			return yamcs_pvs.values();
 		}
 	}
-	
-	private String generateExamplePV() 
-	{
+
+	private String generateExamplePV() {
 		return "Server_A:yamcs-cfs://cfs/CPD/amc/AMC_HkTlm_t.usCmdCnt";
+	}
+
+	public static String extractServerName(String pvName) {
+		return pvName.split(":")[0];
+	}
+
+	public static CMDR_YamcsInstance getCMDR_YamcsInstanceFromPVname(String PVName) {
+		
+		return null;
 	}
 
 }

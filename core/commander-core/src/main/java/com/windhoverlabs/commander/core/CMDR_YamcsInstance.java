@@ -13,7 +13,6 @@ public class CMDR_YamcsInstance implements TmTcNode {
 	private TmTcNodeState currentState;
 	private String instanceName;
 	private YamcsInstance instance;
-	private ParameterSubscription sub;
 	public YamcsInstance getInstance() {
 		return instance;
 	}
@@ -49,19 +48,16 @@ public class CMDR_YamcsInstance implements TmTcNode {
 
 	@Override
 	public void activate() {
-		// TODO Implementation
 		currentState = TmTcNodeState.ACTIVE;
 	}
 
 	@Override
 	public void deactivate() {
-		// TODO Implementation
 		currentState = TmTcNodeState.INACTIVE;
 	}
 
 	@Override
 	public TmTcNodeState getState() {
-		// TODO Auto-generated method stub
 		return currentState;
 	}
 	

@@ -44,14 +44,7 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 	private volatile Class<? extends VType> type;
 	private final List<String> initial_value;
 
-	private boolean invalid = false;
-
-	private Datasource dataSource;
-
 	ParameterSubscription yamcsSubscription = null;
-
-//	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
 	/** Timer for periodic updates */
 	private final static ScheduledExecutorService executor = Executors.newScheduledThreadPool(1, target -> {
 		final Thread thread = new Thread(target, "YamcsPv");
@@ -70,22 +63,14 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 		// Set initial value
 		notifyListenersOfValue(ValueHelper.getInitialValue(initial_value, type));
 
-		dataSource = new ParameterDatasource();
 	}
 
 	protected YamcsPV(final String actual_name, final Class<? extends VType> type) throws Exception {
 		super(actual_name);
 		this.type = type;
-//        this.initial_value = initial_value;
 
 		initial_value = new ArrayList<String>();
 
-		// Set initial value
-//        notifyListenersOfValue(ValueHelper.getInitialValue(initial_value, type));
-
-//        notifyListenersOfValue(new );
-
-		dataSource = new ParameterDatasource();
 
 	}
 
@@ -96,15 +81,8 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 
 		initial_value = new ArrayList<String>();
 
-		dataSource = new ParameterDatasource();
 
-		yamcsSubscription = newYamcsSubscription;
-
-		System.out.println("new YAMCS PV:" + yamcsSubscription.toString());
-		
-//		yamcsSubscription.sendMessage(SubscribeParametersRequest.newBuilder().setInstance("yamcs-cfs")
-//		.setProcessor("realtime").setSendFromCache(true).setAbortOnInvalid(false).setUpdateOnExpiration(true)
-//		.addId(null).build());
+		yamcsSubscription = newYamcsSubscription;		
 
 		double update_seconds = 1;
 		// Limit rate to 100 Hz
@@ -208,16 +186,9 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 	}
 
 	@Override
-	public void onData(List<ParameterValue> values) {
-		// TODO Auto-generated method stub
-		
-		
+	public void onData(List<ParameterValue> values) {		
 		ArrayList<String> yamcsValues = new ArrayList<String>();
-		
-//		System.out.println("pv name:" + this.getName());
-		
-//		System.out.println("pv value from yamcs:" + this.getValue(getName()) );
-		yamcsValues.add(Integer.toString( values.get(0).getEngValue().getUint32Value()));
+		yamcsValues.add(Integer.toString(values.get(0).getEngValue().getUint32Value()));
 		VType value = null;
 		try {
 			value = ValueHelper.getInitialValue(yamcsValues, VInt.class);
@@ -225,11 +196,7 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-//		System.out.println("yamcs sub value:" + yamcsSubscription. );
-
 		this.notifyListenersOfValue(value);
-//		System.out.println("values:" + values);
 
 	}
 
