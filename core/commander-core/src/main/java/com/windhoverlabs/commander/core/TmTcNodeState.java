@@ -1,5 +1,5 @@
 package com.windhoverlabs.commander.core;
 
-public enum NodeState {
+public enum TmTcNodeState {
 ACTIVE, INACTIVE, UNAVAILABLE;
 }

@@ -9,10 +9,11 @@ import org.yamcs.protobuf.YamcsInstance;
  * @author lgomez
  *
  */
-public class YamcsNode implements Node {
-	private NodeState currentState;
+public class CMDR_YamcsInstance implements TmTcNode {
+	private TmTcNodeState currentState;
 	private String instanceName;
 	private YamcsInstance instance;
+	private ParameterSubscription sub;
 	public YamcsInstance getInstance() {
 		return instance;
 	}
@@ -25,13 +26,13 @@ public class YamcsNode implements Node {
 	private String processor;
 	private ParameterSubscription yamcsSubscription = null;
 
-	public YamcsNode(String newName) {
+	public CMDR_YamcsInstance(String newName) {
 		instanceName = newName;
-		currentState = NodeState.ACTIVE;
+		currentState = TmTcNodeState.ACTIVE;
 	}
 
-	public YamcsNode() {
-		currentState = NodeState.ACTIVE;
+	public CMDR_YamcsInstance() {
+		currentState = TmTcNodeState.ACTIVE;
 	}
 
 	public String getProcessor() {
@@ -49,23 +50,29 @@ public class YamcsNode implements Node {
 	@Override
 	public void activate() {
 		// TODO Implementation
-		currentState = NodeState.ACTIVE;
+		currentState = TmTcNodeState.ACTIVE;
 	}
 
 	@Override
 	public void deactivate() {
 		// TODO Implementation
-		currentState = NodeState.INACTIVE;
+		currentState = TmTcNodeState.INACTIVE;
 	}
 
 	@Override
-	public NodeState getState() {
+	public TmTcNodeState getState() {
 		// TODO Auto-generated method stub
 		return currentState;
 	}
+	
 
 	public ParameterSubscription getYamcsSubscription() {
 		return yamcsSubscription;
+	}
+	
+	public String getPv(String pvName) 
+	{
+		return "";
 	}
 
 }

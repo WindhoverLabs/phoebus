@@ -18,7 +18,7 @@ import org.phoebus.ui.docking.DockItem;
 import org.phoebus.ui.docking.DockPane;
 import org.w3c.dom.*;
 
-import com.windhoverlabs.commander.core.YamcsContext;
+import com.windhoverlabs.commander.core.YamcsServerContext;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -42,6 +42,8 @@ public class ConnectionsManagerInstance implements AppInstance {
 	private final AppDescriptor app;
 
 	private ConnectionsManagerController controller;
+	
+	private YamcsServerInstancesTree serverTree = new YamcsServerInstancesTree();
 
 	private DockItem tab = null;
 
@@ -49,12 +51,13 @@ public class ConnectionsManagerInstance implements AppInstance {
 		this.app = app;
 
 		Node content;
-		try {
-			content = loadGUI();
-		} catch (IOException ex) {
-			logger.log(Level.WARNING, "Cannot load UI", ex);
-			content = new Label("Cannot load UI");
-		}
+//		try {
+//			content = loadGUI();
+			content = serverTree.getTreeView();
+//		} catch (IOException ex) {
+//			logger.log(Level.WARNING, "Cannot load UI", ex);
+//			content = new Label("Cannot load UI");
+//		}
 
 		tab = new DockItem(this, content);
 		DockPane.getActiveDockPane().addTab(tab);

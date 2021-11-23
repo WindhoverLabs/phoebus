@@ -1,19 +1,14 @@
 package com.windhoverlabs.commander.applications.connections;
 
-import java.util.ArrayList;
-
 import org.phoebus.ui.javafx.ImageCache;
 
-import com.windhoverlabs.commander.core.NodeContext;
-import com.windhoverlabs.commander.core.YamcsConnection;
-import com.windhoverlabs.commander.core.YamcsContext;
-import com.windhoverlabs.commander.core.YamcsNode;
+import com.windhoverlabs.commander.core.YamcsServer;
+import com.windhoverlabs.commander.core.YamcsServerContext;
+import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
@@ -26,37 +21,25 @@ import javafx.scene.image.ImageView;
  */
 @SuppressWarnings("nls")
 public class ConnectionsManagerController {
-
 	@FXML
-	private TreeView<NodeContext> contextTree;
-
-	private NodeContext rootContext;
+	private TreeView<YamcsModelItemCell> contextTree;
 
 	@FXML
 	public void initialize() {
 		initCellValueFactories();
-//		contextTree.getRoot().getChildren()
-//		serverConnectionsTreeView.setPlaceholder(new Label("Right-click to add connections."));
-//		initCellValueFactories();
 
 	}
 
 	private void initCellValueFactories() {
-		YamcsContext newContext = new YamcsContext();
+		YamcsServerContext newContext = new YamcsServerContext();
 
-//		switch (newContext.getType()) {
-//			case YAMCS: {
-//				 newContext = new YamcsContext();
-//
-//			}
-//		}
-
-		TreeItem<YamcsContext> connectionTreeItem = new TreeItem<YamcsContext>(newContext);
+		YamcsModelItemCell newRootCell = new YamcsModelItemCell(newContext, true, "");
+		TreeItem<YamcsModelItemCell> connectionTreeItem = new TreeItem<YamcsModelItemCell>(newRootCell);
 
 		if (contextTree.getRoot() == null) {
-//			contextTree.setRoot(connectionTreeItem);
+			contextTree.setRoot(connectionTreeItem);
 		}
-		contextTree.setCellFactory(cell -> new ContextCellModel<YamcsContext>("YAMCS", true));
+		contextTree.setCellFactory(cell -> new YamcsServerItemTreeCell());
 
 	}
 
@@ -67,43 +50,39 @@ public class ConnectionsManagerController {
 	Image deactivateImage = ImageCache.getImage(ConnectionsManagerApp.class, "/icons/delete.png");
 
 	public void createContextMenu() {
-		System.out.println("1");
-		YamcsContext newContext = new YamcsContext();
-		TreeItem<NodeContext> connectionTreeItem = new TreeItem<NodeContext>(newContext);
-
-		if (contextTree.getRoot() == null) {
-			contextTree.setRoot(connectionTreeItem);
-		}
 
 		final ContextMenu contextMenu = new ContextMenu();
-		MenuItem addServerConnection = new MenuItem("Add Connection", new ImageView(addserverConnectionImmage));
+		MenuItem addServerConnection = new MenuItem("Add Server", new ImageView(addserverConnectionImmage));
 		addServerConnection.setOnAction(e -> {
 			NewConnectionDialog dialog = null;
 			dialog = new NewConnectionDialog();
-			YamcsConnection newConnection = dialog.showAndWait().orElse(null);
+			YamcsServer newServer = dialog.showAndWait().orElse(null);
 
-			if (newConnection == null)
+			if (newServer == null)
 				return;
 
-			YamcsContext newChildContext = new YamcsContext(newConnection);
+			YamcsServerContext newChildContext = new YamcsServerContext(newServer);
 
 			newChildContext.connect();
 
-			ArrayList<YamcsNode> newNodes = new ArrayList<YamcsNode>();
+			YamcsServerContext newContext = new YamcsServerContext();
 
-			newNodes.add(new YamcsNode("newNode"));
+			YamcsModelItemCell newCell = new YamcsModelItemCell(newContext, false,
+					newChildContext.getConnection().toString());
 
-			newChildContext.setNodes(newNodes);
-
-			TreeItem<NodeContext> childYamcsContextTreeItem = new TreeItem<NodeContext>(newChildContext);
-
-			System.out.println("Add Server Connection");
+			TreeItem<YamcsModelItemCell> childYamcsContextTreeItem = new TreeItem<YamcsModelItemCell>(newCell);
 
 			contextTree.getRoot().getChildren().add(childYamcsContextTreeItem);
 
-			for (YamcsNode node : newChildContext.getNodes()) {
+			for (CMDR_YamcsInstance node : newChildContext.getNodes()) {
+				YamcsModelItemCell newYamcsInstanceCell = new YamcsModelItemCell(newContext, false,
+						node.getInstanceName());
+
+				TreeItem<YamcsModelItemCell> newYamcsInstanceCellTreeItem = new TreeItem<YamcsModelItemCell>(
+						newYamcsInstanceCell);
+
 				contextTree.getRoot().getChildren().get(contextTree.getRoot().getChildren().size() - 1).getChildren()
-						.add(new TreeItem<NodeContext>(newChildContext));
+						.add(newYamcsInstanceCellTreeItem);
 			}
 
 		});
@@ -130,31 +109,31 @@ public class ConnectionsManagerController {
 			contextMenu.getItems().add(deactivateServerConnection);
 		}
 
-		else if (isSelectionNodeTreeItem()) {
-			MenuItem activateNodeMenuItem = new MenuItem("Activate Node", new ImageView(activateImage));
-			MenuItem deactivateNodeMenuItem = new MenuItem("Deactivate Node", new ImageView(deactivateImage));
-
-			activateNodeMenuItem.setOnAction(e -> {
-				contextTree.selectionModelProperty().getValue().getSelectedItems().forEach(item -> {
-					((YamcsContext) item.getValue()).getNodes().get(item.getParent().getChildren().indexOf(item))
-							.activate();
-				});
-				contextTree.refresh();
-
-			});
-
-			deactivateNodeMenuItem.setOnAction(e -> {// generateNodes(5, newChildContext);
-
-				contextTree.selectionModelProperty().getValue().getSelectedItems().forEach(item -> {
-					((YamcsContext) item.getValue()).getNodes().get(item.getParent().getChildren().indexOf(item))
-							.deactivate();
-				});
-				contextTree.refresh();
-			});
-
-			contextMenu.getItems().add(activateNodeMenuItem);
-			contextMenu.getItems().add(deactivateNodeMenuItem);
-		}
+//		else if (isSelectionNodeTreeItem()) {
+//			MenuItem activateNodeMenuItem = new MenuItem("Activate Node", new ImageView(activateImage));
+//			MenuItem deactivateNodeMenuItem = new MenuItem("Deactivate Node", new ImageView(deactivateImage));
+//
+//			activateNodeMenuItem.setOnAction(e -> {
+//				contextTree.selectionModelProperty().getValue().getSelectedItems().forEach(item -> {
+//					((YamcsServerContext) item.getValue()).getNodes().get(item.getParent().getChildren().indexOf(item))
+//							.activate();
+//				});
+//				contextTree.refresh();
+//
+//			});
+//
+//			deactivateNodeMenuItem.setOnAction(e -> {// generateNodes(5, newChildContext);
+//
+//				contextTree.selectionModelProperty().getValue().getSelectedItems().forEach(item -> {
+//					((YamcsServerContext) item.getValue()).getNodes().get(item.getParent().getChildren().indexOf(item))
+//							.deactivate();
+//				});
+//				contextTree.refresh();
+//			});
+//
+//			contextMenu.getItems().add(activateNodeMenuItem);
+//			contextMenu.getItems().add(deactivateNodeMenuItem);
+//		}
 
 		contextTree.setContextMenu(contextMenu);
 

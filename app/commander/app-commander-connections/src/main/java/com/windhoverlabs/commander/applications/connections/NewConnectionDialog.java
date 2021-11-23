@@ -4,8 +4,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.phoebus.ui.autocomplete.PVAutocompleteMenu;
-import com.windhoverlabs.commander.core.YamcsConnection;
-import com.windhoverlabs.commander.core.YamcsConnection.YamcsConnectionStatus;
+import com.windhoverlabs.commander.core.YamcsServer;
+import com.windhoverlabs.commander.core.YamcsServer.YamcsConnectionStatus;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -21,7 +21,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
-public class NewConnectionDialog extends Dialog<YamcsConnection> {
+public class NewConnectionDialog extends Dialog<YamcsServer> {
 	private final TextField serverUrl = new TextField();
 	private final TextField port = new TextField();
 	private final TextField user = new TextField();
@@ -69,10 +69,10 @@ public class NewConnectionDialog extends Dialog<YamcsConnection> {
 		Platform.runLater(() -> serverUrl.requestFocus());
 
 		setResultConverter(button -> {
-			YamcsConnection newConnection = null;
+			YamcsServer newConnection = null;
 			if (button.getButtonData() == ButtonData.OK_DONE) {
 				try {
-					newConnection = new YamcsConnection(serverUrl.getText(), Integer.parseInt(port.getText()),
+					newConnection = new YamcsServer(serverUrl.getText(), Integer.parseInt(port.getText()),
 							user.getText());
 					newConnection.setStatus(YamcsConnectionStatus.Connected);
 				} catch (NumberFormatException e) {

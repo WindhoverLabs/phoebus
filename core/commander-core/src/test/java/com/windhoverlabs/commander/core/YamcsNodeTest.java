@@ -8,19 +8,19 @@ public class YamcsNodeTest {
 
 	@Test
 	public void testActiveInstance() {
-		YamcsNode newInstance = new YamcsNode("yamcs-cfs");
+		CMDR_YamcsInstance newInstance = new CMDR_YamcsInstance("yamcs-cfs");
 		newInstance.activate();
 		
-		assertThat(newInstance.getState(), equalTo(NodeState.ACTIVE));
+		assertThat(newInstance.getState(), equalTo(TmTcNodeState.ACTIVE));
 		assertThat(newInstance.getInstanceName(), equalTo("yamcs-cfs"));
 	}
 	
 	@Test
 	public void testInactiveInstance() {
-		YamcsNode newInstance = new YamcsNode("yamcs-cfs");
+		CMDR_YamcsInstance newInstance = new CMDR_YamcsInstance("yamcs-cfs");
 		newInstance.deactivate();
 		
-		assertThat(newInstance.getState(), equalTo(NodeState.INACTIVE));
+		assertThat(newInstance.getState(), equalTo(TmTcNodeState.INACTIVE));
 		assertThat(newInstance.getInstanceName(), equalTo("yamcs-cfs"));
 	}
 

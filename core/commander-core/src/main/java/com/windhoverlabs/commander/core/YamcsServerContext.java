@@ -14,23 +14,23 @@ import org.yamcs.protobuf.YamcsInstance;
  * @author lgomez
  *
  */
-public class YamcsContext extends NodeContext<YamcsNode> {
+public class YamcsServerContext extends NodeContext<CMDR_YamcsInstance> {
 	private YamcsClient yamcsClient;
-	private YamcsConnection connection;
+	private YamcsServer connection;
 	
 	private NodeType type = NodeType.YAMCS;
 
-	public YamcsConnection getConnection() {
+	public YamcsServer getConnection() {
 		return connection;
 	}
 
-	private HashMap<YamcsNode, MissionDatabase> instanceDBMap;
+	private HashMap<CMDR_YamcsInstance, MissionDatabase> instanceDBMap;
 
-	public void setNodes(ArrayList<YamcsNode> nodes) {
+	public void setNodes(ArrayList<CMDR_YamcsInstance> nodes) {
 		this.nodes = nodes;
 	}
 
-	public List<YamcsNode> getNodes() {
+	public List<CMDR_YamcsInstance> getNodes() {
 		return nodes;
 	}
 
@@ -42,21 +42,21 @@ public class YamcsContext extends NodeContext<YamcsNode> {
 		return connection.getPort();
 	}
 
-	public YamcsContext(String newUrl, int newPort, String newUser) {
-		connection = new YamcsConnection(newUrl, newPort, newUser);
-		nodes = new ArrayList<YamcsNode>();
+	public YamcsServerContext(String newUrl, int newPort, String newUser) {
+		connection = new YamcsServer(newUrl, newPort, newUser);
+		nodes = new ArrayList<CMDR_YamcsInstance>();
 	}
 
-	public YamcsContext(YamcsConnection newConnection) {
+	public YamcsServerContext(YamcsServer newConnection) {
 		connection = newConnection;
-		nodes = new ArrayList<YamcsNode>();
+		nodes = new ArrayList<CMDR_YamcsInstance>();
 	}
 
-	public YamcsContext() {
+	public YamcsServerContext() {
 	}
 
 	public void addNode(String name) {
-		nodes.add(new YamcsNode(name));
+		nodes.add(new CMDR_YamcsInstance(name));
 	}
 
 	@Override
@@ -64,7 +64,6 @@ public class YamcsContext extends NodeContext<YamcsNode> {
 		if (yamcsClient != null) {
 			yamcsClient.close();
 		}
-		System.out.println("yamcs connect1");
 		yamcsClient = YamcsClient.newBuilder(connection.getUrl(), connection.getPort()).build();
 
 		yamcsClient.listInstances().whenComplete((response, exc) -> {
@@ -73,26 +72,20 @@ public class YamcsContext extends NodeContext<YamcsNode> {
 				List<ProcessorInfo> processors = new ArrayList<>();
 
 				for (YamcsInstance instance : response) {
-					YamcsNode newNode = new YamcsNode();
+					CMDR_YamcsInstance newNode = new CMDR_YamcsInstance();
 					newNode.setInstance(instance);
 					nodes.add(newNode);
-					System.out.println("instance name:" + instance);
 				}
 			}
 		});
 
 		try {
-			System.out.println("yamcs connect3");
-
 			yamcsClient.connectWebSocket();
-			System.out.println("yamcs connect4");
 
 		} catch (ClientException e) {
 			// TODO Auto-generated catch block
-			System.out.println("yamcs connect5");
 			e.printStackTrace();
 		}
-		System.out.println("yamcs connect6");
 
 	}
 

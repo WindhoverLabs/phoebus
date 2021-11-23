@@ -9,7 +9,7 @@ import java.util.List;
  * @author lgomez
  *
  */
-public abstract class NodeContext<T extends Node> {
+public abstract class NodeContext<T extends TmTcNode> {
 	public enum NodeType {
 		YAMCS
 	};
