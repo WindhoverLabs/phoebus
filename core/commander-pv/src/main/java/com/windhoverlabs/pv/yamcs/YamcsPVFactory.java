@@ -57,6 +57,7 @@ import java.util.stream.Collectors;
 public class YamcsPVFactory implements PVFactory {
 	final public static String TYPE = "yamcs";
 
+	//TODO:Need one of these per each server.
 	private YamcsClient yamcsClient = null;
 
 	private ParameterSubscription yamcsSubscription = null;
@@ -67,11 +68,7 @@ public class YamcsPVFactory implements PVFactory {
 
 	private Map<NamedObjectId, Set<PV>> pvsById = new LinkedHashMap<>();
 
-	private static final Logger log = Logger.getLogger(YamcsPVFactory.class.getName());
-
-	private YamcsSubscriptionService subscriptionService;
-	
-	private YamcsPlugin yamcsPlugin = YamcsPlugin.getPlugin();
+	private static final Logger log = Logger.getLogger(YamcsPVFactory.class.getName());	
 
 	private ArrayList<NamedObjectId> ids = new ArrayList<NamedObjectId>();
 
@@ -79,9 +76,6 @@ public class YamcsPVFactory implements PVFactory {
 	private static final Map<String, YamcsPV> yamcs_pvs = new HashMap<>();
 
 	public YamcsPVFactory() throws ClientException {
-		System.out.println("YAMCS Init");
-		
-		yamcsPlugin.init("192.168.2.96", 8090);
 		
 		yamcsClient = YamcsPlugin.getYamcsClient();
 		
@@ -144,7 +138,7 @@ public class YamcsPVFactory implements PVFactory {
 	/**
 	 * Async adds a Yamcs PV for receiving updates.
 	 */
-	public void register(PV pv) {
+	public void register(PV pv, String instance) {
 		System.out.println("register pv:" + pv);
 		NamedObjectId id = YamcsSubscriptionService.identityOf(YamcsSubscriptionService.getYamcsPvName(pv.getName()));
 		executor.execute(() -> {
@@ -161,7 +155,7 @@ public class YamcsPVFactory implements PVFactory {
 		try {
 			yamcsSubscription.sendMessage(SubscribeParametersRequest.newBuilder().setInstance("yamcs-cfs")
 					.setProcessor("realtime").setSendFromCache(true).setAbortOnInvalid(false)
-					.setUpdateOnExpiration(true).addId(ids.get(0)).setAction(Action.ADD).build());
+					.setUpdateOnExpiration(true).addAllId(ids).setAction(Action.ADD).build());
 		} catch (Exception e) {
 			System.out.println("e:" + e);
 		}
@@ -190,34 +184,27 @@ public class YamcsPVFactory implements PVFactory {
 
 	@Override
 	public PV createPV(final String name, final String base_name) throws Exception {
-//		final String[] ntv = ValueHelper.parseName(base_name);
-
-		// Actual name: loc://the_pv without <type> or (initial value)
-//		final String actual_name = YamcsPVFactory.TYPE + PVPool.SEPARATOR + ntv[0];
 
 		String actual_name = name;
 
-		// Info for initial value, null if nothing provided
-//		final List<String> initial_value = ValueHelper.splitInitialItems(ntv[2]);
-
-		// Determine type from initial value or use given type
-//		final Class<? extends VType> type = ntv[1] == null ? determineValueType(initial_value) : parseType(ntv[1]);
 		final Class<? extends VType> type = parseType("");
 
 		YamcsPV pv = new YamcsPV(actual_name, type, yamcsSubscription);
+		
+		String instanceName = "yamcs-cfs";
 
 		yamcsSubscription.addListener(pv);
 
-		register(pv);
+		register(pv, instanceName);
 		// TODO Use ConcurrentHashMap, computeIfAbsent
-//		synchronized (yamcs_pvs) {
-//			pv = yamcs_pvs.get(actual_name);
-//			if (pv == null) {
-//				pv = new YamcsPV(actual_name, type);
-//				yamcs_pvs.put(actual_name, pv);
-//			} else
-//				pv.checkInitializer(type, null);
-//		}
+		synchronized (yamcs_pvs) {
+			pv = yamcs_pvs.get(actual_name);
+			if (pv == null) {
+				pv = new YamcsPV(actual_name, type);
+				yamcs_pvs.put(actual_name, pv);
+			} else
+				pv.checkInitializer(type, null);
+		}
 		return pv;
 	}
 
@@ -281,6 +268,11 @@ public class YamcsPVFactory implements PVFactory {
 		synchronized (yamcs_pvs) {
 			return yamcs_pvs.values();
 		}
+	}
+	
+	private String generateExamplePV() 
+	{
+		return "Server_A:yamcs-cfs://cfs/CPD/amc/AMC_HkTlm_t.usCmdCnt";
 	}
 
 }

@@ -33,26 +33,11 @@ import org.yamcs.protobuf.SubscribeParametersRequest;
 import org.yamcs.protobuf.Yamcs.NamedObjectId;
 
 /**
- * Local Process Variable
- *
- * <p>
+ * Yamcs Process Variable
  * Syntax:
- * <ul>
- * <li>loc://name(3.14), same as loc://name&lt;VDouble>(3.14)
- * <li>loc://name("Fred"), same as loc://name&lt;VString>("Fred")
- * <li>loc://name(1, 2, 3), same as loc://name&lt;VDoubleArray>(1, 2, 3)
- * <li>loc://name&lt;VDoubleArray>(1), forces array type
- * <li>loc://name("a", "b", "c"), same as loc://name&lt;VStringArray>("a", "b",
- * "c")
- * <li>loc://name&lt;VLong>(1e10), forces long integer data type
- * <li>loc://name&lt;VEnum>(0, "a", "b", "c"), declares enumerated type with
- * initial value and labels
- * <li>loc://name&lt;VTable>, declares PV as table (initially empty)
- * <li>loc://name&lt;VTable>("X", "Y"), declares PV as table with given column
- * names (initially empty)
- * </ul>
+ * "ServerName:instance-name://path/to/pv/item"
  * 
- * @author Kay Kasemir, based on similar code in org.csstudio.utility.pv
+ * @author lgomez, based on similar code in org.csstudio.utility.pv
  */
 @SuppressWarnings("nls")
 public class YamcsPV extends PV implements ParameterSubscription.Listener {
@@ -108,14 +93,8 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 			ParameterSubscription newYamcsSubscription) throws Exception {
 		super(actual_name);
 		this.type = type;
-//        this.initial_value = initial_value;
 
 		initial_value = new ArrayList<String>();
-
-		// Set initial value
-//        notifyListenersOfValue(ValueHelper.getInitialValue(initial_value, type));
-
-//        notifyListenersOfValue(new );
 
 		dataSource = new ParameterDatasource();
 

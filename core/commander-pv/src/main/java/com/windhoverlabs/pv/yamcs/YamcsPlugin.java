@@ -45,9 +45,6 @@ import org.yamcs.protobuf.UserInfo;
  *
  */
 public class YamcsPlugin {
-
-	public static final String PLUGIN_ID = "org.yamcs.studio.core";
-	public static final String CMD_CONNECT = "org.yamcs.studio.core.ui.connect";
 	private static final Logger log = Logger.getLogger(YamcsPlugin.class.getName());
 	private static final AtomicInteger COMMAND_SEQUENCE = new AtomicInteger(1);
 
@@ -234,24 +231,16 @@ public class YamcsPlugin {
 	 * @param tzOffset whether timezone offset is added to the output string.
 	 */
 	public String formatInstant(Instant instant, boolean tzOffset) {
-//		if (format == null) {
-//			IPreferenceStore store = getPreferenceStore();
-//			String pattern = store.getString(DateFormatPreferencePage.PREF_DATEFORMAT);
-//			setDateFormat(pattern);
-//		}
-//		ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, YamcsPlugin.getZoneId());
-//		Calendar cal = GregorianCalendar.from(zdt);
-//		cal.setTimeZone(YamcsPlugin.getTimeZone());
-//		if (tzOffset) {
-//			tzFormat.setTimeZone(cal.getTimeZone());
-//			return tzFormat.format(cal.getTime());
-//		} else {
-//			format.setTimeZone(cal.getTimeZone());
-//			return format.format(cal.getTime());
-//		}
-
-		// dead code
-		return null;
+		ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, YamcsPlugin.getZoneId());
+		Calendar cal = GregorianCalendar.from(zdt);
+		cal.setTimeZone(YamcsPlugin.getTimeZone());
+		if (tzOffset) {
+			tzFormat.setTimeZone(cal.getTimeZone());
+			return tzFormat.format(cal.getTime());
+		} else {
+			format.setTimeZone(cal.getTimeZone());
+			return format.format(cal.getTime());
+		}
 	}
 
 	public static YamcsClient getYamcsClient() {
@@ -338,15 +327,6 @@ public class YamcsPlugin {
 		return ZoneId.systemDefault();
 	}
 
-	public static String getProductString() {
-//		String productName = Platform.getProduct().getName();
-//		Version productVersion = Platform.getProduct().getDefiningBundle().getVersion();
-//		return productName + " v" + productVersion;
-
-		// dead code
-		return null;
-	}
-
 	public static int nextCommandSequenceNumber() {
 		return COMMAND_SEQUENCE.incrementAndGet();
 	}
@@ -355,42 +335,6 @@ public class YamcsPlugin {
 		return plugin.listeners.iterator();
 	}
 
-	public static void updateEntities(RemoteEntityHolder holder) {
-//		if (plugin.timeSubscription != null) {
-//			plugin.timeSubscription.cancel(true);
-//		}
-//		if (plugin.clearanceSubscription != null) {
-//			plugin.clearanceSubscription.cancel(true);
-//		}
-//		if (plugin.processorSubscription != null) {
-//			plugin.processorSubscription.cancel(true);
-//		}
-//
-//		// First update state
-//		plugin.yamcsClient = holder.yamcsClient;
-//		plugin.serverInfo = holder.serverInfo;
-//		plugin.userInfo = holder.userInfo;
-//		plugin.missionDatabase = holder.missionDatabase;
-//		plugin.instance = holder.instance;
-//		plugin.processor = holder.processor;
-//
-//		// Then see if anything needs notifying
-//		if (plugin.instance != null) {
-//			plugin.listeners.forEach(l -> l.changeInstance(plugin.instance));
-//		}
-//		if (plugin.processor != null) {
-//			plugin.listeners.forEach(l -> l.changeProcessor(plugin.instance, plugin.processor.getName()));
-//			plugin.listeners.forEach(l -> l.changeProcessorInfo(plugin.processor));
-//		}
-//
-//		setupGlobalTimeSubscription();
-//		setupGlobalClearanceSubscription();
-//		setupGlobalProcessorSubscription();
-//
-//		plugin.yamcsClient.addConnectionListener(DISCONNECT_NOTIFIER);
-
-		// dead code
-	}
 
 	private static void setupGlobalTimeSubscription() {
 		if (plugin.instance != null) {
@@ -405,30 +349,6 @@ public class YamcsPlugin {
 			}
 //			plugin.timeSubscription.sendMessage(requestb.build());
 		}
-	}
-
-	private static void setupGlobalClearanceSubscription() {
-//		plugin.clearanceSubscription = getYamcsClient().createClearanceSubscription();
-//		plugin.clearanceSubscription.addMessageListener(info -> {
-//			boolean enabled = plugin.processor != null && plugin.processor.getCheckCommandClearance();
-//			if (info.hasLevel()) {
-//				plugin.listeners.forEach(l -> l.updateClearance(enabled, info.getLevel()));
-//			} else {
-//				plugin.listeners.forEach(l -> l.updateClearance(enabled, null));
-//			}
-//		});
-//		plugin.clearanceSubscription.sendMessage(Empty.getDefaultInstance());
-	}
-
-	private static void setupGlobalProcessorSubscription() {
-//		if (plugin.processor != null) {
-//			plugin.processorSubscription = getYamcsClient().createProcessorSubscription();
-//			plugin.processorSubscription.addMessageListener(info -> {
-//				plugin.listeners.forEach(l -> l.changeProcessorInfo(info));
-//			});
-//			plugin.processorSubscription.sendMessage(SubscribeProcessorsRequest.newBuilder()
-//					.setInstance(plugin.instance).setProcessor(plugin.processor.getName()).build());
-//		}
 	}
 
 	public static void disconnect(boolean lost) {
