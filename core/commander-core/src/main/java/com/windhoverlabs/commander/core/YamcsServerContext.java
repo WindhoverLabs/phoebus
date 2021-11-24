@@ -10,6 +10,9 @@ import org.yamcs.client.YamcsClient;
 import org.yamcs.protobuf.ProcessorInfo;
 import org.yamcs.protobuf.YamcsInstance;
 
+import com.windhoverlabs.pv.yamcs.YamcsPV;
+import com.windhoverlabs.pv.yamcs.YamcsSubscriptionService;
+
 /**
  * 
  * @author lgomez
@@ -20,6 +23,10 @@ public class YamcsServerContext extends NodeContext<CMDR_YamcsInstance> {
 	private YamcsServer connection;
 	private ParameterSubscription yamcsParameterSubscription = null;
 	private String name;
+	
+	private YamcsSubscriptionService paramSubscriptionService = null;
+	
+	private boolean isConnected  = false;
 
 	public String getName() {
 		return name;
@@ -86,6 +93,8 @@ public class YamcsServerContext extends NodeContext<CMDR_YamcsInstance> {
 					newNode.setInstance(instance);
 					nodes.add(newNode);
 				}
+				isConnected = true;
+				paramSubscriptionService = new YamcsSubscriptionService(yamcsClient.createParameterSubscription());
 			}
 		});
 
@@ -97,6 +106,10 @@ public class YamcsServerContext extends NodeContext<CMDR_YamcsInstance> {
 			e.printStackTrace();
 		}
 
+	}
+
+	public boolean isConnected() {
+		return isConnected;
 	}
 
 	@Override
@@ -120,27 +133,23 @@ public class YamcsServerContext extends NodeContext<CMDR_YamcsInstance> {
 		}
 		return yamcsParameterSubscription;
 	}
-	
-	//TODO:Eventually this function will be moved outside of this class.
+
+	// TODO:Eventually this function will be moved outside of this class.
 	/**
-	 * 
-	 * @param pathToInstance The syntax for this string should be something like "Server_A:yamcs-cfs"
+	 * Traverse through allServers and find the instance object that matches pathToInstance
+	 * @param pathToInstance The syntax for this string should be something like
+	 *                       "Server_A:yamcs-cfs"
 	 * @param allServers
 	 * @return
 	 */
-	public static CMDR_YamcsInstance getInstanceFromPath(String pathToInstance, List<YamcsServerContext> allServers) 
-	{
+	public static CMDR_YamcsInstance getInstanceFromPath(String pathToInstance, List<YamcsServerContext> allServers) {
 		CMDR_YamcsInstance outInstance = null;
 		String serverName = pathToInstance.split(":")[0];
-		String instanceName = pathToInstance.split(":")[1]; 
-		for(YamcsServerContext server: allServers) 
-		{
-			if(server.getName().equals(serverName)) 
-			{
-				for(CMDR_YamcsInstance instance: server.getNodes()) 
-				{
-					if(instance.getInstanceName().equals(instanceName)) 
-					{
+		String instanceName = pathToInstance.split(":")[1];
+		for (YamcsServerContext server : allServers) {
+			if (server.getName().equals(serverName)) {
+				for (CMDR_YamcsInstance instance : server.getNodes()) {
+					if (instance.getInstanceName().equals(instanceName)) {
 						outInstance = instance;
 					}
 				}
@@ -149,6 +158,29 @@ public class YamcsServerContext extends NodeContext<CMDR_YamcsInstance> {
 		return outInstance;
 	}
 	
+	// TODO:Eventually this function will be moved outside of this class.
+	/**
+	 * Traverse through allServers and find the instance object that matches pathToInstance
+	 * @param pathToInstance The syntax for this string should be something like
+	 *                       "Server_A:yamcs-cfs"
+	 * @param allServers
+	 * @return
+	 */
+	public static YamcsServerContext getServerContextFromPath(String pathToInstance, List<YamcsServerContext> allServers) {
+		YamcsServerContext outServerContext = null;
+		String serverName = pathToInstance.split(":")[0];
+		for (YamcsServerContext server : allServers) {
+			if (server.getName().equals(serverName)) {
+				outServerContext = server;
+			}
+		}
+		return outServerContext;
+	}
+	
+	public void subscribePV(YamcsPV newPV) 
+	{
+		System.out.println("register PV-->" + newPV);
+	}
 
 //	@Override
 //	public void disconnect() {

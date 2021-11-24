@@ -15,7 +15,9 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.yamcs.client.ParameterSubscription;
+import org.yamcs.client.base.AbstractSubscription;
 import org.yamcs.protobuf.Pvalue.ParameterValue;
+import org.yamcs.protobuf.SubscribeParametersData;
 import org.yamcs.protobuf.SubscribeParametersRequest;
 import org.yamcs.protobuf.SubscribeParametersRequest.Action;
 import org.yamcs.protobuf.Yamcs.NamedObjectId;
@@ -38,7 +40,7 @@ import org.phoebus.pv.loc.ValueHelper;
  * Keeps track of {@link IPV} registration state and takes care of establishing
  * or re-establishing a bundled parameter subscription against Yamcs.
  */
-public class YamcsSubscriptionService implements YamcsAware, ParameterSubscription.Listener, CommanderPlugin {
+public class YamcsSubscriptionService implements YamcsAware, ParameterSubscription.Listener {
 
 	private static final Logger log = Logger.getLogger(YamcsSubscriptionService.class.getName());
 
@@ -49,6 +51,10 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
 	private Set<ParameterValueListener> parameterValueListeners = new HashSet<>();
+
+	private ParameterSubscription yamcsSubscription = null;
+
+	private ArrayList<NamedObjectId> ids = new ArrayList<NamedObjectId>();
 
 	public YamcsSubscriptionService(ParameterSubscription newSubscriprion) {
 
@@ -142,31 +148,6 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 	@Override
 	public void changeProcessor(String instance, String processor) {
 		executor.execute(() -> {
-//            if (subscription != null) {
-//                subscription.cancel(true);
-//                subscription = null;
-//                pvsById.forEach((id, pvs) -> {
-//                    pvs.forEach(pv -> {
-//                        pv.notifyConnectionChange();
-//                        pv.notifyValueChange();
-//                        pv.notifyWritePermissionChange();
-//                    });
-//                });
-//            }
-//
-//            if (processor != null) {
-//                subscription = YamcsPlugin.getYamcsClient().createParameterSubscription();
-//                subscription.addListener(this);
-//
-//                // Reset connection and value state
-//                pvsById.forEach((id, pvs) -> {
-//                    pvs.forEach(pv -> {
-//                        pv.notifyConnectionChange();
-//                        pv.notifyValueChange();
-//                        pv.notifyWritePermissionChange();
-//                    });
-//                });
-
 			// Ready to receive some data
 			Set<NamedObjectId> ids = getRequestedIdentifiers();
 			log.fine(String.format("Subscribing to %s [%s/%s]", ids, instance, processor));
@@ -175,6 +156,28 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 					.addAllId(ids).build());
 		});
 
+	}
+	
+	/**
+	 * Async adds a Yamcs PV for receiving updates.
+	 */
+	public void register(YamcsPV pv, String instance) {
+		NamedObjectId id = YamcsSubscriptionService.identityOf(YamcsSubscriptionService.getYamcsPvName(pv.getName()));
+		executor.execute(() -> {
+			Set<YamcsPV> pvs = pvsById.computeIfAbsent(id, x -> new HashSet<>());
+			pvs.add(pv);
+			subscriptionDirty.set(true);
+		});
+
+		ids.add(id);
+
+		try {
+			yamcsSubscription.sendMessage(SubscribeParametersRequest.newBuilder().setInstance(instance)
+					.setProcessor("realtime").setSendFromCache(true).setAbortOnInvalid(false)
+					.setUpdateOnExpiration(true).addId(id).setAction(Action.ADD).build());
+		} catch (Exception e) {
+			System.out.println("e:" + e);
+		}
 	}
 
 	/**
@@ -190,23 +193,22 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
 	}
 
-//    /**
-//     * Async removes a Yamcs PV from receiving updates.
-//     */
-//    public void unregister(PV pv) {
-//        NamedObjectId id = identityOf(pv.getName());
-//        executor.execute(() -> {
-//            Set<PV> pvs = pvsById.get(id);
-//            if (pvs != null) {
-//                boolean removed = pvs.remove(pv);
-//                if (removed) {
-//                    subscriptionDirty.set(true);
-//                }
-//            }
-//        });
-//    }
+    /**
+     * Async removes a Yamcs PV from receiving updates.
+     */
+    public void unregister(PV pv) {
+        NamedObjectId id = identityOf(pv.getName());
+        executor.execute(() -> {
+            Set<YamcsPV> pvs = pvsById.get(id);
+            if (pvs != null) {
+                boolean removed = pvs.remove(pv);
+                if (removed) {
+                    subscriptionDirty.set(true);
+                }
+            }
+        });
+    }
 
-	@Override
 	public void destroy() {
 		YamcsPlugin.removeListener(this);
 		executor.shutdown();
@@ -357,9 +359,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
 		return value;
 	}
-	
-	public void init() {}
-//	public void destroy() {}
+
 
 	@Override
 	public void onData(List<ParameterValue> values) {
