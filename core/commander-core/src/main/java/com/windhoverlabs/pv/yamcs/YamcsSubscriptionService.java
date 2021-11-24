@@ -367,7 +367,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
 		for (ParameterValue p : values) {
 			try {
-				pvsById.get(p).iterator().next().updateValue(getVType(p));
+				pvsById.get(p.getId()).iterator().next().updateValue(getVType(p));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
