@@ -59,7 +59,6 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 		this.initial_value = initial_value;
 
 		notifyListenersOfPermissions(true);
-
 	}
 
 	protected YamcsPV(final String actual_name, final Class<? extends VType> type) throws Exception {
@@ -95,7 +94,6 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 	@Override
 	protected void close() {
 		super.close();
-//		YamcsPVFactory.releasePV(this);
 	}
 
 	@Override
@@ -115,7 +113,6 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 
 	public void updateValue() throws Exception {
 		ArrayList<String> values = new ArrayList<String>();
-
 		VType value = ValueHelper.getInitialValue(values, VInt.class);
 
 		this.notifyListenersOfValue(value);
