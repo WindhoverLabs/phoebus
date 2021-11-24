@@ -1,5 +1,6 @@
 package com.windhoverlabs.commander.applications.connections;
 
+import javafx.collections.FXCollections;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
@@ -8,7 +9,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.phoebus.framework.nls.NLS;
 import org.phoebus.framework.persistence.Memento;
 import org.phoebus.framework.persistence.XMLUtil;
@@ -16,10 +16,10 @@ import org.phoebus.framework.spi.AppDescriptor;
 import org.phoebus.framework.spi.AppInstance;
 import org.phoebus.ui.docking.DockItem;
 import org.phoebus.ui.docking.DockPane;
-import org.w3c.dom.*;
 
 import com.windhoverlabs.commander.core.YamcsServerContext;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -43,7 +43,7 @@ public class ConnectionsManagerInstance implements AppInstance {
 
 	private ConnectionsManagerController controller;
 	
-	private YamcsServerInstancesTree serverTree = new YamcsServerInstancesTree();
+	private Tree serverTree = new Tree(restoreServers());
 
 	private DockItem tab = null;
 
@@ -104,4 +104,20 @@ public class ConnectionsManagerInstance implements AppInstance {
 	public void raise() {
 		tab.select();
 	}
+
+    private ObservableList<YamcsServer> restoreServers() {
+//        YamcsServer server1 = new YamcsServer("Server1");
+//        YamcsServer server2 = new YamcsServer("Server2");
+//
+//        YamcsInstance instance1 = new YamcsInstance("instance1");
+//        YamcsInstance instance2 = new YamcsInstance("instance2");
+//
+//        server1.getItems().add(instance1);
+//        server2.getItems().add(instance2);
+//
+//        return FXCollections.observableArrayList(server1, server2, instance1, instance2);
+
+        return FXCollections.observableArrayList();
+
+    }
 }
