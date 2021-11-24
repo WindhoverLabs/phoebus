@@ -94,7 +94,7 @@ public class YamcsServerContext extends NodeContext<OLD_CMDR_YamcsInstance> {
 					nodes.add(newNode);
 				}
 				isConnected = true;
-				paramSubscriptionService = new YamcsSubscriptionService(yamcsClient.createParameterSubscription());
+//				paramSubscriptionService = new YamcsSubscriptionService(yamcsClient.createParameterSubscription());
 			}
 		});
 

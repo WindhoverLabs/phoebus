@@ -1,10 +1,11 @@
-package com.windhoverlabs.commander.applications.connections;
+package com.windhoverlabs.commander.core;
 
 import org.yamcs.client.ClientException;
 import org.yamcs.client.YamcsClient;
 import org.yamcs.protobuf.YamcsInstance;
 
 import com.windhoverlabs.commander.core.YamcsServerConnection;
+import com.windhoverlabs.pv.yamcs.YamcsPV;
 import com.windhoverlabs.pv.yamcs.YamcsSubscriptionService;
 
 public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
@@ -12,6 +13,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 	private YamcsClient yamcsClient;
 	private YamcsServerConnection connection;
 	private boolean isConnected;
+
 	public boolean isConnected() {
 		return isConnected;
 	}
@@ -45,10 +47,10 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 				for (YamcsInstance instance : response) {
 					createAndAddChild(instance.getName());
 				}
-				isConnected = true;
-				paramSubscriptionService = new YamcsSubscriptionService(yamcsClient.createParameterSubscription());
 			}
 		});
+		
+		paramSubscriptionService = new YamcsSubscriptionService(yamcsClient.createParameterSubscription(), this.getName());
 
 		try {
 			yamcsClient.connectWebSocket();
@@ -58,6 +60,13 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 			e.printStackTrace();
 		}
 
+		isConnected = true;
 	}
 
+	public void subscribePV(YamcsPV pv, String instanceName) {
+		System.out.println("subscribePV pv:" + pv);
+		System.out.println("**********paramSubscriptionService:****************" + paramSubscriptionService);
+		paramSubscriptionService.register(pv, instanceName);
+		System.out.println("subscribe to:" + pv.getName() + "for server " + getName());
+	}
 }

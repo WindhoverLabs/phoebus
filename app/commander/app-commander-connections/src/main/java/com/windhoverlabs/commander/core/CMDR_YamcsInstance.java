@@ -1,4 +1,6 @@
-package com.windhoverlabs.commander.applications.connections;
+package com.windhoverlabs.commander.core;
+
+import com.windhoverlabs.pv.yamcs.YamcsPV;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,5 +26,4 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     public String getObjectType() {
     	return OBJECT_TYPE;
     }
-
 }

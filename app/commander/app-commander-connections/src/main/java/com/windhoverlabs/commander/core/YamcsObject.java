@@ -1,4 +1,4 @@
-package com.windhoverlabs.commander.applications.connections;
+package com.windhoverlabs.commander.core;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

@@ -28,13 +28,16 @@ import org.epics.vtype.VStringArray;
 import org.epics.vtype.VType;
 import org.phoebus.pv.PV;
 import org.phoebus.pv.PVFactory;
+import org.phoebus.pv.loc.LocalPV;
 import org.yamcs.client.ClientException;
 import org.yamcs.client.ParameterSubscription;
 import org.yamcs.client.YamcsClient;
 import org.yamcs.protobuf.SubscribeParametersRequest;
 import org.yamcs.protobuf.YamcsInstance;
 
+import com.windhoverlabs.commander.applications.connections.ConnectionsManagerInstance;
 import com.windhoverlabs.commander.core.OLD_CMDR_YamcsInstance;
+import com.windhoverlabs.commander.core.YamcsServer;
 import com.windhoverlabs.commander.core.YamcsServerContext;
 
 import org.yamcs.protobuf.Yamcs.NamedObjectId;
@@ -52,85 +55,45 @@ import java.util.stream.Collectors;
 public class YamcsPVFactory implements PVFactory {
 	final public static String TYPE = "yamcs";
 
-	// TODO:Need one of these per each server.
-	private YamcsClient yamcsClient = null;
-	private ParameterSubscription yamcsSubscription = null;
-	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-	private AtomicBoolean subscriptionDirty = new AtomicBoolean(false);
 	private Map<NamedObjectId, Set<PV>> pvsById = new LinkedHashMap<>();
 	private static final Logger log = Logger.getLogger(YamcsPVFactory.class.getName());
-	private ArrayList<NamedObjectId> ids = new ArrayList<NamedObjectId>();
-	
-	List<YamcsServerContext> allServers = new ArrayList<YamcsServerContext>();	
+
+	List<YamcsServer> allServers = new ArrayList<YamcsServer>();
 
 	/** Map of local PVs */
 	private static final Map<String, YamcsPV> yamcs_pvs = new HashMap<>();
 
 	public YamcsPVFactory() throws ClientException {
-		YamcsServerContext serverA = new YamcsServerContext("192.168.2.96", 8091, "");
-		serverA.setName("ServerA");
-		
-		serverA.connect();
-		
-		while(!serverA.isConnected());
-		allServers.add(serverA);		
-		
-//		yamcsClient = YamcsPlugin.getYamcsClient();
-//
-////		if (yamcsClient != null) {
-////			yamcsSubscription = yamcsClient.createParameterSubscription();
-////		}
-////
-////		yamcsClient.listInstances().whenComplete((response, exc) -> {
-////			if (exc == null) {
-////				for (YamcsInstance instance : response) {
-////					System.out.println("instance name:" + instance);
-////				}
-////			}
-////		});
-////
-////		// Periodically check if the subscription needs a refresh
-////		// (PVs send individual events, so this bundles them)
-////		executor.scheduleWithFixedDelay(() -> {
-////			if (subscriptionDirty.getAndSet(false) && yamcsSubscription != null) {
-////				Set<NamedObjectId> ids = getRequestedIdentifiers();
-////				log.fine(String.format("Modifying subscription to %s", ids));
-//////				yamcsSubscription.sendMessage(
-//////						SubscribeParametersRequest.newBuilder().setAction(Action.REPLACE).setSendFromCache(true)
-//////								.setAbortOnInvalid(false).setUpdateOnExpiration(true).addAllId(ids).build());
-////
-////			}
-////
-////		}, 500, 500, TimeUnit.MILLISECONDS);
 	}
 
 	/**
 	 * Async adds a Yamcs PV for receiving updates.
+	 * 
+	 * @return TODO
 	 */
-	public void register(PV pv) {
-		
-		String instancePath = "";
-		
-		YamcsServerContext pvInstance = YamcsServerContext.getServerContextFromPath(instancePath, allServers);
-		
-		pvInstance.subscribePV((YamcsPV) pv);
-		
-		NamedObjectId id = YamcsSubscriptionService.identityOf(YamcsSubscriptionService.getYamcsPvName(pv.getName()));
-		executor.execute(() -> {
-			Set<PV> pvs = pvsById.computeIfAbsent(id, x -> new HashSet<>());
-			pvs.add(pv);
-			subscriptionDirty.set(true);
-		});
-
-		ids.add(id);
-
-		try {
-			yamcsSubscription.sendMessage(SubscribeParametersRequest.newBuilder().setInstance("yamcs-cfs")
-					.setProcessor("realtime").setSendFromCache(true).setAbortOnInvalid(false)
-					.setUpdateOnExpiration(true).addId(id).setAction(Action.ADD).build());
-		} catch (Exception e) {
-			System.out.println("e:" + e);
+	public boolean register(PV pv) {
+		String serverPath = extractServerNameFromPVName(pv);
+		String instanceName = extractInstanceNameFromPVName(pv);
+		YamcsServer pvServer = ConnectionsManagerInstance.getServerTree().getServerFromName(serverPath);
+		if (pvServer == null) {
+			log.warning("Server not found");
+			return false;
 		}
+		pvServer.subscribePV((YamcsPV) pv, instanceName);
+
+		return true;
+	}
+
+	private String extractServerNameFromPVName(PV pv) {
+		String serverPath = pv.getName().split("://")[1];
+		serverPath = serverPath.split(":")[0];
+		return serverPath;
+	}
+
+	private String extractInstanceNameFromPVName(PV pv) {
+		String InstancePath = pv.getName().split("://")[1];
+		InstancePath = InstancePath.split(":")[1].split("/")[0];
+		return InstancePath;
 	}
 
 	private Set<NamedObjectId> getRequestedIdentifiers() {
@@ -161,23 +124,28 @@ public class YamcsPVFactory implements PVFactory {
 
 		final Class<? extends VType> type = parseType("");
 
-		YamcsPV pv = new YamcsPV(actual_name, type, yamcsSubscription);
-
-		String instanceName = "yamcs-cfs";
-
-//		yamcsSubscription.addListener(pv);
-		
-
-		register(pv);
+		YamcsPV pv;
 		// TODO Use ConcurrentHashMap, computeIfAbsent
-		synchronized (yamcs_pvs) {
+//        synchronized (yamcs_pvs)
+		{
+			System.out.println("actual_name-->" + actual_name);
 			pv = yamcs_pvs.get(actual_name);
+			List<String> initial_value = null;
 			if (pv == null) {
-				pv = new YamcsPV(actual_name, type);
-				yamcs_pvs.put(actual_name, pv);
-			} else
-				pv.checkInitializer(type, null);
+				System.out.println("^^^^^^PV is null");
+				System.out.println("map:" + yamcs_pvs.toString());
+				pv = new YamcsPV(actual_name, type, initial_value);
+				if (register(pv)) {
+					yamcs_pvs.put(actual_name, pv);
+				}
+			} else {
+
+				pv.checkInitializer(type, initial_value);
+			}
+
 		}
+
+		System.out.println("pv----------->" + pv);
 		return pv;
 	}
 
@@ -207,11 +175,6 @@ public class YamcsPVFactory implements PVFactory {
 	 * 
 	 * @param pv {@link YamcsPV}
 	 */
-	static void releasePV(final YamcsPV pv) {
-		synchronized (yamcs_pvs) {
-			yamcs_pvs.remove(pv.getName());
-		}
-	}
 
 	// For unit test
 	public static Collection<YamcsPV> getLocalPVs() {

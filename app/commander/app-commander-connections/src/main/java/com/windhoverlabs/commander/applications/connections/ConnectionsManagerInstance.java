@@ -17,6 +17,7 @@ import org.phoebus.framework.spi.AppInstance;
 import org.phoebus.ui.docking.DockItem;
 import org.phoebus.ui.docking.DockPane;
 
+import com.windhoverlabs.commander.core.YamcsServer;
 import com.windhoverlabs.commander.core.YamcsServerContext;
 
 import javafx.collections.ObservableList;
@@ -43,7 +44,7 @@ public class ConnectionsManagerInstance implements AppInstance {
 
 	private ConnectionsManagerController controller;
 	
-	private Tree serverTree = new Tree(restoreServers());
+	private static Tree serverTree = new Tree(restoreServers());
 
 	private DockItem tab = null;
 
@@ -105,7 +106,7 @@ public class ConnectionsManagerInstance implements AppInstance {
 		tab.select();
 	}
 
-    private ObservableList<YamcsServer> restoreServers() {
+    private static ObservableList<YamcsServer> restoreServers() {
 //        YamcsServer server1 = new YamcsServer("Server1");
 //        YamcsServer server2 = new YamcsServer("Server2");
 //
@@ -120,4 +121,8 @@ public class ConnectionsManagerInstance implements AppInstance {
         return FXCollections.observableArrayList();
 
     }
+    
+	public static Tree getServerTree() {
+		return serverTree;
+	}
 }

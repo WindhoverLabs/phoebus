@@ -5,9 +5,10 @@ import static java.util.stream.Collectors.toList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.windhoverlabs.commander.core.OLD_CMDR_YamcsInstance;
+import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
+import com.windhoverlabs.commander.core.YamcsObject;
+import com.windhoverlabs.commander.core.YamcsServer;
 import com.windhoverlabs.commander.core.YamcsServerConnection;
-//import com.windhoverlabs.commander.core.YamcsServer;
 import com.windhoverlabs.commander.core.YamcsServerContext;
 
 import javafx.collections.ListChangeListener.Change;
@@ -98,9 +99,9 @@ public class Tree {
 			YamcsServerConnection newServer = dialog.showAndWait().orElse(null);
 			if (newServer == null)
 				return;
-			
+
 			root.createAndAddChild(newServer.getName());
-			
+
 			((YamcsServer) root.getItems().get(root.getItems().size() - 1)).connect(newServer);
 		});
 
@@ -228,6 +229,31 @@ public class Tree {
 
 	private PseudoClass asPseudoClass(Class<?> clz) {
 		return PseudoClass.getPseudoClass(clz.getSimpleName().toLowerCase());
+	}
+
+	// TODO:Eventually this function will be moved outside of this class.
+	/**
+	 * Traverse through allServers and find the instance object that matches
+	 * pathToInstance
+	 * 
+	 * @param pathToInstance The syntax for this string should be something like
+	 *                       "Server_A:yamcs-cfs"
+	 * @param pathToInstance
+	 * @return
+	 */
+	public YamcsServer getServerFromName(String name) {
+		YamcsServer outServer = null;
+		for (YamcsObject<?> server : root.getItems()) {
+			if (server.getName().equals(name)) {
+				outServer = (YamcsServer) server;
+			}
+		}
+		return outServer;
+	}
+
+	@SuppressWarnings("unchecked")
+	public YamcsObject<YamcsServer> getRoot() {
+		return (YamcsObject<YamcsServer>) root;
 	}
 
 }
