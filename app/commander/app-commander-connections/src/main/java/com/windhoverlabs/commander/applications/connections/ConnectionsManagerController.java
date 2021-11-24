@@ -2,9 +2,9 @@ package com.windhoverlabs.commander.applications.connections;
 
 import org.phoebus.ui.javafx.ImageCache;
 
-import com.windhoverlabs.commander.core.YamcsServer;
+import com.windhoverlabs.commander.core.YamcsServerConnection;
 import com.windhoverlabs.commander.core.YamcsServerContext;
-import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
+import com.windhoverlabs.commander.core.OLD_CMDR_YamcsInstance;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
@@ -56,7 +56,7 @@ public class ConnectionsManagerController {
 		addServerConnection.setOnAction(e -> {
 			NewConnectionDialog dialog = null;
 			dialog = new NewConnectionDialog();
-			YamcsServer newServer = dialog.showAndWait().orElse(null);
+			YamcsServerConnection newServer = dialog.showAndWait().orElse(null);
 
 			if (newServer == null)
 				return;
@@ -74,7 +74,7 @@ public class ConnectionsManagerController {
 
 			contextTree.getRoot().getChildren().add(childYamcsContextTreeItem);
 
-			for (CMDR_YamcsInstance node : newChildContext.getNodes()) {
+			for (OLD_CMDR_YamcsInstance node : newChildContext.getNodes()) {
 				YamcsModelItemCell newYamcsInstanceCell = new YamcsModelItemCell(newContext, false,
 						node.getInstanceName());
 

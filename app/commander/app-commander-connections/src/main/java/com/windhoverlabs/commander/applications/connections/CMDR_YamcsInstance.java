@@ -3,10 +3,10 @@ package com.windhoverlabs.commander.applications.connections;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class YamcsInstance extends YamcsObject<YamcsObject<?>> {
+public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 	public static String OBJECT_TYPE = "instance";
 	
-    public YamcsInstance(String name) {
+    public CMDR_YamcsInstance(String name) {
         super(name);
     }
     

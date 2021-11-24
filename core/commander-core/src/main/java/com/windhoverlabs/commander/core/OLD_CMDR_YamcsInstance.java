@@ -9,7 +9,7 @@ import org.yamcs.protobuf.YamcsInstance;
  * @author lgomez
  *
  */
-public class CMDR_YamcsInstance implements TmTcNode {
+public class OLD_CMDR_YamcsInstance implements TmTcNode {
 	private TmTcNodeState currentState;
 	private String instanceName;
 	private YamcsInstance instance;
@@ -25,12 +25,12 @@ public class CMDR_YamcsInstance implements TmTcNode {
 	private String processor;
 	private ParameterSubscription yamcsSubscription = null;
 
-	public CMDR_YamcsInstance(String newName) {
+	public OLD_CMDR_YamcsInstance(String newName) {
 		instanceName = newName;
 		currentState = TmTcNodeState.ACTIVE;
 	}
 
-	public CMDR_YamcsInstance() {
+	public OLD_CMDR_YamcsInstance() {
 		currentState = TmTcNodeState.ACTIVE;
 	}
 

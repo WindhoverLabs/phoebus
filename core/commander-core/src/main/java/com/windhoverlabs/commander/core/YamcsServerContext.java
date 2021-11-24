@@ -18,9 +18,9 @@ import com.windhoverlabs.pv.yamcs.YamcsSubscriptionService;
  * @author lgomez
  *
  */
-public class YamcsServerContext extends NodeContext<CMDR_YamcsInstance> {
+public class YamcsServerContext extends NodeContext<OLD_CMDR_YamcsInstance> {
 	private YamcsClient yamcsClient;
-	private YamcsServer connection;
+	private YamcsServerConnection connection;
 	private ParameterSubscription yamcsParameterSubscription = null;
 	private String name;
 	
@@ -38,17 +38,17 @@ public class YamcsServerContext extends NodeContext<CMDR_YamcsInstance> {
 
 	private NodeType type = NodeType.YAMCS;
 
-	public YamcsServer getConnection() {
+	public YamcsServerConnection getConnection() {
 		return connection;
 	}
 
-	private HashMap<CMDR_YamcsInstance, MissionDatabase> instanceDBMap;
+	private HashMap<OLD_CMDR_YamcsInstance, MissionDatabase> instanceDBMap;
 
-	public void setNodes(ArrayList<CMDR_YamcsInstance> nodes) {
+	public void setNodes(ArrayList<OLD_CMDR_YamcsInstance> nodes) {
 		this.nodes = nodes;
 	}
 
-	public List<CMDR_YamcsInstance> getNodes() {
+	public List<OLD_CMDR_YamcsInstance> getNodes() {
 		return nodes;
 	}
 
@@ -61,21 +61,21 @@ public class YamcsServerContext extends NodeContext<CMDR_YamcsInstance> {
 	}
 
 	public YamcsServerContext(String newUrl, int newPort, String newUser) {
-		connection = new YamcsServer(newUrl, newPort, newUser);
-		nodes = new ArrayList<CMDR_YamcsInstance>();
+		connection = new YamcsServerConnection(newUrl, newPort, newUser);
+		nodes = new ArrayList<OLD_CMDR_YamcsInstance>();
 	}
 
-	public YamcsServerContext(YamcsServer newConnection) {
+	public YamcsServerContext(YamcsServerConnection newConnection) {
 		connection = newConnection;
-		nodes = new ArrayList<CMDR_YamcsInstance>();
+		nodes = new ArrayList<OLD_CMDR_YamcsInstance>();
 	}
 
 	public YamcsServerContext() {
-		nodes = new ArrayList<CMDR_YamcsInstance>();
+		nodes = new ArrayList<OLD_CMDR_YamcsInstance>();
 	}
 
 	public void addNode(String name) {
-		nodes.add(new CMDR_YamcsInstance(name));
+		nodes.add(new OLD_CMDR_YamcsInstance(name));
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class YamcsServerContext extends NodeContext<CMDR_YamcsInstance> {
 
 			if (exc == null) {
 				for (YamcsInstance instance : response) {
-					CMDR_YamcsInstance newNode = new CMDR_YamcsInstance();
+					OLD_CMDR_YamcsInstance newNode = new OLD_CMDR_YamcsInstance();
 					newNode.setInstance(instance);
 					nodes.add(newNode);
 				}
@@ -142,13 +142,13 @@ public class YamcsServerContext extends NodeContext<CMDR_YamcsInstance> {
 	 * @param allServers
 	 * @return
 	 */
-	public static CMDR_YamcsInstance getInstanceFromPath(String pathToInstance, List<YamcsServerContext> allServers) {
-		CMDR_YamcsInstance outInstance = null;
+	public static OLD_CMDR_YamcsInstance getInstanceFromPath(String pathToInstance, List<YamcsServerContext> allServers) {
+		OLD_CMDR_YamcsInstance outInstance = null;
 		String serverName = pathToInstance.split(":")[0];
 		String instanceName = pathToInstance.split(":")[1];
 		for (YamcsServerContext server : allServers) {
 			if (server.getName().equals(serverName)) {
-				for (CMDR_YamcsInstance instance : server.getNodes()) {
+				for (OLD_CMDR_YamcsInstance instance : server.getNodes()) {
 					if (instance.getInstanceName().equals(instanceName)) {
 						outInstance = instance;
 					}

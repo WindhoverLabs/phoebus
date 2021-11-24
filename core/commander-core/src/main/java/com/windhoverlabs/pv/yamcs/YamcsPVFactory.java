@@ -34,7 +34,7 @@ import org.yamcs.client.YamcsClient;
 import org.yamcs.protobuf.SubscribeParametersRequest;
 import org.yamcs.protobuf.YamcsInstance;
 
-import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
+import com.windhoverlabs.commander.core.OLD_CMDR_YamcsInstance;
 import com.windhoverlabs.commander.core.YamcsServerContext;
 
 import org.yamcs.protobuf.Yamcs.NamedObjectId;
@@ -228,7 +228,7 @@ public class YamcsPVFactory implements PVFactory {
 		return pvName.split(":")[0];
 	}
 
-	public static CMDR_YamcsInstance getCMDR_YamcsInstanceFromPVname(String PVName) {
+	public static OLD_CMDR_YamcsInstance getCMDR_YamcsInstanceFromPVname(String PVName) {
 
 		return null;
 	}

@@ -27,7 +27,7 @@ public class YamcsServerContextTest {
 		allServers.add(newServerB);
 		allServers.add(newServerA);
 
-		CMDR_YamcsInstance instanceResult = YamcsServerContext.getInstanceFromPath(pathToInstance, allServers);
+		OLD_CMDR_YamcsInstance instanceResult = YamcsServerContext.getInstanceFromPath(pathToInstance, allServers);
 
 		assertThat(newServerA.getNodes().get(0), equalTo(instanceResult));
 		assertThat(newServerA.getNodes().get(0).getInstanceName(), equalTo(instanceResult.getInstanceName()));

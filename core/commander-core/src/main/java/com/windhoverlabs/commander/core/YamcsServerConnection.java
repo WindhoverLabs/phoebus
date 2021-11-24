@@ -1,6 +1,6 @@
 package com.windhoverlabs.commander.core;
 
-public class YamcsServer {
+public class YamcsServerConnection {
 
 	public enum YamcsConnectionStatus {
 		Connected, Disconnected;
@@ -10,7 +10,22 @@ public class YamcsServer {
 	private int port;
 	private String user;
 	private String password;
+	private String name;
+
 	private YamcsConnectionStatus status;
+
+	public YamcsServerConnection(String newUrl, int newPort, String newUser) {
+		url = newUrl;
+		port = newPort;
+		user = newUser;
+	}
+
+	public YamcsServerConnection(String newUrl, int newPort, String newUser, String newPassword) {
+		url = newUrl;
+		port = newPort;
+		user = newUser;
+		password = newPassword;
+	}
 
 	public YamcsConnectionStatus getStatus() {
 		return status;
@@ -44,18 +59,12 @@ public class YamcsServer {
 		this.port = port;
 	}
 
-	public YamcsServer(String newUrl, int newPort, String newUser) {
-		url = newUrl;
-		port = newPort;
-		user = newUser;
-
+	public String getName() {
+		return name;
 	}
 
-	public YamcsServer(String newUrl, int newPort, String newUser, String newPassword) {
-		url = newUrl;
-		port = newPort;
-		user = newUser;
-		password = newPassword;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String toString() {
