@@ -13,23 +13,13 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-
-import org.epics.vtype.Time;
-import org.epics.vtype.VDouble;
-import org.epics.vtype.VDoubleArray;
 import org.epics.vtype.VInt;
-import org.epics.vtype.VString;
-import org.epics.vtype.VStringArray;
 import org.epics.vtype.VType;
-import org.epics.vtype.VUInt;
-import org.phoebus.core.vtypes.VTypeHelper;
 import org.phoebus.pv.PV;
 import org.phoebus.pv.loc.ValueHelper;
 import org.yamcs.client.ParameterSubscription;
 import org.yamcs.protobuf.Pvalue.ParameterValue;
-import org.yamcs.protobuf.SubscribeParametersRequest;
 import org.yamcs.protobuf.Yamcs.NamedObjectId;
 
 /**

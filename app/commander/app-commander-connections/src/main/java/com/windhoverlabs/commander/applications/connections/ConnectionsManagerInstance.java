@@ -42,8 +42,6 @@ public class ConnectionsManagerInstance implements AppInstance {
 
 	private final AppDescriptor app;
 
-	private ConnectionsManagerController controller;
-	
 	private static Tree serverTree = new Tree(restoreServers());
 
 	private DockItem tab = null;
@@ -52,36 +50,14 @@ public class ConnectionsManagerInstance implements AppInstance {
 		this.app = app;
 
 		Node content;
-//		try {
-//			content = loadGUI();
-			content = serverTree.getTreeView();
-//		} catch (IOException ex) {
-//			logger.log(Level.WARNING, "Cannot load UI", ex);
-//			content = new Label("Cannot load UI");
-//		}
+		content = serverTree.getTreeView();
 
 		tab = new DockItem(this, content);
 		DockPane.getActiveDockPane().addTab(tab);
-		
-		
-        tab.addCloseCheck(() ->
-        {
-            INSTANCE = null;
-            return CompletableFuture.completedFuture(true);
-        });
-
-	}
-
-	private Node loadGUI() throws IOException {
-		final FXMLLoader fxmlLoader;
-		Node content;
-		final URL fxml = getClass().getResource("ConnectionsManager.fxml");
-		final ResourceBundle bundle = NLS.getMessages(ConnectionsManagerInstance.class);
-		fxmlLoader = new FXMLLoader(fxml, bundle);
-		content = (Node) fxmlLoader.load();
-		controller = fxmlLoader.getController();
-
-		return content;
+		tab.addCloseCheck(() -> {
+			INSTANCE = null;
+			return CompletableFuture.completedFuture(true);
+		});
 	}
 
 	@Override
@@ -97,16 +73,15 @@ public class ConnectionsManagerInstance implements AppInstance {
 	@Override
 	public void save(final Memento memento) {
 		String stringToSave = "Hello";
-		
+
 		XMLUtil.createTextElement(null, SHOW_COLUMN, DIRECTORY);
 	}
-	
 
 	public void raise() {
 		tab.select();
 	}
 
-    private static ObservableList<YamcsServer> restoreServers() {
+	private static ObservableList<YamcsServer> restoreServers() {
 //        YamcsServer server1 = new YamcsServer("Server1");
 //        YamcsServer server2 = new YamcsServer("Server2");
 //
@@ -118,10 +93,10 @@ public class ConnectionsManagerInstance implements AppInstance {
 //
 //        return FXCollections.observableArrayList(server1, server2, instance1, instance2);
 
-        return FXCollections.observableArrayList();
+		return FXCollections.observableArrayList();
 
-    }
-    
+	}
+
 	public static Tree getServerTree() {
 		return serverTree;
 	}
