@@ -12,6 +12,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 	public static String OBJECT_TYPE = "server";
 	private YamcsClient yamcsClient;
 	private YamcsServerConnection connection;
+
 	private boolean isConnected;
 
 	public boolean isConnected() {
@@ -68,5 +69,9 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 		System.out.println("**********paramSubscriptionService:****************" + paramSubscriptionService);
 		paramSubscriptionService.register(pv, instanceName);
 		System.out.println("subscribe to:" + pv.getName() + "for server " + getName());
+	}
+	
+	public YamcsServerConnection getConnection() {
+		return connection;
 	}
 }

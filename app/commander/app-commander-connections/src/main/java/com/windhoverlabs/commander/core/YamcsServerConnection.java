@@ -13,6 +13,13 @@ public class YamcsServerConnection {
 	private String name;
 
 	private YamcsConnectionStatus status;
+	
+	public YamcsServerConnection(YamcsServerConnection newConnection) 
+	{
+		url = newConnection.getUrl();
+		port = newConnection.getPort();
+		user = newConnection.getUser();
+	} 
 
 	public YamcsServerConnection(String newUrl, int newPort, String newUser) {
 		url = newUrl;
@@ -20,11 +27,10 @@ public class YamcsServerConnection {
 		user = newUser;
 	}
 
-	public YamcsServerConnection(String newUrl, int newPort, String newUser, String newPassword) {
+	public YamcsServerConnection(String newName, String newUrl, int newPort) {
 		url = newUrl;
 		port = newPort;
-		user = newUser;
-		password = newPassword;
+		name = newName;
 	}
 
 	public YamcsConnectionStatus getStatus() {
