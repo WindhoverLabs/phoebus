@@ -117,8 +117,7 @@ public class Tree {
 				if (selectedObject.getObjectType() != YamcsServer.OBJECT_TYPE) {
 					/* Server is not selected. This is not supposed to happen. */
 				} else {
-					selectedItem.getParent().getChildren().remove(selectedItem);
-					selectedObject.getItems().clear();
+					root.getItems().remove(selectedObject);
 				}
 			}
 		});
@@ -231,15 +230,13 @@ public class Tree {
 		return PseudoClass.getPseudoClass(clz.getSimpleName().toLowerCase());
 	}
 
-	// TODO:Eventually this function will be moved outside of this class.
 	/**
 	 * Traverse through allServers and find the instance object that matches
 	 * pathToInstance
 	 * 
-	 * @param pathToInstance The syntax for this string should be something like
+	 * @param name Name of the user-defined server.
 	 *                       "Server_A:yamcs-cfs"
-	 * @param pathToInstance
-	 * @return
+	 * @return The object with the server name.
 	 */
 	public YamcsServer getServerFromName(String name) {
 		YamcsServer outServer = null;

@@ -86,12 +86,7 @@ public class ConnectionsManagerInstance implements AppInstance {
 
 	@Override
 	public void restore(final Memento memento) {
-		for (YamcsObject o : serverTree.getRoot().getItems()) {
-			System.out.println("yamcs server name:" + o.getName());
-		}
-//		serverTree.getRoot().getItems() .createAndAddChild(newServer.getName());
-//
-//		((YamcsServer) root.getItems().get(root.getItems().size() - 1)).connect(newServer);
+		// TODO: Move "new Tree(restoreServers());" here.
 	}
 
 	@Override
@@ -120,8 +115,9 @@ public class ConnectionsManagerInstance implements AppInstance {
 		for (YamcsServer s : treeRoot.getItems()) {
 			yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).createChild(s.getConnection().getName());
 
-			MementoTree connection = yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).getChild(s.getConnection().getName());
-
+			MementoTree connection = yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS)
+					.getChild(s.getConnection().getName());
+			
 			connection.setString(YAMCS_URL, s.getConnection().getUrl());
 			connection.setString(YAMCS_PORT, Integer.toString(s.getConnection().getPort()));
 			connection.setString(YAMCS_CONNECTION_NAME, s.getName());
@@ -138,27 +134,19 @@ public class ConnectionsManagerInstance implements AppInstance {
 
 	private static ObservableList<YamcsServer> restoreServers() {
 		ObservableList<YamcsServer> serverList = FXCollections.observableArrayList();
-		System.out.println("restoreServers1");
 
 		try {
-			System.out.println("restoreServers2");
 			final XMLMementoTree yamcsConnectionsMemento = XMLMementoTree
 					.read(new FileInputStream(new File(Locations.user(), YAMCS_CONNECTIONS_MEMENTO_FILENAME)));
-			
-			System.out.println("memento str:" + yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).toString());
-			for (MementoTree child : yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS)
-					.getChildren()) {
+			for (MementoTree child : yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).getChildren()) {
 				// TODO: child.getString(YAMCS_CONNECTION_NAME) should never be null.
-				System.out.println("restoreServers3");
 				YamcsServer server = new YamcsServer(child.getString(YAMCS_CONNECTION_NAME).orElse(null));
 				server.connect(new YamcsServerConnection(child.getString(YAMCS_CONNECTION_NAME).orElse(null),
 						child.getString(YAMCS_URL).orElse(null),
 						Integer.parseInt(child.getString(YAMCS_PORT).orElse(null))));
 				serverList.add(server);
-				System.out.println("restoreServers4");
 			}
 		} catch (Exception e) {
-			System.out.println("restoreServers -1");
 			logger.warning("Error restoring yamcs servers:" + e);
 		}
 

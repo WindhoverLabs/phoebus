@@ -59,16 +59,14 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 		} catch (ClientException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return;
 		}
 
 		isConnected = true;
 	}
 
 	public void subscribePV(YamcsPV pv, String instanceName) {
-		System.out.println("subscribePV pv:" + pv);
-		System.out.println("**********paramSubscriptionService:****************" + paramSubscriptionService);
 		paramSubscriptionService.register(pv, instanceName);
-		System.out.println("subscribe to:" + pv.getName() + "for server " + getName());
 	}
 	
 	public YamcsServerConnection getConnection() {

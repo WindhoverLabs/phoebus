@@ -22,7 +22,7 @@ import org.yamcs.protobuf.Pvalue.ParameterValue;
 import org.yamcs.protobuf.SubscribeParametersRequest;
 import org.yamcs.protobuf.SubscribeParametersRequest.Action;
 import org.yamcs.protobuf.Yamcs.NamedObjectId;
-
+import org.epics.util.array.ArrayBoolean;
 import org.epics.util.array.ArrayDouble;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.AlarmSeverity;
@@ -31,6 +31,7 @@ import org.epics.vtype.Display;
 import org.epics.vtype.EnumDisplay;
 import org.epics.vtype.Time;
 import org.epics.vtype.VBoolean;
+import org.epics.vtype.VBooleanArray;
 import org.epics.vtype.VDouble;
 import org.epics.vtype.VDoubleArray;
 import org.epics.vtype.VEnum;
@@ -81,7 +82,6 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 				subscription.sendMessage(
 						SubscribeParametersRequest.newBuilder().setAction(Action.REPLACE).setSendFromCache(true)
 								.setAbortOnInvalid(false).setUpdateOnExpiration(true).addAllId(ids).build());
-				System.out.println("scheduleWithFixedDelay + YamcsSubscriptionService2");
 
 			}
 		}, 500, 500, TimeUnit.MILLISECONDS);
@@ -126,7 +126,6 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 	 * Async adds a Yamcs PV for receiving updates.
 	 */
 	public void register(YamcsPV pv, String instance) {
-		System.out.println("register:" + pv.getName() + "To yamcs instance:" + instance);
 		NamedObjectId id = YamcsSubscriptionService
 				.identityOf(YamcsSubscriptionService.getYamcsPvName(pv.getName(), instance, serverName));
 		executor.execute(() -> {

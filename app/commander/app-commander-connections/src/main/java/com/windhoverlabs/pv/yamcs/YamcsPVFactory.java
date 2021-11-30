@@ -128,12 +128,9 @@ public class YamcsPVFactory implements PVFactory {
 		// TODO Use ConcurrentHashMap, computeIfAbsent
 //        synchronized (yamcs_pvs)
 		{
-			System.out.println("actual_name-->" + actual_name);
 			pv = yamcs_pvs.get(actual_name);
 			List<String> initial_value = null;
 			if (pv == null) {
-				System.out.println("^^^^^^PV is null");
-				System.out.println("map:" + yamcs_pvs.toString());
 				pv = new YamcsPV(actual_name, type, initial_value);
 				if (register(pv)) {
 					yamcs_pvs.put(actual_name, pv);
@@ -145,7 +142,6 @@ public class YamcsPVFactory implements PVFactory {
 
 		}
 
-		System.out.println("pv----------->" + pv);
 		return pv;
 	}
 
@@ -181,10 +177,6 @@ public class YamcsPVFactory implements PVFactory {
 		synchronized (yamcs_pvs) {
 			return yamcs_pvs.values();
 		}
-	}
-
-	private String generateExamplePV() {
-		return "Server_A:yamcs-cfs://cfs/CPD/amc/AMC_HkTlm_t.usCmdCnt";
 	}
 
 	public static String extractServerName(String pvName) {
