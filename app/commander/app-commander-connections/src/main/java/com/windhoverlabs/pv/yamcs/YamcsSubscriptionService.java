@@ -63,10 +63,10 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 	private Set<ParameterValueListener> parameterValueListeners = new HashSet<>();
 
 	private ArrayList<NamedObjectId> ids = new ArrayList<NamedObjectId>();
-	
-	private String serverName = null; 
-	
-    static final Alarm UDF = Alarm.of(AlarmSeverity.UNDEFINED, AlarmStatus.UNDEFINED, "UDF");
+
+	private String serverName = null;
+
+	static final Alarm UDF = Alarm.of(AlarmSeverity.UNDEFINED, AlarmStatus.UNDEFINED, "UDF");
 
 	public YamcsSubscriptionService(ParameterSubscription newSubscriprion, String newServerName) {
 		serverName = newServerName;
@@ -258,9 +258,10 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 			valueType = VDouble.class;
 			break;
 		}
-		case ENUMERATED:
-			// TODO Implement
-			break;
+//		case ENUMERATED:
+////			yamcsValues.add(Enum.toString(parameter.getEngValue().getS));
+//			valueType = VFloat.class;
+//			break;
 		case FLOAT: {
 			yamcsValues.add(Float.toString(parameter.getEngValue().getFloatValue()));
 			valueType = VFloat.class;
@@ -275,11 +276,14 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 			break;
 		}
 		case SINT64: {
+
+//            return Value.newBuilder().setType(Type.STRING).setStringValue(String.valueOf(value)).build();
 			yamcsValues.add(Long.toString(parameter.getEngValue().getSint64Value()));
 			valueType = VLong.class;
 			break;
 		}
-		case STRING: {
+		case STRING:
+		case ENUMERATED: {
 			yamcsValues.add(parameter.getEngValue().getStringValue());
 			valueType = VString.class;
 			break;
@@ -302,7 +306,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 		}
 
 		if (!yamcsValues.isEmpty()) {
-			try {				
+			try {
 				value = getInitialValue(yamcsValues, valueType);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -312,174 +316,157 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
 		return value;
 	}
-	
-    /** @param items Items from <code>splitInitialItems</code>
-     *  @return All items as strings, surrounding quotes removed, un-escaping quotes
-     */
-    private static List<String> getInitialStrings(List<String> items)
-    {
-        if (items == null)
-            return Arrays.asList("");
-        final List<String> strings = new ArrayList<>(items.size());
-        for (String item : items)
-            if (item.startsWith("\""))
-                strings.add(item.substring(1, item.length()-1).replace("\\\"", "\""));
-            else
-                strings.add(item);
-        return strings;
-    }
 
-    /** @param items Items from <code>splitInitialItems</code>
-     *  @return Numeric values for all items
-     *  @throws Exception on error
-     */
-    public static double[] getInitialDoubles(List<?> items) throws Exception
-    {
-        final double[] values = new double[items.size()];
-        for (int i=0; i<values.length; ++i)
-        {
-            try
-            {
-                final String text = Objects.toString(items.get(i));
-                if (text.startsWith("0x"))
-                    values[i] = Integer.parseInt(text.substring(2), 16);
-                else
-                    values[i] = Double.parseDouble(text);
-            }
-            catch (NumberFormatException ex)
-            {
-                throw new Exception("Cannot parse number from " + items.get(i));
-            }
-        }
+	/**
+	 * @param items Items from <code>splitInitialItems</code>
+	 * @return All items as strings, surrounding quotes removed, un-escaping quotes
+	 */
+	private static List<String> getInitialStrings(List<String> items) {
+		if (items == null)
+			return Arrays.asList("");
+		final List<String> strings = new ArrayList<>(items.size());
+		for (String item : items)
+			if (item.startsWith("\""))
+				strings.add(item.substring(1, item.length() - 1).replace("\\\"", "\""));
+			else
+				strings.add(item);
+		return strings;
+	}
 
-        return values;
-    }
+	/**
+	 * @param items Items from <code>splitInitialItems</code>
+	 * @return Numeric values for all items
+	 * @throws Exception on error
+	 */
+	public static double[] getInitialDoubles(List<?> items) throws Exception {
+		final double[] values = new double[items.size()];
+		for (int i = 0; i < values.length; ++i) {
+			try {
+				final String text = Objects.toString(items.get(i));
+				if (text.startsWith("0x"))
+					values[i] = Integer.parseInt(text.substring(2), 16);
+				else
+					values[i] = Double.parseDouble(text);
+			} catch (NumberFormatException ex) {
+				throw new Exception("Cannot parse number from " + items.get(i));
+			}
+		}
 
-    /**
-     * 
-     * @param items Items from <code>splitInitialItems</code>
-     * @return Boolean list of all items
-     */
-    private static List<Boolean> getInitialBooleans(List<String> items) {
-        if (items == null)
-            return Arrays.asList(Boolean.FALSE);
-        return items.stream().map(item -> {
-            return Boolean.parseBoolean(item);
-        }).collect(Collectors.toList());
-    }
-	
-    /** @param items Items from <code>splitInitialItems</code>, i.e. strings are quoted
-     *  @param type Desired VType
-     *  @return VType for initial value
-     *  @throws Exception on error
-     */
-    public static VType getInitialValue(final List<String> items, Class<? extends VType> type) throws Exception
-    {
-        if (type == VDouble.class)
-        {
-            if (items == null)
-                return VDouble.of(0.0, UDF, Time.now(), Display.none());
-            if (items.size() == 1)
-                return VDouble.of(getInitialDoubles(items)[0], Alarm.none(), Time.now(), Display.none());
-            else
-                throw new Exception("Expected one number, got " + items);
-        }
-        
-        if (type == VFloat.class)
-        {
-            if (items == null)
-                return VFloat.of(0.0, UDF, Time.now(), Display.none());
-            if (items.size() == 1)
-                return VFloat.of(getInitialDoubles(items)[0], Alarm.none(), Time.now(), Display.none());
-            else
-                throw new Exception("Expected one number, got " + items);
-        }
+		return values;
+	}
 
-        if (type == VLong.class)
-        {
-            if (items.size() == 1)
-                return VLong.of((long) getInitialDoubles(items)[0], Alarm.none(), Time.now(), Display.none());
-            else
-                throw new Exception("Expected one number, got " + items);
-        }
+	/**
+	 * 
+	 * @param items Items from <code>splitInitialItems</code>
+	 * @return Boolean list of all items
+	 */
+	private static List<Boolean> getInitialBooleans(List<String> items) {
+		if (items == null)
+			return Arrays.asList(Boolean.FALSE);
+		return items.stream().map(item -> {
+			return Boolean.parseBoolean(item);
+		}).collect(Collectors.toList());
+	}
 
-        if (type == VInt.class)
-        {
-            if (items.size() == 1)
-                return VInt.of((long) getInitialDoubles(items)[0], Alarm.none(), Time.now(), Display.none());
-            else
-                throw new Exception("Expected one number, got " + items);
-        }
-        
-        if (type == VUInt.class)
-        {
-            if (items.size() == 1)
-                return VInt.of((long) getInitialDoubles(items)[0], Alarm.none(), Time.now(), Display.none());
-            else
-                throw new Exception("Expected one number, got " + items);
-        }
+	/**
+	 * @param items Items from <code>splitInitialItems</code>, i.e. strings are
+	 *              quoted
+	 * @param type  Desired VType
+	 * @return VType for initial value
+	 * @throws Exception on error
+	 */
+	public static VType getInitialValue(final List<String> items, Class<? extends VType> type) throws Exception {
+		if (type == VDouble.class) {
+			if (items == null)
+				return VDouble.of(0.0, UDF, Time.now(), Display.none());
+			if (items.size() == 1)
+				return VDouble.of(getInitialDoubles(items)[0], Alarm.none(), Time.now(), Display.none());
+			else
+				throw new Exception("Expected one number, got " + items);
+		}
 
-        if (type == VBoolean.class)
-        {
-            if (items == null  ||  items.size() == 1)
-                return VBoolean.of(getInitialBooleans(items).get(0), Alarm.none(), Time.now());
-            else
-                throw new Exception("Expected one boolean, got " + items);
-        }
+		if (type == VFloat.class) {
+			if (items == null)
+				return VFloat.of(0.0, UDF, Time.now(), Display.none());
+			if (items.size() == 1)
+				return VFloat.of(getInitialDoubles(items)[0], Alarm.none(), Time.now(), Display.none());
+			else
+				throw new Exception("Expected one number, got " + items);
+		}
 
-        if (type == VString.class)
-        {
-            if (items == null  ||  items.size() == 1)
-                return VString.of(getInitialStrings(items).get(0), Alarm.none(), Time.now());
-            else
-                throw new Exception("Expected one string, got " + items);
-        }
+		if (type == VLong.class) {
+			if (items.size() == 1)
+				return VLong.of((long) getInitialDoubles(items)[0], Alarm.none(), Time.now(), Display.none());
+			else
+				throw new Exception("Expected one number, got " + items);
+		}
 
-        if (type == VDoubleArray.class)
-            return VDoubleArray.of(ArrayDouble.of(getInitialDoubles(items)), Alarm.none(), Time.now(), Display.none());
+		if (type == VInt.class) {
+			if (items.size() == 1)
+				return VInt.of((long) getInitialDoubles(items)[0], Alarm.none(), Time.now(), Display.none());
+			else
+				throw new Exception("Expected one number, got " + items);
+		}
+
+		if (type == VUInt.class) {
+			if (items.size() == 1)
+				return VInt.of((long) getInitialDoubles(items)[0], Alarm.none(), Time.now(), Display.none());
+			else
+				throw new Exception("Expected one number, got " + items);
+		}
+
+		if (type == VBoolean.class) {
+			if (items == null || items.size() == 1)
+				return VBoolean.of(getInitialBooleans(items).get(0), Alarm.none(), Time.now());
+			else
+				throw new Exception("Expected one boolean, got " + items);
+		}
+
+		if (type == VString.class) {
+			if (items == null || items.size() == 1)
+				return VString.of(getInitialStrings(items).get(0), Alarm.none(), Time.now());
+			else
+				throw new Exception("Expected one string, got " + items);
+		}
+
+		if (type == VDoubleArray.class)
+			return VDoubleArray.of(ArrayDouble.of(getInitialDoubles(items)), Alarm.none(), Time.now(), Display.none());
 
 //        if (type == VBooleanArray.class)
 //            return VBooleanArray.of(ArrayBoolean.of(getInitialBooleans(items)), Alarm.none(), Time.now());
 
-        if (type == VStringArray.class)
-            return VStringArray.of(getInitialStrings(items), Alarm.none(), Time.now());
+		if (type == VStringArray.class)
+			return VStringArray.of(getInitialStrings(items), Alarm.none(), Time.now());
 
+		if (type == VEnum.class) {
+			if (items.size() < 2)
+				throw new Exception("VEnum needs at least '(index, \"Label0\")'");
+			final int initial;
+			try {
+				initial = Integer.parseInt(items.get(0));
+			} catch (NumberFormatException ex) {
+				throw new Exception("Cannot parse enum index", ex);
+			}
+			// Preserve original list
+			final List<String> copy = new ArrayList<>(items.size() - 1);
+			for (int i = 1; i < items.size(); ++i)
+				copy.add(items.get(i));
+			final List<String> labels = getInitialStrings(copy);
+			return VEnum.of(initial, EnumDisplay.of(labels), Alarm.none(), Time.now());
+		}
 
-        if (type == VEnum.class)
-        {
-            if (items.size() < 2)
-                throw new Exception("VEnum needs at least '(index, \"Label0\")'");
-            final int initial;
-            try
-            {
-                initial = Integer.parseInt(items.get(0));
-            }
-            catch (NumberFormatException ex)
-            {
-                throw new Exception("Cannot parse enum index", ex);
-            }
-            // Preserve original list
-            final List<String> copy = new ArrayList<>(items.size()-1);
-            for (int i=1; i<items.size(); ++i)
-                copy.add(items.get(i));
-            final List<String> labels = getInitialStrings(copy);
-            return VEnum.of(initial, EnumDisplay.of(labels), Alarm.none(), Time.now());
-        }
-
-        if (type == VTable.class)
-        {
-            final List<String> headers = getInitialStrings(items);
-            final List<Class<?>> types = new ArrayList<>();
-            final List<Object> values = new ArrayList<>();
-            while (headers.size() > values.size())
-            {   // Assume each column is of type string, no values
-                types.add(String.class);
-                values.add(Collections.emptyList());
-            }
-            return VTable.of(types, headers, values);
-        }
-        throw new Exception("Cannot obtain type " + type.getSimpleName() + " from " + items);
-    }
+		if (type == VTable.class) {
+			final List<String> headers = getInitialStrings(items);
+			final List<Class<?>> types = new ArrayList<>();
+			final List<Object> values = new ArrayList<>();
+			while (headers.size() > values.size()) { // Assume each column is of type string, no values
+				types.add(String.class);
+				values.add(Collections.emptyList());
+			}
+			return VTable.of(types, headers, values);
+		}
+		throw new Exception("Cannot obtain type " + type.getSimpleName() + " from " + items);
+	}
 
 	@Override
 	public void onData(List<ParameterValue> values) {
@@ -490,7 +477,8 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			};
+			}
+			;
 		}
 
 	}
