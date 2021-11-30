@@ -129,8 +129,6 @@ public class PVPool
         if (factory == null)
             throw new Exception(name + " has unknown PV type '" + prefix_base[0] + "'");
         
-        System.out.println("factory type:" + factory.getType());
-
         final String core_name = factory.getCoreName(name);
         final ReferencedEntry<PV> ref = pool.createOrGet(core_name, () -> createPV(factory, name, prefix_base[1]));
         logger.log(Level.CONFIG, () -> "PV '" + ref.getEntry().getName() + "' references: " + ref.getReferences());
