@@ -2,6 +2,7 @@ package com.windhoverlabs.commander.core;
 
 import org.yamcs.client.ClientException;
 import org.yamcs.client.YamcsClient;
+import org.yamcs.client.processor.ProcessorClient;
 import org.yamcs.protobuf.YamcsInstance;
 
 import com.windhoverlabs.commander.core.YamcsServerConnection;
@@ -11,6 +12,7 @@ import com.windhoverlabs.pv.yamcs.YamcsSubscriptionService;
 public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 	public static String OBJECT_TYPE = "server";
 	private YamcsClient yamcsClient;
+	ProcessorClient yamcsProcessor = null;
 	private YamcsServerConnection connection;
 
 	private boolean isConnected;
@@ -47,11 +49,13 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 			if (exc == null) {
 				for (YamcsInstance instance : response) {
 					createAndAddChild(instance.getName());
+					getItems().get(getItems().size() - 1).initProcessorClient(yamcsClient);
 				}
 			}
 		});
-		
-		paramSubscriptionService = new YamcsSubscriptionService(yamcsClient.createParameterSubscription(), this.getName());
+
+		paramSubscriptionService = new YamcsSubscriptionService(yamcsClient.createParameterSubscription(),
+				this.getName());
 
 		try {
 			yamcsClient.connectWebSocket();
@@ -68,8 +72,21 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 	public void subscribePV(YamcsPV pv, String instanceName) {
 		paramSubscriptionService.register(pv, instanceName);
 	}
-	
+
 	public YamcsServerConnection getConnection() {
 		return connection;
 	}
+
+	public CMDR_YamcsInstance getInstance(String instanceName) {
+		CMDR_YamcsInstance resultInstance = null;
+		for (CMDR_YamcsInstance instance : getItems()) {
+			if (instanceName.equals(instance.getName())) {
+				resultInstance = instance;
+				break;
+			}
+		}
+
+		return resultInstance;
+	}
+
 }
