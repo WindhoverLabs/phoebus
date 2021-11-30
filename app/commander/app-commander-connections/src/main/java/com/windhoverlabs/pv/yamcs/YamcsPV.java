@@ -28,19 +28,9 @@ import org.yamcs.protobuf.Yamcs.NamedObjectId;
  * @author lgomez, based on similar code in org.csstudio.utility.pv
  */
 @SuppressWarnings("nls")
-public class YamcsPV extends PV implements ParameterSubscription.Listener {
+public class YamcsPV extends PV {
 	private volatile Class<? extends VType> type;
 	private final List<String> initial_value;
-
-	ParameterSubscription yamcsSubscription = null;
-	/** Timer for periodic updates */
-	private final static ScheduledExecutorService executor = Executors.newScheduledThreadPool(1, target -> {
-		final Thread thread = new Thread(target, "YamcsPv");
-		thread.setDaemon(true);
-		return thread;
-	});
-
-	private ScheduledFuture<?> task;
 
 	protected YamcsPV(final String actual_name, final Class<? extends VType> type, final List<String> initial_value)
 			throws Exception {
@@ -84,21 +74,6 @@ public class YamcsPV extends PV implements ParameterSubscription.Listener {
 	@Override
 	protected void close() {
 		super.close();
-	}
-
-	@Override
-	public void onData(List<ParameterValue> values) {
-		ArrayList<String> yamcsValues = new ArrayList<String>();
-		yamcsValues.add(Integer.toString(values.get(0).getEngValue().getUint32Value()));
-		VType value = null;
-		try {
-			value = ValueHelper.getInitialValue(yamcsValues, VInt.class);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		this.notifyListenersOfValue(value);
-
 	}
 
 	public void updateValue() throws Exception {
