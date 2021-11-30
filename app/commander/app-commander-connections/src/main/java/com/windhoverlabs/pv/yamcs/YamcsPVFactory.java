@@ -15,10 +15,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 import org.epics.vtype.VDouble;
@@ -63,7 +65,7 @@ public class YamcsPVFactory implements PVFactory {
 	/** Map of local PVs */
 	private static final Map<String, YamcsPV> yamcs_pvs = new HashMap<>();
 
-	public YamcsPVFactory() throws ClientException {
+	public YamcsPVFactory() {
 	}
 
 	/**
@@ -126,8 +128,7 @@ public class YamcsPVFactory implements PVFactory {
 
 		YamcsPV pv;
 		// TODO Use ConcurrentHashMap, computeIfAbsent
-//        synchronized (yamcs_pvs)
-		{
+		synchronized (yamcs_pvs) {
 			pv = yamcs_pvs.get(actual_name);
 			List<String> initial_value = null;
 			if (pv == null) {
@@ -181,11 +182,6 @@ public class YamcsPVFactory implements PVFactory {
 
 	public static String extractServerName(String pvName) {
 		return pvName.split(":")[0];
-	}
-
-	public static OLD_CMDR_YamcsInstance getCMDR_YamcsInstanceFromPVname(String PVName) {
-
-		return null;
 	}
 
 }

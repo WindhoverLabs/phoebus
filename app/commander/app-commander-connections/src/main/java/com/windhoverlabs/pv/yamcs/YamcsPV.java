@@ -32,8 +32,7 @@ public class YamcsPV extends PV {
 	private volatile Class<? extends VType> type;
 	private final List<String> initial_value;
 
-	protected YamcsPV(final String actual_name, final Class<? extends VType> type, final List<String> initial_value)
-			throws Exception {
+	protected YamcsPV(final String actual_name, final Class<? extends VType> type, final List<String> initial_value) {
 		super(actual_name);
 		this.type = type;
 		this.initial_value = initial_value;
@@ -41,7 +40,7 @@ public class YamcsPV extends PV {
 		notifyListenersOfPermissions(true);
 	}
 
-	protected YamcsPV(final String actual_name, final Class<? extends VType> type) throws Exception {
+	protected YamcsPV(final String actual_name, final Class<? extends VType> type) {
 		super(actual_name);
 		this.type = type;
 
