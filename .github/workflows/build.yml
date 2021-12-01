@@ -19,12 +19,12 @@ jobs:
       run: mvn --batch-mode -DskipTests deploy
       if: ${{ github.repository == 'ControlSystemStudio/phoebus' && (github.ref == 'refs/heads/master' || github.ref == 'refs/tags/*') }}
 
-#    - name: Upload binaries to release
-#        uses: svenstaro/upload-release-action@v2
-#        with:
-#          repo_token: ${{ secrets.GITHUB_TOKEN }}
-#          file: phoebus-product/target/product-4.6.6-SNAPSHOT.zip
-#          asset_name: Commander_v0.1.0-SNAPSHOT-nightly-linux-x86_64.zip
-#          tag: Commander-nightly-build
-#          overwrite: true
-#          body: "Latest and greatest nightly build. This is NOT a stable version."
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@2.2.1
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: phoebus-product/target/product-4.6.6-SNAPSHOT.zip
+        asset_name: Commander_v0.1.0-SNAPSHOT-nightly-linux-x86_64.zip
+        tag: Commander-nightly-build
+        overwrite: true
+        body: "Latest and greatest nightly build. This is NOT a stable version."
