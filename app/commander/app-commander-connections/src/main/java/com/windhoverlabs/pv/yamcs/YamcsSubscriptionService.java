@@ -54,6 +54,8 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
 	private static final Logger log = Logger.getLogger(YamcsSubscriptionService.class.getName());
 
+	private static String instanceName;
+
 	private Map<NamedObjectId, Set<YamcsPV>> pvsById = new LinkedHashMap<>();
 
 	private ParameterSubscription subscription;
@@ -68,9 +70,11 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
 	static final Alarm UDF = Alarm.of(AlarmSeverity.UNDEFINED, AlarmStatus.UNDEFINED, "UDF");
 
-	public YamcsSubscriptionService(ParameterSubscription newSubscriprion, String newServerName) {
+	public YamcsSubscriptionService(ParameterSubscription newSubscriprion, String newServerName,
+			String newInstanceName) {
 		serverName = newServerName;
 		subscription = newSubscriprion;
+		instanceName = newInstanceName;
 		subscription.addListener(this);
 
 		// Periodically check if the subscription needs a refresh
@@ -104,7 +108,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 	 * @param pvName
 	 * @return
 	 */
-	public static String getYamcsPvName(String pvName, String instanceName, String serverName) {
+	public static String getYamcsPvName(String pvName, String serverName) {
 		String subStr = "yamcs://" + serverName + ":" + instanceName;
 		return pvName.substring(subStr.length());
 	}
@@ -125,9 +129,9 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 	/**
 	 * Async adds a Yamcs PV for receiving updates.
 	 */
-	public void register(YamcsPV pv, String instance) {
+	public void register(YamcsPV pv) {
 		NamedObjectId id = YamcsSubscriptionService
-				.identityOf(YamcsSubscriptionService.getYamcsPvName(pv.getName(), instance, serverName));
+				.identityOf(YamcsSubscriptionService.getYamcsPvName(pv.getName(), serverName));
 		executor.execute(() -> {
 			Set<YamcsPV> pvs = pvsById.computeIfAbsent(id, x -> new HashSet<>());
 			pvs.add(pv);
@@ -137,25 +141,12 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 		ids.add(id);
 
 		try {
-			subscription.sendMessage(SubscribeParametersRequest.newBuilder().setInstance(instance)
+			subscription.sendMessage(SubscribeParametersRequest.newBuilder().setInstance(instanceName)
 					.setProcessor("realtime").setSendFromCache(true).setAbortOnInvalid(false)
 					.setUpdateOnExpiration(true).addId(id).setAction(Action.ADD).build());
 		} catch (Exception e) {
 			System.out.println("e:" + e);
 		}
-
-	}
-
-	/**
-	 * Async adds a Yamcs PV for receiving updates.
-	 */
-	public void register(YamcsPV pv) {
-		NamedObjectId id = identityOf(pv.getName());
-		executor.execute(() -> {
-			Set<YamcsPV> pvs = pvsById.computeIfAbsent(id, x -> new HashSet<>());
-			pvs.add(pv);
-			subscriptionDirty.set(true);
-		});
 
 	}
 

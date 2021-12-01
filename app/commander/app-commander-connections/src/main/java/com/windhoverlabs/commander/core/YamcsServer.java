@@ -21,7 +21,6 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 		return isConnected;
 	}
 
-	private YamcsSubscriptionService paramSubscriptionService;
 
 	public YamcsServer(String name) {
 		super(name);
@@ -50,12 +49,10 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 				for (YamcsInstance instance : response) {
 					createAndAddChild(instance.getName());
 					getItems().get(getItems().size() - 1).initProcessorClient(yamcsClient);
+					getItems().get(getItems().size() - 1).initYamcsSubscriptionService(yamcsClient, this.getName());
 				}
 			}
 		});
-
-		paramSubscriptionService = new YamcsSubscriptionService(yamcsClient.createParameterSubscription(),
-				this.getName());
 
 		try {
 			yamcsClient.connectWebSocket();
@@ -67,10 +64,6 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 		}
 
 		isConnected = true;
-	}
-
-	public void subscribePV(YamcsPV pv, String instanceName) {
-		paramSubscriptionService.register(pv, instanceName);
 	}
 
 	public YamcsServerConnection getConnection() {

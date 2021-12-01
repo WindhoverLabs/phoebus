@@ -38,6 +38,7 @@ import org.yamcs.protobuf.SubscribeParametersRequest;
 import org.yamcs.protobuf.YamcsInstance;
 
 import com.windhoverlabs.commander.applications.connections.ConnectionsManagerInstance;
+import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
 import com.windhoverlabs.commander.core.OLD_CMDR_YamcsInstance;
 import com.windhoverlabs.commander.core.YamcsServer;
 import com.windhoverlabs.commander.core.YamcsServerContext;
@@ -76,12 +77,13 @@ public class YamcsPVFactory implements PVFactory {
 	public boolean register(PV pv) {
 		String serverPath = extractServerNameFromPVName(pv);
 		String instanceName = extractInstanceNameFromPVName(pv);
-		YamcsServer pvServer = ConnectionsManagerInstance.getServerTree().getServerFromName(serverPath);
-		if (pvServer == null) {
+		CMDR_YamcsInstance pvInstance = ConnectionsManagerInstance.getServerTree().getInstanceFromName(serverPath,
+				instanceName);
+		if (pvInstance == null) {
 			log.warning("Server not found");
 			return false;
 		}
-		pvServer.subscribePV((YamcsPV) pv, instanceName);
+		pvInstance.subscribePV((YamcsPV) pv);
 
 		return true;
 	}

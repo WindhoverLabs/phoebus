@@ -231,11 +231,10 @@ public class Tree {
 	}
 
 	/**
-	 * Traverse through allServers and find the instance object that matches
-	 * pathToInstance
+	 * Traverse through allServers and find the server object that matches
+	 * name
 	 * 
 	 * @param name Name of the user-defined server.
-	 *                       "Server_A:yamcs-cfs"
 	 * @return The object with the server name.
 	 */
 	public YamcsServer getServerFromName(String name) {
@@ -243,6 +242,24 @@ public class Tree {
 		for (YamcsObject<?> server : root.getItems()) {
 			if (server.getName().equals(name)) {
 				outServer = (YamcsServer) server;
+			}
+		}
+		return outServer;
+	}
+	
+	/**
+	 * Traverse through allServers and find the instance object that matches
+	 * pathToInstance
+	 * 
+	 * @param serverName Name of the user-defined server.
+	 *                       "Server_A:yamcs-cfs"
+	 * @return The object with the server name.
+	 */
+	public CMDR_YamcsInstance getInstanceFromName(String serverName, String instanceName) {
+		CMDR_YamcsInstance outServer = null;
+		for (YamcsObject<?> server : root.getItems()) {
+			if (server.getName().equals(serverName)) {
+				outServer = ((YamcsServer) server).getInstance(instanceName);
 			}
 		}
 		return outServer;
