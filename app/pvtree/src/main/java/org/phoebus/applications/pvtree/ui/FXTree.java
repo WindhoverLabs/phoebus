@@ -194,7 +194,7 @@ public class FXTree
 
         // Create new model root and represent it
         model.setRootPV(pv_name);
-        final TreeItem<TreeModelItem> root = createTree(model.getRoot());
+        final TreeItem<TreeModelItem> root = (TreeItem<TreeModelItem>)createTree(model.getRoot());
         tree_view.setRoot(root);
         model.getRoot().start();
     }

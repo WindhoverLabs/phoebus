@@ -1,21 +1,45 @@
 package com.windhoverlabs.commander.applications.connections;
 
+import javafx.collections.FXCollections;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.phoebus.framework.nls.NLS;
 import org.phoebus.framework.persistence.Memento;
+import org.phoebus.framework.persistence.MementoTree;
+import org.phoebus.framework.persistence.XMLMementoTree;
+import org.phoebus.framework.persistence.XMLUtil;
 import org.phoebus.framework.spi.AppDescriptor;
 import org.phoebus.framework.spi.AppInstance;
+import org.phoebus.framework.workbench.Locations;
 import org.phoebus.ui.docking.DockItem;
 import org.phoebus.ui.docking.DockPane;
+import org.python.jline.internal.Log;
 
+import com.windhoverlabs.commander.core.YamcsObject;
+import com.windhoverlabs.commander.core.YamcsServer;
+import com.windhoverlabs.commander.core.YamcsServerConnection;
+import com.windhoverlabs.commander.core.YamcsServerContext;
+
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
  * 
@@ -23,69 +47,113 @@ import javafx.scene.control.Label;
  *
  */
 @SuppressWarnings("nls")
-public class ConnectionsManagerInstance implements AppInstance
-{
-    /** Logger for all file browser code */
-    public static final Logger logger = Logger.getLogger(ConnectionsManagerInstance.class.getPackageName());
+public class ConnectionsManagerInstance implements AppInstance {
+	private static final String YAMCS_CONNECTIONS_MEMENTO_FILENAME = "yamcs_connections_memento";
 
-    /** Memento tags */
-    private static final String DIRECTORY = "directory",
-                                SHOW_COLUMN = "show_col",
-                                WIDTH = "col_width";
+	/** Logger for all file browser code */
+	public static final Logger logger = Logger.getLogger(ConnectionsManagerInstance.class.getPackageName());
 
-    private final AppDescriptor app;
+	/** Memento tags */
+	private static final String YAMCS_CONNECTIONS = "yamcs_connections", YAMCS_URL = "url", YAMCS_PORT = "port",
+			YAMCS_CONNECTION_NAME = "name";
 
-    private ConnectionsManagerController controller;
+	static ConnectionsManagerInstance INSTANCE = null;
 
-    public ConnectionsManagerInstance(AppDescriptor app)
-    {
-        this.app = app;
+	private final AppDescriptor app;
 
+	private static Tree serverTree = new Tree(restoreServers());
 
-        Node content;
-        try
-        {
-        	content = loadGUI();
-        }
-        catch (IOException ex)
-        {
-            logger.log(Level.WARNING, "Cannot load UI", ex);
-            content = new Label("Cannot load UI");
-        }
+	private DockItem tab = null;
 
-        final DockItem tab = new DockItem(this, content);
-        DockPane.getActiveDockPane().addTab(tab);
-                 
-        tab.addClosedNotification(controller::shutdown);
-    }
+	public ConnectionsManagerInstance(AppDescriptor app) {
+		this.app = app;
 
-	private Node loadGUI() throws IOException {
-		final FXMLLoader fxmlLoader;
 		Node content;
-		final URL fxml = getClass().getResource("ConnectionsManager.fxml");
-		final ResourceBundle bundle = NLS.getMessages(ConnectionsManagerInstance.class);
-		fxmlLoader = new FXMLLoader(fxml, bundle);
-		content = (Node) fxmlLoader.load();
-		controller = fxmlLoader.getController();
-		
-		return content;
+		content = serverTree.getTreeView();
+
+		tab = new DockItem(this, content);
+		DockPane.getActiveDockPane().addTab(tab);
+		tab.addCloseCheck(() -> {
+			INSTANCE = null;
+			return CompletableFuture.completedFuture(true);
+		});
 	}
 
-    @Override
-    public AppDescriptor getAppDescriptor()
-    {
-        return app;
-    }
+	@Override
+	public AppDescriptor getAppDescriptor() {
+		return app;
+	}
 
-    @Override
-    public void restore(final Memento memento)
-    {
-    	System.out.println("restore");
-    }
+	@Override
+	public void restore(final Memento memento) {
+		// TODO: Move "new Tree(restoreServers());" here.
+	}
 
-    @Override
-    public void save(final Memento memento)
-    {
-    	System.out.println("save");
-    }
+	@Override
+	public void save(final Memento memento) {
+		try {
+		} catch (Exception e) {
+			logger.warning("Error saving Yamcs connections...:" + e.toString());
+		}
+		logger.info("Saving Yamcs connections...");
+
+		// Save yamcs connections
+		try {
+			createYamcsConnectionMemento();
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error writing saved state to " + "", ex);
+		}
+
+	}
+
+	private void createYamcsConnectionMemento() throws Exception, FileNotFoundException {
+		final XMLMementoTree yamcsConnectionsMemento = XMLMementoTree.create();
+		yamcsConnectionsMemento.createChild(YAMCS_CONNECTIONS);
+
+		YamcsObject<YamcsServer> treeRoot = serverTree.getRoot();
+
+		for (YamcsServer s : treeRoot.getItems()) {
+			yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).createChild(s.getConnection().getName());
+
+			MementoTree connection = yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS)
+					.getChild(s.getConnection().getName());
+			
+			connection.setString(YAMCS_URL, s.getConnection().getUrl());
+			connection.setString(YAMCS_PORT, Integer.toString(s.getConnection().getPort()));
+			connection.setString(YAMCS_CONNECTION_NAME, s.getName());
+
+		}
+
+		yamcsConnectionsMemento
+				.write(new FileOutputStream(new File(Locations.user(), YAMCS_CONNECTIONS_MEMENTO_FILENAME)));
+	}
+
+	public void raise() {
+		tab.select();
+	}
+
+	private static ObservableList<YamcsServer> restoreServers() {
+		ObservableList<YamcsServer> serverList = FXCollections.observableArrayList();
+
+		try {
+			final XMLMementoTree yamcsConnectionsMemento = XMLMementoTree
+					.read(new FileInputStream(new File(Locations.user(), YAMCS_CONNECTIONS_MEMENTO_FILENAME)));
+			for (MementoTree child : yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).getChildren()) {
+				// TODO: child.getString(YAMCS_CONNECTION_NAME) should never be null.
+				YamcsServer server = new YamcsServer(child.getString(YAMCS_CONNECTION_NAME).orElse(null));
+				server.connect(new YamcsServerConnection(child.getString(YAMCS_CONNECTION_NAME).orElse(null),
+						child.getString(YAMCS_URL).orElse(null),
+						Integer.parseInt(child.getString(YAMCS_PORT).orElse(null))));
+				serverList.add(server);
+			}
+		} catch (Exception e) {
+			logger.warning("Error restoring yamcs servers:" + e);
+		}
+
+		return serverList;
+	}
+
+	public static Tree getServerTree() {
+		return serverTree;
+	}
 }
