@@ -9,7 +9,6 @@ import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
 import com.windhoverlabs.commander.core.YamcsObject;
 import com.windhoverlabs.commander.core.YamcsServer;
 import com.windhoverlabs.commander.core.YamcsServerConnection;
-import com.windhoverlabs.commander.core.YamcsServerContext;
 
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.FXCollections;

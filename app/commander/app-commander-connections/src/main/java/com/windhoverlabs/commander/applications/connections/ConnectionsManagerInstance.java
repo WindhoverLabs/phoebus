@@ -29,7 +29,6 @@ import org.python.jline.internal.Log;
 import com.windhoverlabs.commander.core.YamcsObject;
 import com.windhoverlabs.commander.core.YamcsServer;
 import com.windhoverlabs.commander.core.YamcsServerConnection;
-import com.windhoverlabs.commander.core.YamcsServerContext;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;

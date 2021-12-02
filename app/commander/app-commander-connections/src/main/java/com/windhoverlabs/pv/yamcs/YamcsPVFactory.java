@@ -39,9 +39,7 @@ import org.yamcs.protobuf.YamcsInstance;
 
 import com.windhoverlabs.commander.applications.connections.ConnectionsManagerInstance;
 import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
-import com.windhoverlabs.commander.core.OLD_CMDR_YamcsInstance;
 import com.windhoverlabs.commander.core.YamcsServer;
-import com.windhoverlabs.commander.core.YamcsServerContext;
 
 import org.yamcs.protobuf.Yamcs.NamedObjectId;
 import org.yamcs.protobuf.SubscribeParametersRequest.Action;
