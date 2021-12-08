@@ -36,6 +36,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+/**
+ * A Job to search for alarm messages logged by the alarm logging service
+ * @author Kunal Shroff
+ */
 public class AlarmLogSearchJob implements JobRunnable {
     private final RestHighLevelClient client;
     private final String pattern;
@@ -50,10 +54,12 @@ public class AlarmLogSearchJob implements JobRunnable {
     private final PreferencesReader prefs = new PreferencesReader(AlarmLogTableApp.class,
             "/alarm_logging_preferences.properties");
 
-    public static Job submit(RestHighLevelClient client, final String pattern, Boolean isNodeTable, ObservableMap<Keys, String> searchParameters,
-            final Consumer<List<AlarmLogTableType>> alarmMessageHandler,
-            final BiConsumer<String, Exception> errorHandler) {
-
+    public static Job submit(RestHighLevelClient client,
+                             final String pattern,
+                             Boolean isNodeTable,
+                             ObservableMap<Keys, String> searchParameters,
+                             final Consumer<List<AlarmLogTableType>> alarmMessageHandler,
+                             final BiConsumer<String, Exception> errorHandler) {
         return JobManager.schedule("searching alarm log messages for : " + pattern,
                 new AlarmLogSearchJob(client, pattern, isNodeTable, searchParameters, alarmMessageHandler, errorHandler));
     }
@@ -74,9 +80,12 @@ public class AlarmLogSearchJob implements JobRunnable {
     @Override
     public void run(JobMonitor monitor) {
         monitor.beginTask("searching for alarm log entires : " + pattern);
-        String from = "", to = "";
+        String from = "";
+        String to = "";
         String searchPattern = "*".concat(pattern).concat("*");
+        int size = prefs.getInt("es_max_size");
         Boolean configSet = false;
+
         BoolQueryBuilder boolQuery = new BoolQueryBuilder(); 
 
         for (Map.Entry<Keys, String> entry : searchParameters.entrySet()) {
@@ -100,6 +109,10 @@ public class AlarmLogSearchJob implements JobRunnable {
                 }
                 continue;
             }
+            if (key.equals("size")) {
+                size = Math.min(size, Integer.parseInt(value));
+                continue;
+            }
             if (!value.equals("*")) {
                 if (key.equals("command")) {
                     if (value.equalsIgnoreCase("Enabled")) {
@@ -111,23 +124,23 @@ public class AlarmLogSearchJob implements JobRunnable {
                     }
                 }
                 if (key.equals("pv")) {
-                    if (isNodeTable == true) {
+                    if (isNodeTable) {
                         value = "*".concat(value).concat("*");
                         boolQuery.must(QueryBuilders.wildcardQuery("config", value));
                         configSet = true;
                     }
                     continue;
                 }
-                boolQuery.must(QueryBuilders.matchQuery(key, value));
+                boolQuery.must(QueryBuilders.wildcardQuery(key, value));
             }
         }
-        if (configSet == false) {
+        if (!configSet) {
             boolQuery.must(QueryBuilders.wildcardQuery("config", searchPattern));
         }
         boolQuery.must(QueryBuilders.rangeQuery("message_time").from(from).to(to));
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         sourceBuilder = sourceBuilder.query(boolQuery);
-        sourceBuilder.size(prefs.getInt("es_max_size"));
+        sourceBuilder.size(size);
         sourceBuilder.sort("message_time", SortOrder.DESC);
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.source(sourceBuilder);
