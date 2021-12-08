@@ -27,6 +27,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
+import org.phoebus.logbook.LogClient;
 import org.phoebus.logbook.LogEntry;
 import org.phoebus.logbook.LogFactory;
 import org.phoebus.logbook.LogService;
@@ -34,6 +35,7 @@ import org.phoebus.logbook.LogbookPreferences;
 import org.phoebus.logbook.olog.ui.LogbookUIPreferences;
 import org.phoebus.olog.es.api.model.OlogLog;
 import org.phoebus.security.store.SecureStore;
+import org.phoebus.security.tokens.ScopedAuthenticationToken;
 import org.phoebus.security.tokens.SimpleAuthenticationToken;
 
 import java.util.concurrent.ExecutionException;
@@ -79,9 +81,12 @@ public class LogEntryEditorController {
     private SimpleBooleanProperty progressIndicatorVisibility =
             new SimpleBooleanProperty(false);
 
+    private LogEntry replyTo;
 
-    public LogEntryEditorController(Node parent, LogEntryCompletionHandler logEntryCompletionHandler) {
+
+    public LogEntryEditorController(Node parent, LogEntry replyTo, LogEntryCompletionHandler logEntryCompletionHandler) {
         this.parent = parent;
+        this.replyTo = replyTo;
         this.completionHandler = logEntryCompletionHandler;
         this.executorService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
         this.logFactory = LogService.getInstance().getLogFactories().get(LogbookPreferences.logbook_factory);
@@ -121,17 +126,23 @@ public class LogEntryEditorController {
                 // Get the SecureStore. Store username and password.
                 try {
                     SecureStore store = new SecureStore();
-                    store.set(FieldsViewController.USERNAME_TAG, fieldsViewController.getUsernameProperty());
-                    store.set(FieldsViewController.PASSWORD_TAG, fieldsViewController.getPasswordProperty());
+                    ScopedAuthenticationToken scopedAuthenticationToken =
+                            new ScopedAuthenticationToken(LogService.AUTHENTICATION_SCOPE, fieldsViewController.getUsernameProperty(), fieldsViewController.getPasswordProperty());
+                    store.setScopedAuthentication(scopedAuthenticationToken);
                 } catch (Exception ex) {
                     logger.log(Level.WARNING, "Secure Store file not found.", ex);
                 }
             }
 
-            LogEntry result = logFactory
-                    .getLogClient(new SimpleAuthenticationToken(fieldsViewController.getUsernameProperty(), fieldsViewController.getPasswordProperty()))
-                    .set(ologLog);
-            return result;
+            LogClient logClient =
+                    logFactory.getLogClient(new SimpleAuthenticationToken(fieldsViewController.getUsernameProperty(), fieldsViewController.getPasswordProperty()));
+
+            if(replyTo == null){
+                return logClient.set(ologLog);
+            }
+            else {
+                return logClient.reply(ologLog, replyTo);
+            }
         });
         try {
             LogEntry result = future.get();
