@@ -29,6 +29,7 @@ public class Tree {
 	private final List<Class<? extends YamcsObject<?>>> itemTypes = Arrays.asList(YamcsServer.class,
 			CMDR_YamcsInstance.class);
 
+    //TODO: Move this root handling to another model class. This would make it easier to decouple 
 	private YamcsObject<?> root;
 
 	public Tree(ObservableList<YamcsServer> servers) {
