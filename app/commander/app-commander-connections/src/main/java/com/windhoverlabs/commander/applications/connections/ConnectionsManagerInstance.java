@@ -27,6 +27,7 @@ import org.phoebus.ui.docking.DockPane;
 import org.python.jline.internal.Log;
 
 import com.windhoverlabs.commander.core.YamcsObject;
+import com.windhoverlabs.commander.core.YamcsObjectManager;
 import com.windhoverlabs.commander.core.YamcsServer;
 import com.windhoverlabs.commander.core.YamcsServerConnection;
 
@@ -60,6 +61,7 @@ public class ConnectionsManagerInstance implements AppInstance {
 
 	private final AppDescriptor app;
 
+	//TODO: Refactor Tree constructor since we don't need to pass the list of servers anymore.
 	private static Tree serverTree = new Tree(restoreServers());
 
 	private DockItem tab = null;
@@ -116,7 +118,7 @@ public class ConnectionsManagerInstance implements AppInstance {
 
 			MementoTree connection = yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS)
 					.getChild(s.getConnection().getName());
-			
+
 			connection.setString(YAMCS_URL, s.getConnection().getUrl());
 			connection.setString(YAMCS_PORT, Integer.toString(s.getConnection().getPort()));
 			connection.setString(YAMCS_CONNECTION_NAME, s.getName());
@@ -132,7 +134,7 @@ public class ConnectionsManagerInstance implements AppInstance {
 	}
 
 	private static ObservableList<YamcsServer> restoreServers() {
-		ObservableList<YamcsServer> serverList = FXCollections.observableArrayList();
+		ObservableList<YamcsServer> serverList = YamcsObjectManager.getRoot().getItems();
 
 		try {
 			final XMLMementoTree yamcsConnectionsMemento = XMLMementoTree

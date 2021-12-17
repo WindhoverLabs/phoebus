@@ -8,9 +8,8 @@ import org.yamcs.client.processor.ProcessorClient;
 import org.yamcs.client.processor.ProcessorClient.CommandBuilder;
 import org.yamcs.protobuf.IssueCommandRequest.Assignment;
 
-import com.windhoverlabs.commander.applications.connections.ConnectionsManagerInstance;
-import com.windhoverlabs.commander.applications.connections.Tree;
 import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
+import com.windhoverlabs.commander.core.YamcsObjectManager;
 import com.windhoverlabs.commander.core.YamcsServer;
 import com.windhoverlabs.pv.yamcs.YamcsPlugin;
 import com.windhoverlabs.yamcs.commanding.CommandParser;
@@ -21,13 +20,13 @@ public class Yamcs {
 	public static Logger log = Logger.getLogger(Yamcs.class.getName());
 
 	private static CMDR_YamcsInstance getInstance(String serverName, String instanceName) {
-		YamcsServer server = ConnectionsManagerInstance.getServerTree().getServerFromName(serverName);
+		YamcsServer server = YamcsObjectManager.getServerFromName(serverName);
 
 		if (server == null) {
 			log.warning("Server \"" + serverName + "\" not found.");
 			return null;
 		}
-		CMDR_YamcsInstance instance = ConnectionsManagerInstance.getServerTree().getServerFromName(serverName)
+		CMDR_YamcsInstance instance = YamcsObjectManager.getServerFromName(serverName)
 				.getInstance(instanceName);
 
 		if (instance == null) {
@@ -35,7 +34,7 @@ public class Yamcs {
 			return null;
 		}
 
-		return ConnectionsManagerInstance.getServerTree().getServerFromName(serverName).getInstance(instanceName);
+		return YamcsObjectManager.getServerFromName(serverName).getInstance(instanceName);
 	}
 
 	/**
