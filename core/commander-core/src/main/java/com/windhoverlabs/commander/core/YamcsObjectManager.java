@@ -3,6 +3,12 @@ package com.windhoverlabs.commander.core;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+/**
+ * Very simple class which manages YamcsObjects. Users of commander-core should always use this class to access
+ * YamcsObject objects via the getRoot() method.
+ * @author lgomez
+ *
+ */
 public class YamcsObjectManager {
 private static YamcsObject<YamcsServer> root;
 private static ObservableList<YamcsServer> servers = FXCollections.observableArrayList();
