@@ -12,7 +12,6 @@ import com.windhoverlabs.pv.yamcs.YamcsSubscriptionService;
 public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 	public static String OBJECT_TYPE = "server";
 	private YamcsClient yamcsClient;
-	ProcessorClient yamcsProcessor = null;
 	private YamcsServerConnection connection;
 
 	private boolean isConnected;

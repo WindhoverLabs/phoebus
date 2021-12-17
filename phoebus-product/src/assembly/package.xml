@@ -16,7 +16,8 @@
         <include>NOTICE*</include>
         <include>*.sh</include>
         <include>*.bat</include>
-        <include>*.desktop</include>
+	<include>*.desktop</include>
+	<include>site_splash.png</include>
       </includes>
     </fileSet>
     <fileSet>

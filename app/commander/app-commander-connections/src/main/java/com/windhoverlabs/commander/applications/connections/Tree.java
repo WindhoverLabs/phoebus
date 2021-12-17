@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
 import com.windhoverlabs.commander.core.YamcsObject;
+import com.windhoverlabs.commander.core.YamcsObjectManager;
 import com.windhoverlabs.commander.core.YamcsServer;
 import com.windhoverlabs.commander.core.YamcsServerConnection;
 
@@ -29,29 +30,13 @@ public class Tree {
 	private final List<Class<? extends YamcsObject<?>>> itemTypes = Arrays.asList(YamcsServer.class,
 			CMDR_YamcsInstance.class);
 
+    //TODO: Move this root handling to another model class. This would make it easier to decouple 
 	private YamcsObject<?> root;
 
 	public Tree(ObservableList<YamcsServer> servers) {
 		treeView = new TreeView<>();
 
-		root = new YamcsObject<YamcsServer>("") {
-
-			@Override
-			public String getObjectType() {
-				return "root";
-			}
-
-			@Override
-			public ObservableList<YamcsServer> getItems() {
-				return servers;
-			}
-
-			@Override
-			public void createAndAddChild(String name) {
-				getItems().add(new YamcsServer(name));
-			}
-
-		};
+		root = YamcsObjectManager.getRoot();
 
 		TreeItem<YamcsObject<?>> treeRoot = createItem(root);
 
