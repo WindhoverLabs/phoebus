@@ -7,11 +7,5 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-public class YamcsServerContextTest {
-
-	
-	@Test
-	public void testPVPathToYamcsInstance() {
-		//TODO
-	}
+public class YamcsServerTest {
 }

@@ -2,12 +2,7 @@ package com.windhoverlabs.commander.core;
 
 import org.yamcs.client.ClientException;
 import org.yamcs.client.YamcsClient;
-import org.yamcs.client.processor.ProcessorClient;
 import org.yamcs.protobuf.YamcsInstance;
-
-import com.windhoverlabs.commander.core.YamcsServerConnection;
-import com.windhoverlabs.pv.yamcs.YamcsPV;
-import com.windhoverlabs.pv.yamcs.YamcsSubscriptionService;
 
 public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 	public static String OBJECT_TYPE = "server";
