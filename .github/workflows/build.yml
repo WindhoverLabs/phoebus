@@ -38,16 +38,17 @@ jobs:
         export PATH=`pwd`/cov-analysis-linux64/bin:$PATH
         cov-build --dir cov-int mvn -DskipTests install
     - name: Submit static analysis results
-        env:
-          TOKEN: ${{ secrets.COVERITY_TOKEN }}
+      env:
+        TOKEN: ${{ secrets.COVERITY_TOKEN }}
+      run: |
         tar czvf commander-analysis.tgz cov-int
         curl \
-        --form token=$TOKEN \
-        --form email=lgomez@windhoverlabs.com \
-        --form file=@commander-analysis.tgz \
-        --form version=SNAPSHOT \
-        --form description="" \
-        https://scan.coverity.com/builds?project=WindhoverLabs%2Fphoebus
+          --form token=$TOKEN \
+          --form email=lgomez@windhoverlabs.com \
+          --form file=@commander-analysis.tgz \
+          --form version=SNAPSHOT \
+          --form description="" \
+          https://scan.coverity.com/builds?project=WindhoverLabs%2Fphoebus
 
 
     - name: Upload binaries to release
