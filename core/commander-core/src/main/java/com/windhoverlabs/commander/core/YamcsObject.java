@@ -1,6 +1,5 @@
 package com.windhoverlabs.commander.core;
 
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
