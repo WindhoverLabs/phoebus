@@ -11,6 +11,9 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
+    - name: Check coding style
+      run: mvn fmt:check
+
     - name: Build
       run: mvn -Dgpg.skip=true --batch-mode install
     - name: Publish
@@ -28,3 +31,4 @@ jobs:
         tag: Commander-nightly-build
         overwrite: true
         body: "Latest and greatest nightly build. This is NOT a stable version."
+
