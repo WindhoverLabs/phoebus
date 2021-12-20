@@ -2,78 +2,78 @@ package com.windhoverlabs.commander.core;
 
 public class YamcsServerConnection {
 
-	public enum YamcsConnectionStatus {
-		Connected, Disconnected;
-	};
+  public enum YamcsConnectionStatus {
+    Connected,
+    Disconnected;
+  };
 
-	private String url;
-	private int port;
-	private String user;
-	private String password;
-	private String name;
+  private String url;
+  private int port;
+  private String user;
+  private String password;
+  private String name;
 
-	private YamcsConnectionStatus status;
-	
-	public YamcsServerConnection(YamcsServerConnection newConnection) 
-	{
-		url = newConnection.getUrl();
-		port = newConnection.getPort();
-		user = newConnection.getUser();
-	} 
+  private YamcsConnectionStatus status;
 
-	public YamcsServerConnection(String newUrl, int newPort, String newUser) {
-		url = newUrl;
-		port = newPort;
-		user = newUser;
-	}
+  public YamcsServerConnection(YamcsServerConnection newConnection) {
+    url = newConnection.getUrl();
+    port = newConnection.getPort();
+    user = newConnection.getUser();
+  }
 
-	public YamcsServerConnection(String newName, String newUrl, int newPort) {
-		url = newUrl;
-		port = newPort;
-		name = newName;
-	}
+  public YamcsServerConnection(String newUrl, int newPort, String newUser) {
+    url = newUrl;
+    port = newPort;
+    user = newUser;
+  }
 
-	public YamcsConnectionStatus getStatus() {
-		return status;
-	}
+  public YamcsServerConnection(String newName, String newUrl, int newPort) {
+    url = newUrl;
+    port = newPort;
+    name = newName;
+  }
 
-	public void setStatus(YamcsConnectionStatus newStatus) {
-		this.status = newStatus;
-	}
+  public YamcsConnectionStatus getStatus() {
+    return status;
+  }
 
-	public String getUser() {
-		return user;
-	}
+  public void setStatus(YamcsConnectionStatus newStatus) {
+    this.status = newStatus;
+  }
 
-	public void setUser(String newUser) {
-		user = newUser;
-	}
+  public String getUser() {
+    return user;
+  }
 
-	public String getUrl() {
-		return url;
-	}
+  public void setUser(String newUser) {
+    user = newUser;
+  }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+  public String getUrl() {
+    return url;
+  }
 
-	public int getPort() {
-		return port;
-	}
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-	public void setPort(int port) {
-		this.port = port;
-	}
+  public int getPort() {
+    return port;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public void setPort(int port) {
+    this.port = port;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public String toString() {
-		return String.format("%s:%d\n", url, port);
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String toString() {
+    return String.format("%s:%d\n", url, port);
+  }
 }

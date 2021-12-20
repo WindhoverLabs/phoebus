@@ -8,18 +8,19 @@ import org.yamcs.protobuf.UserInfo;
 
 /**
  * Groups entities that have been populated from the remote server.
- * <p>
- * This is intended as a convenience class for passing information from {@link YamcsConnector} to {@link YamcsPlugin}.
+ *
+ * <p>This is intended as a convenience class for passing information from {@link YamcsConnector} to
+ * {@link YamcsPlugin}.
  */
 public class RemoteEntityHolder {
 
-    // Required
-    public YamcsClient yamcsClient;
-    public GetServerInfoResponse serverInfo;
-    public UserInfo userInfo;
+  // Required
+  public YamcsClient yamcsClient;
+  public GetServerInfoResponse serverInfo;
+  public UserInfo userInfo;
 
-    // Optional
-    public String instance;
-    public ProcessorInfo processor;
-    public MissionDatabase missionDatabase;
+  // Optional
+  public String instance;
+  public ProcessorInfo processor;
+  public MissionDatabase missionDatabase;
 }
