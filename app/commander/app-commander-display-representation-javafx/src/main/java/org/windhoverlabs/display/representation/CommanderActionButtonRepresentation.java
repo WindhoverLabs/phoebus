@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package org.windhoverlabs.display.representation;
+package com.windhoverlabs.display.representation;
 
 import static org.csstudio.display.builder.representation.ToolkitRepresentation.logger;
 
@@ -39,7 +39,7 @@ import org.phoebus.ui.javafx.Styles;
 import org.phoebus.ui.javafx.TextUtils;
 import org.phoebus.ui.vtype.FormatOption;
 import org.phoebus.ui.vtype.FormatOptionHandler;
-import org.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget;
+import com.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget;
 
 import javafx.application.Platform;
 import javafx.geometry.Dimension2D;

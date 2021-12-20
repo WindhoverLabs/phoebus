@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package org.windhoverlabs.display.builder.runtime;
+package com.windhoverlabs.display.builder.runtime;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,8 +25,8 @@ import org.csstudio.display.builder.runtime.pv.PVFactory;
 import org.csstudio.display.builder.runtime.pv.RuntimePV;
 import org.csstudio.display.builder.runtime.pv.RuntimePVListener;
 import org.epics.vtype.VType;
-import org.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget;
-import org.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget.PvArgProperty;
+import com.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget;
+import com.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget.PvArgProperty;
 
 /** Runtime for the CommanderCommandActionButtonWidget
  *

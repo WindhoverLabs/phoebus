@@ -1,4 +1,4 @@
-package org.windhoverlabs.applications.commander.map;
+package com.windhoverlabs.applications.commander.map;
 
 import java.io.IOException;
 import java.net.URL;
