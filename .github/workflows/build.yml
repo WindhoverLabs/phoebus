@@ -12,7 +12,10 @@ jobs:
       with:
         java-version: 11
     - name: Check coding style
-      run: mvn fmt:check
+      run: |
+        cd phoebus/core/commander-core
+        mvn fmt:check
+        cd ../..
 
     - name: Build
       run: mvn -Dgpg.skip=true --batch-mode install
