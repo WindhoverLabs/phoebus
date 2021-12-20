@@ -12,11 +12,11 @@ jobs:
       with:
         java-version: 11
     - name: Build
-      run: mvn gpg.skip=true --batch-mode install
+      run: mvn -Dgpg.skip=true --batch-mode install
     - name: Publish
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: mvn gpg.skip=true --batch-mode -DskipTests deploy
+      run: mvn -Dgpg.skip=true --batch-mode -DskipTests deploy
       if: ${{ github.repository == 'ControlSystemStudio/phoebus' && (github.ref == 'refs/heads/master' || github.ref == 'refs/tags/*') }}
 
     - name: Upload binaries to release
