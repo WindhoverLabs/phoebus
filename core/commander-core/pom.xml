@@ -27,8 +27,8 @@
 		<connection>scm:git:git://github.com/WindhoverLabs/phoebus.git</connection>
 		<developerConnection>scm:git:ssh://github.com:WindhoverLabs/phoebus.git</developerConnection>
 		<url>https://github.com/WindhoverLabs/phoebus/tree/develop</url>
-	  <tag>commander-core-0.1.0</tag>
-  </scm>
+		<tag>commander-core-0.1.0</tag>
+	</scm>
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -144,6 +144,36 @@
 					<nexusUrl>https://oss.sonatype.org</nexusUrl>
 					<autoReleaseAfterClose>false</autoReleaseAfterClose>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.cosium.code</groupId>
+				<artifactId>git-code-format-maven-plugin</artifactId>
+				<version>3.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>install-hooks</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>[3.5.4,)</version>
+								</requireMavenVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
