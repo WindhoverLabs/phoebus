@@ -36,7 +36,7 @@ jobs:
         TOKEN: ${{ secrets.COVERITY_TOKEN }}
       run: |
         export PATH=`pwd`/cov-analysis-linux64/bin:$PATH
-        cov-build --dir cov-int mvn -DskipTests install
+        cov-build --dir cov-int mvn -Dgpg.skip=true -DskipTests install
     - name: Submit static analysis results
       env:
         TOKEN: ${{ secrets.COVERITY_TOKEN }}
