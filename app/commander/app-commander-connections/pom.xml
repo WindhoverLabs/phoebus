@@ -48,7 +48,7 @@
 	</profiles>
 	<dependencies>
 		<dependency>
-			<groupId>org.windhoverlabs</groupId>
+			<groupId>com.windhoverlabs</groupId>
 			<artifactId>commander-core</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
