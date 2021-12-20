@@ -24,6 +24,31 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: mvn -Dgpg.skip=true --batch-mode -DskipTests deploy
       if: ${{ github.repository == 'ControlSystemStudio/phoebus' && (github.ref == 'refs/heads/master' || github.ref == 'refs/tags/*') }}
+    - name: Download Coverity Build Tool
+      env:
+        TOKEN: ${{ secrets.COVERITY_TOKEN }}
+      run: |
+        wget -q https://scan.coverity.com/download/java/linux64 --post-data "token=$TOKEN&project=WindhoverLabs/phoebus" -O cov-analysis-linux64.tar.gz
+        mkdir cov-analysis-linux64
+        tar xzf cov-analysis-linux64.tar.gz --strip 1 -C cov-analysis-linux64
+    - name: Static analysis
+      env:
+        TOKEN: ${{ secrets.COVERITY_TOKEN }}
+      run: |
+        export PATH=`pwd`/cov-analysis-linux64/bin:$PATH
+        cov-build --dir cov-int mvn -DskipTests install
+    - name: Submit static analysis results
+        env:
+          TOKEN: ${{ secrets.COVERITY_TOKEN }}
+        tar czvf commander-analysis.tgz cov-int
+        curl \
+        --form token=$TOKEN \
+        --form email=lgomez@windhoverlabs.com \
+        --form file=@commander-analysis.tgz \
+        --form version=SNAPSHOT \
+        --form description="" \
+        https://scan.coverity.com/builds?project=WindhoverLabs%2Fphoebus
+
 
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@2.2.1
