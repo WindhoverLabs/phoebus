@@ -13,7 +13,7 @@ jobs:
         java-version: 11
     - name: Check coding style
       run: |
-        cd phoebus/core/commander-core
+        cd core/commander-core
         mvn fmt:check
         cd ../..
 
