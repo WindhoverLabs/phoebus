@@ -11,7 +11,7 @@ public class ConnectionsManagerMenuEntry implements MenuEntry
 {
     @Override
     public String getName() {
-        return ConnectionsManagerApp.DisplayName;
+        return ConnectionsManagerApp.Name;
     }
 
     @Override
