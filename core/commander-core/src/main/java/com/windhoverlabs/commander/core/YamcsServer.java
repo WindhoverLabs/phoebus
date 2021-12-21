@@ -47,6 +47,9 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
                   getItems()
                       .get(getItems().size() - 1)
                       .initYamcsSubscriptionService(yamcsClient, this.getName());
+                  getItems()
+                      .get(getItems().size() - 1)
+                      .initEventSubscription(yamcsClient, this.getName());
                 }
               }
             });

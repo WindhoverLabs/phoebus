@@ -2,17 +2,28 @@ package com.windhoverlabs.commander.core;
 
 import com.windhoverlabs.pv.yamcs.YamcsPV;
 import com.windhoverlabs.pv.yamcs.YamcsSubscriptionService;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.yamcs.client.EventSubscription;
 import org.yamcs.client.YamcsClient;
+import org.yamcs.client.archive.ArchiveClient;
 import org.yamcs.client.processor.ProcessorClient;
+import org.yamcs.protobuf.Yamcs.Event;
 
 public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
+  public static final Logger logger = Logger.getLogger(CMDR_YamcsInstance.class.getPackageName());
   public static String OBJECT_TYPE = "instance";
   private ProcessorClient yamcsProcessor = null;
   private YamcsSubscriptionService paramSubscriptionService;
   private EventSubscription eventSubscription;
+  private ArchiveClient yamcsArchiveClient;
+
+  public ArchiveClient getYamcsArchiveClient() {
+    return yamcsArchiveClient;
+  }
+
+  private static ObservableList<Event> events = FXCollections.observableArrayList();
 
   public ProcessorClient getYamcsProcessor() {
     return yamcsProcessor;
@@ -49,7 +60,23 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
   protected void initEventSubscription(YamcsClient yamcsClient, String serverName) {
     eventSubscription = yamcsClient.createEventSubscription();
-    eventSubscription.addMessageListener(message -> {});
+    eventSubscription.addMessageListener(
+        event -> {
+          events.add(event);
+          System.out.println("Current events:" + events);
+        });
+
+    yamcsArchiveClient = yamcsClient.createArchiveClient(getName());
+
+    //    yamcsClient.createArchiveClient(getName()).listEvents().whenComplete((page, response) -> {
+    //      page.iterator().forEachRemaining(events::add);
+    //      System.out.println("Current events:" + events);
+    //    });
+
+    // yamcsClient.eve
+
+    // eventSubscription.sendMessage(
+    // SubscribeEventsRequest.newBuilder().setInstance(getName()).build());
   }
 
   public void subscribePV(YamcsPV pv) {
