@@ -278,4 +278,10 @@ mvn -P release release:prepare
 - Commit the modified POMs
 
 Additionally:
-- Before commiting the changes, there is a script in the target platform `release_classpath.py` which will be executed. This script can be modified to updated the .classpath and other files which need manual intervention during a release.
+- Before committing the changes, there is a script in the target platform `release_classpath.py` which will be executed. This script can be modified to updated the .classpath and other files which need manual intervention during a release.
+
+
+## Coding Style
+
+In an effort to maintain a consistent coding style, this project follows the [Google Java Coding Style](https://google.github.io/styleguide/javaguide.html). This is also enforced in our CI pipeline. Any push that does not comply with this style, *will* fail. Developers can easily
+format their code by running ` mvn com.coveo:fmt-maven-plugin:format`.
