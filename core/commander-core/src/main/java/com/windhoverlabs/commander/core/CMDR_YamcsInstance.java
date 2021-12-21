@@ -4,6 +4,7 @@ import com.windhoverlabs.pv.yamcs.YamcsPV;
 import com.windhoverlabs.pv.yamcs.YamcsSubscriptionService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.yamcs.client.EventSubscription;
 import org.yamcs.client.YamcsClient;
 import org.yamcs.client.processor.ProcessorClient;
 
@@ -11,6 +12,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   public static String OBJECT_TYPE = "instance";
   private ProcessorClient yamcsProcessor = null;
   private YamcsSubscriptionService paramSubscriptionService;
+  private EventSubscription eventSubscription;
 
   public ProcessorClient getYamcsProcessor() {
     return yamcsProcessor;
@@ -43,6 +45,11 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     paramSubscriptionService =
         new YamcsSubscriptionService(
             yamcsClient.createParameterSubscription(), serverName, this.getName());
+  }
+
+  protected void initEventSubscription(YamcsClient yamcsClient, String serverName) {
+    eventSubscription = yamcsClient.createEventSubscription();
+    eventSubscription.addMessageListener(message -> {});
   }
 
   public void subscribePV(YamcsPV pv) {
