@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
-package org.windhoverlabs.applications.commander.map;
+package com.windhoverlabs.applications.commander.map;
 
 import org.phoebus.framework.nls.NLS;
 

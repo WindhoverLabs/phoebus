@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package org.windhoverlabs.display.representation;
+package com.windhoverlabs.display.representation;
 
 import static java.util.Map.entry;
 
@@ -15,8 +15,8 @@ import org.csstudio.display.builder.model.WidgetDescriptor;
 import org.csstudio.display.builder.representation.WidgetRepresentation;
 import org.csstudio.display.builder.representation.WidgetRepresentationFactory;
 import org.csstudio.display.builder.representation.spi.WidgetRepresentationsService;
-import org.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget;
-import org.windhoverlabs.display.model.widgets.WHTextUpdateWidget;
+import com.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget;
+import com.windhoverlabs.display.model.widgets.WHTextUpdateWidget;
 
 /**
  * SPI for representations of base widgets
