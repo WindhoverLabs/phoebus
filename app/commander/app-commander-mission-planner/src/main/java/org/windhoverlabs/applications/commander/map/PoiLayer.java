@@ -24,7 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.windhoverlabs.applications.commander.map;
+package com.windhoverlabs.applications.commander.map;
 
 import com.gluonhq.maps.MapLayer;
 import com.gluonhq.maps.MapPoint;

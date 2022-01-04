@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
 import com.windhoverlabs.commander.core.YamcsObject;
+import com.windhoverlabs.commander.core.YamcsObjectManager;
 import com.windhoverlabs.commander.core.YamcsServer;
 import com.windhoverlabs.commander.core.YamcsServerConnection;
 
@@ -29,29 +30,13 @@ public class Tree {
 	private final List<Class<? extends YamcsObject<?>>> itemTypes = Arrays.asList(YamcsServer.class,
 			CMDR_YamcsInstance.class);
 
+    //TODO: Move this root handling to another model class. This would make it easier to decouple 
 	private YamcsObject<?> root;
 
 	public Tree(ObservableList<YamcsServer> servers) {
 		treeView = new TreeView<>();
 
-		root = new YamcsObject<YamcsServer>("") {
-
-			@Override
-			public String getObjectType() {
-				return "root";
-			}
-
-			@Override
-			public ObservableList<YamcsServer> getItems() {
-				return servers;
-			}
-
-			@Override
-			public void createAndAddChild(String name) {
-				getItems().add(new YamcsServer(name));
-			}
-
-		};
+		root = YamcsObjectManager.getRoot();
 
 		TreeItem<YamcsObject<?>> treeRoot = createItem(root);
 
@@ -227,41 +212,6 @@ public class Tree {
 
 	private PseudoClass asPseudoClass(Class<?> clz) {
 		return PseudoClass.getPseudoClass(clz.getSimpleName().toLowerCase());
-	}
-
-	/**
-	 * Traverse through allServers and find the server object that matches
-	 * name
-	 * 
-	 * @param name Name of the user-defined server.
-	 * @return The object with the server name.
-	 */
-	public YamcsServer getServerFromName(String name) {
-		YamcsServer outServer = null;
-		for (YamcsObject<?> server : root.getItems()) {
-			if (server.getName().equals(name)) {
-				outServer = (YamcsServer) server;
-			}
-		}
-		return outServer;
-	}
-	
-	/**
-	 * Traverse through allServers and find the instance object that matches
-	 * pathToInstance
-	 * 
-	 * @param serverName Name of the user-defined server.
-	 *                       "Server_A:yamcs-cfs"
-	 * @return The object with the server name.
-	 */
-	public CMDR_YamcsInstance getInstanceFromName(String serverName, String instanceName) {
-		CMDR_YamcsInstance outServer = null;
-		for (YamcsObject<?> server : root.getItems()) {
-			if (server.getName().equals(serverName)) {
-				outServer = ((YamcsServer) server).getInstance(instanceName);
-			}
-		}
-		return outServer;
 	}
 
 	@SuppressWarnings("unchecked")

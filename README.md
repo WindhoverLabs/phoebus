@@ -1,5 +1,9 @@
 # phoebus
 ![GitHub Actions Status](https://github.com/ControlSystemStudio/phoebus/actions/workflows/build.yml/badge.svg)
+<a href="https://scan.coverity.com/projects/windhoverlabs-phoebus">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/24259/badge.svg"/>
+</a>
 
 Phoebus is a framework and a collections of tools to monitor and operate large scale control systems, such as the ones in the accelerator community. Phoebus is an update of the Control System Studio toolset that removes dependencies on Eclipse RCP and SWT.
 
@@ -257,7 +261,7 @@ The remaining build is the same, for example `ant clean dist` to build the distr
 
 ## Release
 
-There is a release profile which helps prepare and deploy the a phoebus release.
+There is a release profile which helps prepare and deploy a phoebus release.
 
 ```
 mvn -P release release:prepare

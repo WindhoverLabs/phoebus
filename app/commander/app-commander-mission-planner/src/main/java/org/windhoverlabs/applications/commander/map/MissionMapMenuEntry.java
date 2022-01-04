@@ -1,4 +1,4 @@
-package org.windhoverlabs.applications.commander.map;
+package com.windhoverlabs.applications.commander.map;
 
 import org.phoebus.framework.workbench.ApplicationService;
 import org.phoebus.ui.javafx.ImageCache;

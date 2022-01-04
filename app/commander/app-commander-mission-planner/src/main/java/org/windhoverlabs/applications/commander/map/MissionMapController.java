@@ -1,6 +1,6 @@
-package org.windhoverlabs.applications.commander.map;
+package com.windhoverlabs.applications.commander.map;
 
-import static org.windhoverlabs.applications.commander.map.MissionMapInstance.logger;
+import static com.windhoverlabs.applications.commander.map.MissionMapInstance.logger;
 
 import java.io.File;
 import java.net.URI;
