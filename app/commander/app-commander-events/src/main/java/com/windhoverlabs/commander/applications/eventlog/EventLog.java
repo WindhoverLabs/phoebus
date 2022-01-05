@@ -30,7 +30,7 @@ public class EventLog {
   private final TableView<Event> tableView;
 
   TableColumn<Event, String> severityCol = new TableColumn<Event, String>();
-  TableColumn<Event, String> annotationCol =  new TableColumn<Event, String>();
+  TableColumn<Event, String> annotationCol = new TableColumn<Event, String>();
 
   private List<Event> data;
   private final static int dataSize = 10_023;
@@ -45,49 +45,48 @@ public class EventLog {
   private String currentInstance = "yamcs-cfs";
 
   private YamcsObject<YamcsServer> root;
-  
+
   private Page<Event> currentPage;
 
   public EventLog() {
     tableView = new TableView();
     tableView.getColumns().add(severityCol);
     tableView.getColumns().add(annotationCol);
-//    data = createData();
+    data = createData();
 
     root = YamcsObjectManager.getRoot();
   }
-  
-  public void nextPage() 
-  {
-    if(currentPage.hasNextPage()) 
-    {   
+
+  public void nextPage() {
+    if (currentPage.hasNextPage()) {
       currentPage.iterator().forEachRemaining(data::add);
       EventLogInstance.logger.log(Level.WARNING, "Events-->" + data.toString());
     }
   }
-  
+
   private List<Event> createData() {
-//    YamcsObjectManager.getServerFromName(currentServer).getInstance(currentinstance)
-//        .getYamcsArchiveClient().listEventIndex(Instant, null, null);
-    
+    // YamcsObjectManager.getServerFromName(currentServer).getInstance(currentinstance)
+    // .getYamcsArchiveClient().listEventIndex(Instant, null, null);
+
     ListEventsRequest.newBuilder().setInstance(currentInstance);
-    
-    EventSubscription eventSubscription = YamcsObjectManager.getServerFromName(currentServer).getYamcsClient().createEventSubscription();
-    
-    
-//     eventSubscription.sendMessage(
-//         ListEventsRequest.newBuilder().setInstance(currentinstance).build());
-      
+
+    EventSubscription eventSubscription = YamcsObjectManager.getServerFromName(currentServer)
+        .getYamcsClient().createEventSubscription();
+
+
+    // eventSubscription.sendMessage(
+    // ListEventsRequest.newBuilder().setInstance(currentinstance).build());
+
     YamcsObjectManager.getServerFromName(currentServer).getInstance(currentInstance)
-    .getYamcsArchiveClient().listEvents().whenComplete((page, exc) -> {
-      List<Event> eventList = new ArrayList<>();
-      currentPage = page;
-      page.iterator().forEachRemaining(data::add);
-      EventLogInstance.logger.log(Level.WARNING, "Events-->" + data.toString());
-      Collections.reverse(eventList); // Output is reverse chronological
-      
-  });
-    
+        .getYamcsArchiveClient().listEvents().whenComplete((page, exc) -> {
+          List<Event> eventList = new ArrayList<>();
+          currentPage = page;
+          page.iterator().forEachRemaining(data::add);
+          EventLogInstance.logger.log(Level.WARNING, "Events-->" + data.toString());
+          Collections.reverse(eventList); // Output is reverse chronological
+
+        });
+
 
     List<Event> tempData = new ArrayList<>(dataSize);
 

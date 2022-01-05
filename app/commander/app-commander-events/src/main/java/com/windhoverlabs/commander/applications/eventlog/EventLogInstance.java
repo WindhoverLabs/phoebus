@@ -48,119 +48,122 @@ import javax.xml.parsers.DocumentBuilderFactory;
  */
 @SuppressWarnings("nls")
 public class EventLogInstance implements AppInstance {
-	private static final String YAMCS_CONNECTIONS_MEMENTO_FILENAME = "yamcs_connections_memento";
+  private static final String YAMCS_CONNECTIONS_MEMENTO_FILENAME = "yamcs_connections_memento";
 
-	/** Logger for all file browser code */
-	public static final Logger logger = Logger.getLogger(EventLogInstance.class.getPackageName());
+  /** Logger for all file browser code */
+  public static final Logger logger = Logger.getLogger(EventLogInstance.class.getPackageName());
 
-	/** Memento tags */
-	private static final String YAMCS_CONNECTIONS = "yamcs_connections", YAMCS_URL = "url", YAMCS_PORT = "port",
-			YAMCS_CONNECTION_NAME = "name";
+  /** Memento tags */
+  private static final String YAMCS_CONNECTIONS = "yamcs_connections", YAMCS_URL = "url",
+      YAMCS_PORT = "port", YAMCS_CONNECTION_NAME = "name";
 
-	static EventLogInstance INSTANCE = null;
+  static EventLogInstance INSTANCE = null;
 
-	private final AppDescriptor app;
+  private final AppDescriptor app;
 
-	//TODO: Refactor Tree constructor since we don't need to pass the list of servers anymore.
-	private static EventLog eventLog = new EventLog();
+  // TODO: Refactor Tree constructor since we don't need to pass the list of servers anymore.
+  private static EventLog eventLog = new EventLog();
 
-	private DockItem tab = null;
+  private DockItem tab = null;
 
-	public EventLogInstance(AppDescriptor app) {
-		this.app = app;
-		// TODO:Just a hack for now to trigger events.
-		eventLog = new EventLog();
+  public EventLogInstance(AppDescriptor app) {
+    this.app = app;
+    // TODO:Just a hack for now to trigger events.
+    // Node content = null;
+    //// content = serverTree.getTreeView();
+    //
+    // tab = new DockItem(this, content);
+    // DockPane.getActiveDockPane().addTab(tab);
+    // tab.addCloseCheck(() -> {
+    // INSTANCE = null;
+    // return CompletableFuture.completedFuture(true);
+    // });
+  }
 
-//		Node content = null;
-////		content = serverTree.getTreeView();
-//
-//		tab = new DockItem(this, content);
-//		DockPane.getActiveDockPane().addTab(tab);
-//		tab.addCloseCheck(() -> {
-//			INSTANCE = null;
-//			return CompletableFuture.completedFuture(true);
-//		});
-	}
+  public void nextPage() {
+    eventLog.nextPage();
+  }
 
-	public static EventLog getEventLog() {
+  public static EventLog getEventLog() {
     return eventLog;
   }
 
   @Override
-	public AppDescriptor getAppDescriptor() {
-		return app;
-	}
+  public AppDescriptor getAppDescriptor() {
+    return app;
+  }
 
-	@Override
-	public void restore(final Memento memento) {
-		// TODO: Move "new Tree(restoreServers());" here.
-	}
+  @Override
+  public void restore(final Memento memento) {
+    // TODO: Move "new Tree(restoreServers());" here.
+  }
 
-	@Override
-	public void save(final Memento memento) {
-		try {
-		} catch (Exception e) {
-			logger.warning("Error saving Yamcs connections...:" + e.toString());
-		}
-		logger.info("Saving Yamcs connections...");
+  @Override
+  public void save(final Memento memento) {
+    try {
+    } catch (Exception e) {
+      logger.warning("Error saving Yamcs connections...:" + e.toString());
+    }
+    logger.info("Saving Yamcs connections...");
 
-		// Save yamcs connections
-		try {
-			createYamcsConnectionMemento();
-		} catch (Exception ex) {
-			logger.log(Level.WARNING, "Error writing saved state to " + "", ex);
-		}
+    // Save yamcs connections
+    try {
+      createYamcsConnectionMemento();
+    } catch (Exception ex) {
+      logger.log(Level.WARNING, "Error writing saved state to " + "", ex);
+    }
 
-	}
+  }
 
-	private void createYamcsConnectionMemento() throws Exception, FileNotFoundException {
-		final XMLMementoTree yamcsConnectionsMemento = XMLMementoTree.create();
-		yamcsConnectionsMemento.createChild(YAMCS_CONNECTIONS);
+  private void createYamcsConnectionMemento() throws Exception, FileNotFoundException {
+    final XMLMementoTree yamcsConnectionsMemento = XMLMementoTree.create();
+    yamcsConnectionsMemento.createChild(YAMCS_CONNECTIONS);
 
-//		YamcsObject<YamcsServer> treeRoot = serverTree.getRoot();
-//
-//		for (YamcsServer s : treeRoot.getItems()) {
-//			yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).createChild(s.getConnection().getName());
-//
-//			MementoTree connection = yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS)
-//					.getChild(s.getConnection().getName());
-//
-//			connection.setString(YAMCS_URL, s.getConnection().getUrl());
-//			connection.setString(YAMCS_PORT, Integer.toString(s.getConnection().getPort()));
-//			connection.setString(YAMCS_CONNECTION_NAME, s.getName());
-//
-//		}
+    // YamcsObject<YamcsServer> treeRoot = serverTree.getRoot();
+    //
+    // for (YamcsServer s : treeRoot.getItems()) {
+    // yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).createChild(s.getConnection().getName());
+    //
+    // MementoTree connection = yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS)
+    // .getChild(s.getConnection().getName());
+    //
+    // connection.setString(YAMCS_URL, s.getConnection().getUrl());
+    // connection.setString(YAMCS_PORT, Integer.toString(s.getConnection().getPort()));
+    // connection.setString(YAMCS_CONNECTION_NAME, s.getName());
+    //
+    // }
 
-//		yamcsConnectionsMemento
-//				.write(new FileOutputStream(new File(Locations.user(), YAMCS_CONNECTIONS_MEMENTO_FILENAME)));
-	}
+    // yamcsConnectionsMemento
+    // .write(new FileOutputStream(new File(Locations.user(), YAMCS_CONNECTIONS_MEMENTO_FILENAME)));
+  }
 
-	public void raise() {
-		tab.select();
-	}
+  public void raise() {
+    tab.select();
+  }
 
-	private static ObservableList<YamcsServer> restoreServers() {
-		ObservableList<YamcsServer> serverList = YamcsObjectManager.getRoot().getItems();
+  private static ObservableList<YamcsServer> restoreServers() {
+    ObservableList<YamcsServer> serverList = YamcsObjectManager.getRoot().getItems();
 
-		try {
-			final XMLMementoTree yamcsConnectionsMemento = XMLMementoTree
-					.read(new FileInputStream(new File(Locations.user(), YAMCS_CONNECTIONS_MEMENTO_FILENAME)));
-			for (MementoTree child : yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).getChildren()) {
-				// TODO: child.getString(YAMCS_CONNECTION_NAME) should never be null.
-				YamcsServer server = new YamcsServer(child.getString(YAMCS_CONNECTION_NAME).orElse(null));
-				server.connect(new YamcsServerConnection(child.getString(YAMCS_CONNECTION_NAME).orElse(null),
-						child.getString(YAMCS_URL).orElse(null),
-						Integer.parseInt(child.getString(YAMCS_PORT).orElse(null))));
-				serverList.add(server);
-			}
-		} catch (Exception e) {
-			logger.warning("Error restoring yamcs servers:" + e);
-		}
+    try {
+      final XMLMementoTree yamcsConnectionsMemento = XMLMementoTree.read(
+          new FileInputStream(new File(Locations.user(), YAMCS_CONNECTIONS_MEMENTO_FILENAME)));
+      for (MementoTree child : yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).getChildren()) {
+        // TODO: child.getString(YAMCS_CONNECTION_NAME) should never be null.
+        YamcsServer server = new YamcsServer(child.getString(YAMCS_CONNECTION_NAME).orElse(null));
+        server
+            .connect(new YamcsServerConnection(child.getString(YAMCS_CONNECTION_NAME).orElse(null),
+                child.getString(YAMCS_URL).orElse(null),
+                Integer.parseInt(child.getString(YAMCS_PORT).orElse(null))));
+        serverList.add(server);
+      }
+    } catch (Exception e) {
+      logger.warning("Error restoring yamcs servers:" + e);
+    }
 
-		return serverList;
-	}
+    return serverList;
+  }
 
-	public static EventLog getServerTree() {
-		return eventLog;
-	}
+  public static EventLog getServerTree() {
+    return eventLog;
+  }
 }

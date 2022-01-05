@@ -50,7 +50,7 @@ public class EventLogApp implements AppDescriptor {
     // EventLogInstance.INSTANCE.raise();
     else {
       // TODO:Just a hack for now to trigger events.
-      EventLogInstance.INSTANCE = new EventLogInstance(this);
+      EventLogInstance.INSTANCE.nextPage();
     }
     //
     return EventLogInstance.INSTANCE;
