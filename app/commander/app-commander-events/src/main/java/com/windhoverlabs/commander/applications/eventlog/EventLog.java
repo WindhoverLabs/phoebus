@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.yamcs.client.EventSubscription;
+import org.yamcs.client.Page;
+import org.yamcs.protobuf.ListEventsRequest;
+import org.yamcs.protobuf.SubscribeEventsRequest;
 import org.yamcs.protobuf.Yamcs.Event;
 import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
 import com.windhoverlabs.commander.core.YamcsObject;
@@ -18,6 +22,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
+import java.util.logging.Level;
+
 
 public class EventLog {
 
@@ -26,7 +32,7 @@ public class EventLog {
   TableColumn<Event, String> severityCol = new TableColumn<Event, String>();
   TableColumn<Event, String> annotationCol =  new TableColumn<Event, String>();
 
-  private final List<Event> data;
+  private List<Event> data;
   private final static int dataSize = 10_023;
 
   private final List<Class<? extends YamcsObject<?>>> itemTypes =
@@ -36,33 +42,50 @@ public class EventLog {
 
   // TODO:Eventually these will be in spinner nodes. These are the event filters.
   private String currentServer = "sitl";
-  private String currentinstance = "yamcs-cfs";
+  private String currentInstance = "yamcs-cfs";
 
   private YamcsObject<YamcsServer> root;
+  
+  private Page<Event> currentPage;
 
   public EventLog() {
     tableView = new TableView();
     tableView.getColumns().add(severityCol);
     tableView.getColumns().add(annotationCol);
-    data = createData();
+//    data = createData();
 
     root = YamcsObjectManager.getRoot();
   }
-
+  
+  public void nextPage() 
+  {
+    if(currentPage.hasNextPage()) 
+    {   
+      currentPage.iterator().forEachRemaining(data::add);
+      EventLogInstance.logger.log(Level.WARNING, "Events-->" + data.toString());
+    }
+  }
+  
   private List<Event> createData() {
 //    YamcsObjectManager.getServerFromName(currentServer).getInstance(currentinstance)
 //        .getYamcsArchiveClient().listEventIndex(Instant, null, null);
     
-    YamcsObjectManager.getServerFromName(currentServer).getInstance(currentinstance)
+    ListEventsRequest.newBuilder().setInstance(currentInstance);
+    
+    EventSubscription eventSubscription = YamcsObjectManager.getServerFromName(currentServer).getYamcsClient().createEventSubscription();
+    
+    
+//     eventSubscription.sendMessage(
+//         ListEventsRequest.newBuilder().setInstance(currentinstance).build());
+      
+    YamcsObjectManager.getServerFromName(currentServer).getInstance(currentInstance)
     .getYamcsArchiveClient().listEvents().whenComplete((page, exc) -> {
       List<Event> eventList = new ArrayList<>();
+      currentPage = page;
       page.iterator().forEachRemaining(data::add);
+      EventLogInstance.logger.log(Level.WARNING, "Events-->" + data.toString());
       Collections.reverse(eventList); // Output is reverse chronological
       
-//      data.add(eventList);
-//      Display.getDefault().asyncExec(() -> {
-//          addEvents(eventList);
-//      });
   });
     
 

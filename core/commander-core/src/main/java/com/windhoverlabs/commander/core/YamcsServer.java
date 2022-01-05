@@ -7,6 +7,10 @@ import org.yamcs.protobuf.YamcsInstance;
 public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   public static String OBJECT_TYPE = "server";
   private YamcsClient yamcsClient;
+  public YamcsClient getYamcsClient() {
+    return yamcsClient;
+  }
+
   private YamcsServerConnection connection;
 
   private boolean isConnected;

@@ -62,12 +62,14 @@ public class EventLogInstance implements AppInstance {
 	private final AppDescriptor app;
 
 	//TODO: Refactor Tree constructor since we don't need to pass the list of servers anymore.
-	private static EventLog serverTree = new EventLog();
+	private static EventLog eventLog = new EventLog();
 
 	private DockItem tab = null;
 
 	public EventLogInstance(AppDescriptor app) {
 		this.app = app;
+		// TODO:Just a hack for now to trigger events.
+		eventLog = new EventLog();
 
 //		Node content = null;
 ////		content = serverTree.getTreeView();
@@ -80,7 +82,11 @@ public class EventLogInstance implements AppInstance {
 //		});
 	}
 
-	@Override
+	public static EventLog getEventLog() {
+    return eventLog;
+  }
+
+  @Override
 	public AppDescriptor getAppDescriptor() {
 		return app;
 	}
@@ -155,6 +161,6 @@ public class EventLogInstance implements AppInstance {
 	}
 
 	public static EventLog getServerTree() {
-		return serverTree;
+		return eventLog;
 	}
 }

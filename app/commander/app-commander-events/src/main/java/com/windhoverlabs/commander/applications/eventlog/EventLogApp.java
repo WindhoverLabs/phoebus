@@ -12,45 +12,47 @@ import org.phoebus.framework.spi.AppInstance;
 @SuppressWarnings("nls")
 public class EventLogApp implements AppDescriptor {
 
-    public static final String Name = "Event Log";
+  public static final String Name = "Event Log";
 
-    public static final String DisplayName = Messages.DisplayName;
+  public static final String DisplayName = Messages.DisplayName;
 
-    /** Initial root directory for newly opened file browser */
-    @Preference public static File default_root;
+  /** Initial root directory for newly opened file browser */
+  @Preference
+  public static File default_root;
 
-    /** Show hidden files (File.isHidden)? */
-    @Preference public static boolean show_hidden;
+  /** Show hidden files (File.isHidden)? */
+  @Preference
+  public static boolean show_hidden;
 
-    static
-    {
-    	AnnotatedPreferences.initialize(EventLogApp.class, "/eventlog_preferences.properties");
+  static {
+    AnnotatedPreferences.initialize(EventLogApp.class, "/eventlog_preferences.properties");
+  }
+
+  @Override
+  public String getName() {
+    return Name;
+  }
+
+  @Override
+  public AppInstance create() {
+
+    if (EventLogInstance.INSTANCE == null) {
+      try {
+        EventLogInstance.INSTANCE = new EventLogInstance(this);
+      } catch (Exception ex) {
+        Logger.getLogger(EventLogApp.class.getPackageName()).log(Level.WARNING,
+            "Cannot create Error Log", ex);
+        return null;
+      }
     }
-
-    @Override
-    public String getName() {
-        return Name;
+    // TODO:Testing backend for now.
+    // else
+    // EventLogInstance.INSTANCE.raise();
+    else {
+      // TODO:Just a hack for now to trigger events.
+      EventLogInstance.INSTANCE = new EventLogInstance(this);
     }
-	@Override
-	public AppInstance create() {
-    	
-        if (EventLogInstance.INSTANCE == null)
-        {
-            try
-            {
-            	EventLogInstance.INSTANCE = new EventLogInstance(this);
-            }
-            catch (Exception ex)
-            {
-                Logger.getLogger(EventLogApp.class.getPackageName())
-                      .log(Level.WARNING, "Cannot create Error Log", ex);
-                return null;
-            }
-        }
-//        TODO:Testing backend for now.
-//        else
-//        	EventLogInstance.INSTANCE.raise();
-//        
-        return EventLogInstance.INSTANCE;
-	}
+    //
+    return EventLogInstance.INSTANCE;
+  }
 }
