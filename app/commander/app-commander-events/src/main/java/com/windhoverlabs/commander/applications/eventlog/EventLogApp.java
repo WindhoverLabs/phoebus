@@ -3,7 +3,6 @@ package com.windhoverlabs.commander.applications.eventlog;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.phoebus.framework.preferences.AnnotatedPreferences;
 import org.phoebus.framework.preferences.Preference;
 import org.phoebus.framework.spi.AppDescriptor;
@@ -17,12 +16,10 @@ public class EventLogApp implements AppDescriptor {
   public static final String DisplayName = Messages.DisplayName;
 
   /** Initial root directory for newly opened file browser */
-  @Preference
-  public static File default_root;
+  @Preference public static File default_root;
 
   /** Show hidden files (File.isHidden)? */
-  @Preference
-  public static boolean show_hidden;
+  @Preference public static boolean show_hidden;
 
   static {
     AnnotatedPreferences.initialize(EventLogApp.class, "/eventlog_preferences.properties");
@@ -40,8 +37,8 @@ public class EventLogApp implements AppDescriptor {
       try {
         EventLogInstance.INSTANCE = new EventLogInstance(this);
       } catch (Exception ex) {
-        Logger.getLogger(EventLogApp.class.getPackageName()).log(Level.WARNING,
-            "Cannot create Error Log", ex);
+        Logger.getLogger(EventLogApp.class.getPackageName())
+            .log(Level.WARNING, "Cannot create Error Log", ex);
         return null;
       }
     }

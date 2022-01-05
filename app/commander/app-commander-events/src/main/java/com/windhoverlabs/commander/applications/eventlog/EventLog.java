@@ -1,19 +1,16 @@
 package com.windhoverlabs.commander.applications.eventlog;
 
 import static java.util.stream.Collectors.toList;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import org.yamcs.client.EventSubscription;
-import org.yamcs.client.Page;
-import org.yamcs.protobuf.ListEventsRequest;
-import org.yamcs.protobuf.SubscribeEventsRequest;
-import org.yamcs.protobuf.Yamcs.Event;
+
 import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
 import com.windhoverlabs.commander.core.YamcsObject;
 import com.windhoverlabs.commander.core.YamcsObjectManager;
 import com.windhoverlabs.commander.core.YamcsServer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Level;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.css.PseudoClass;
@@ -22,8 +19,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
-import java.util.logging.Level;
-
+import org.yamcs.client.EventSubscription;
+import org.yamcs.client.Page;
+import org.yamcs.protobuf.ListEventsRequest;
+import org.yamcs.protobuf.Yamcs.Event;
 
 public class EventLog {
 
@@ -33,7 +32,7 @@ public class EventLog {
   TableColumn<Event, String> annotationCol = new TableColumn<Event, String>();
 
   private List<Event> data;
-  private final static int dataSize = 10_023;
+  private static final int dataSize = 10_023;
 
   private final List<Class<? extends YamcsObject<?>>> itemTypes =
       Arrays.asList(YamcsServer.class, CMDR_YamcsInstance.class);
@@ -70,23 +69,26 @@ public class EventLog {
 
     ListEventsRequest.newBuilder().setInstance(currentInstance);
 
-    EventSubscription eventSubscription = YamcsObjectManager.getServerFromName(currentServer)
-        .getYamcsClient().createEventSubscription();
-
+    EventSubscription eventSubscription =
+        YamcsObjectManager.getServerFromName(currentServer)
+            .getYamcsClient()
+            .createEventSubscription();
 
     // eventSubscription.sendMessage(
     // ListEventsRequest.newBuilder().setInstance(currentinstance).build());
 
-    YamcsObjectManager.getServerFromName(currentServer).getInstance(currentInstance)
-        .getYamcsArchiveClient().listEvents().whenComplete((page, exc) -> {
-          List<Event> eventList = new ArrayList<>();
-          currentPage = page;
-          page.iterator().forEachRemaining(data::add);
-          EventLogInstance.logger.log(Level.WARNING, "Events-->" + data.toString());
-          Collections.reverse(eventList); // Output is reverse chronological
-
-        });
-
+    YamcsObjectManager.getServerFromName(currentServer)
+        .getInstance(currentInstance)
+        .getYamcsArchiveClient()
+        .listEvents()
+        .whenComplete(
+            (page, exc) -> {
+              List<Event> eventList = new ArrayList<>();
+              currentPage = page;
+              page.iterator().forEachRemaining(data::add);
+              EventLogInstance.logger.log(Level.WARNING, "Events-->" + data.toString());
+              Collections.reverse(eventList); // Output is reverse chronological
+            });
 
     List<Event> tempData = new ArrayList<>(dataSize);
 
@@ -107,17 +109,21 @@ public class EventLog {
 
     // update tree item's children list if game object's list changes:
 
-    object.getItems().addListener((Change<? extends YamcsObject<?>> c) -> {
-      while (c.next()) {
-        if (c.wasAdded()) {
-          item.getChildren()
-              .addAll(c.getAddedSubList().stream().map(this::createItem).collect(toList()));
-        }
-        if (c.wasRemoved()) {
-          item.getChildren().removeIf(treeItem -> c.getRemoved().contains(treeItem.getValue()));
-        }
-      }
-    });
+    object
+        .getItems()
+        .addListener(
+            (Change<? extends YamcsObject<?>> c) -> {
+              while (c.next()) {
+                if (c.wasAdded()) {
+                  item.getChildren()
+                      .addAll(c.getAddedSubList().stream().map(this::createItem).collect(toList()));
+                }
+                if (c.wasRemoved()) {
+                  item.getChildren()
+                      .removeIf(treeItem -> c.getRemoved().contains(treeItem.getValue()));
+                }
+              }
+            });
 
     return item;
   }
@@ -134,5 +140,4 @@ public class EventLog {
   private PseudoClass asPseudoClass(Class<?> clz) {
     return PseudoClass.getPseudoClass(clz.getSimpleName().toLowerCase());
   }
-
 }
