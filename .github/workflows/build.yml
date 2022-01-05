@@ -16,6 +16,9 @@ jobs:
         cd core/commander-core
         mvn fmt:check
         cd ../..
+        cd app/commander
+        mvn fmt:check
+        cd ../..
 
     - name: Build
       run: mvn -Dgpg.skip=true --batch-mode install
