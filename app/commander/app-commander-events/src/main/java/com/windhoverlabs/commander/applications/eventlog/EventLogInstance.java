@@ -1,37 +1,31 @@
 package com.windhoverlabs.commander.applications.eventlog;
 
-import com.windhoverlabs.commander.core.YamcsObjectManager;
-import com.windhoverlabs.commander.core.YamcsServer;
-import com.windhoverlabs.commander.core.YamcsServerConnection;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import org.phoebus.framework.persistence.Memento;
-import org.phoebus.framework.persistence.MementoTree;
-import org.phoebus.framework.persistence.XMLMementoTree;
 import org.phoebus.framework.spi.AppDescriptor;
 import org.phoebus.framework.spi.AppInstance;
-import org.phoebus.framework.workbench.Locations;
 import org.phoebus.ui.docking.DockItem;
+import org.phoebus.ui.docking.DockPane;
 
 /** @author lgomez */
 @SuppressWarnings("nls")
 public class EventLogInstance implements AppInstance {
-  private static final String YAMCS_CONNECTIONS_MEMENTO_FILENAME = "yamcs_connections_memento";
+  private static final String YAMCS_EVENTS_MEMENTO_FILENAME = "yamcs_events_memento";
 
   /** Logger for all file browser code */
   public static final Logger logger = Logger.getLogger(EventLogInstance.class.getPackageName());
 
   /** Memento tags */
-  private static final String YAMCS_CONNECTIONS = "yamcs_connections",
-      YAMCS_URL = "url",
-      YAMCS_PORT = "port",
-      YAMCS_CONNECTION_NAME = "name";
+  private static final String YAMCS_EVENTS = "yamcs_events", YAMCS_EVENT_MESSAGE = "message";
 
-  static EventLogInstance INSTANCE = null;
+  static EventLogInstance INSTANCE;
 
   private final AppDescriptor app;
 
@@ -42,20 +36,19 @@ public class EventLogInstance implements AppInstance {
 
   public EventLogInstance(AppDescriptor app) {
     this.app = app;
-    // TODO:Just a hack for now to trigger events.
-    // Node content = null;
-    //// content = serverTree.getTreeView();
-    //
-    // tab = new DockItem(this, content);
-    // DockPane.getActiveDockPane().addTab(tab);
-    // tab.addCloseCheck(() -> {
-    // INSTANCE = null;
-    // return CompletableFuture.completedFuture(true);
-    // });
-  }
-
-  public void nextPage() {
-    eventLog.nextPage();
+    Node content = null;
+    content = eventLog.getSubScene();
+    logger.log(Level.WARNING, "EventLogInstance#1");
+    tab = new DockItem(this, content);
+    logger.log(Level.WARNING, "EventLogInstance#2");
+    DockPane.getActiveDockPane().addTab(tab);
+    logger.log(Level.WARNING, "EventLogInstance#3");
+    tab.addCloseCheck(
+        () -> {
+          INSTANCE = null;
+          return CompletableFuture.completedFuture(true);
+        });
+    logger.log(Level.WARNING, "EventLogInstance#4");
   }
 
   public static EventLog getEventLog() {
@@ -74,71 +67,31 @@ public class EventLogInstance implements AppInstance {
 
   @Override
   public void save(final Memento memento) {
+    // TODO:Implement memento pattern
     try {
     } catch (Exception e) {
-      logger.warning("Error saving Yamcs connections...:" + e.toString());
+      logger.warning("Error saving Events    connections...:" + e.toString());
     }
-    logger.info("Saving Yamcs connections...");
+    logger.info("Saving Yamcs Events...");
 
     // Save yamcs connections
     try {
-      createYamcsConnectionMemento();
+      createEventsMemento();
     } catch (Exception ex) {
       logger.log(Level.WARNING, "Error writing saved state to " + "", ex);
     }
   }
 
-  private void createYamcsConnectionMemento() throws Exception, FileNotFoundException {
-    final XMLMementoTree yamcsConnectionsMemento = XMLMementoTree.create();
-    yamcsConnectionsMemento.createChild(YAMCS_CONNECTIONS);
-
-    // YamcsObject<YamcsServer> treeRoot = serverTree.getRoot();
-    //
-    // for (YamcsServer s : treeRoot.getItems()) {
-    // yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).createChild(s.getConnection().getName());
-    //
-    // MementoTree connection = yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS)
-    // .getChild(s.getConnection().getName());
-    //
-    // connection.setString(YAMCS_URL, s.getConnection().getUrl());
-    // connection.setString(YAMCS_PORT, Integer.toString(s.getConnection().getPort()));
-    // connection.setString(YAMCS_CONNECTION_NAME, s.getName());
-    //
-    // }
-
-    // yamcsConnectionsMemento
-    // .write(new FileOutputStream(new File(Locations.user(), YAMCS_CONNECTIONS_MEMENTO_FILENAME)));
+  private void createEventsMemento() throws Exception, FileNotFoundException {
+    // TODO:Implement
   }
 
   public void raise() {
     tab.select();
   }
 
-  private static ObservableList<YamcsServer> restoreServers() {
-    ObservableList<YamcsServer> serverList = YamcsObjectManager.getRoot().getItems();
-
-    try {
-      final XMLMementoTree yamcsConnectionsMemento =
-          XMLMementoTree.read(
-              new FileInputStream(new File(Locations.user(), YAMCS_CONNECTIONS_MEMENTO_FILENAME)));
-      for (MementoTree child : yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).getChildren()) {
-        // TODO: child.getString(YAMCS_CONNECTION_NAME) should never be null.
-        YamcsServer server = new YamcsServer(child.getString(YAMCS_CONNECTION_NAME).orElse(null));
-        server.connect(
-            new YamcsServerConnection(
-                child.getString(YAMCS_CONNECTION_NAME).orElse(null),
-                child.getString(YAMCS_URL).orElse(null),
-                Integer.parseInt(child.getString(YAMCS_PORT).orElse(null))));
-        serverList.add(server);
-      }
-    } catch (Exception e) {
-      logger.warning("Error restoring yamcs servers:" + e);
-    }
-
-    return serverList;
-  }
-
-  public static EventLog getServerTree() {
-    return eventLog;
+  private static ObservableList<String> restoreEvents() {
+    // TODO:Implement memento pattern
+    return FXCollections.observableArrayList(new ArrayList<String>());
   }
 }

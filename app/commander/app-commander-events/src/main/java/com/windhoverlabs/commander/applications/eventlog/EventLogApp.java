@@ -41,15 +41,10 @@ public class EventLogApp implements AppDescriptor {
             .log(Level.WARNING, "Cannot create Error Log", ex);
         return null;
       }
+    } else {
+      EventLogInstance.INSTANCE.getEventLog().updateEvents();
+      EventLogInstance.INSTANCE.raise();
     }
-    // TODO:Testing backend for now.
-    // else
-    // EventLogInstance.INSTANCE.raise();
-    else {
-      // TODO:Just a hack for now to trigger events.
-      EventLogInstance.INSTANCE.nextPage();
-    }
-    //
     return EventLogInstance.INSTANCE;
   }
 }
