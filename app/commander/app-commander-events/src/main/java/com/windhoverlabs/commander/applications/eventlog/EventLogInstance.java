@@ -1,13 +1,17 @@
 package com.windhoverlabs.commander.applications.eventlog;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import org.phoebus.framework.nls.NLS;
 import org.phoebus.framework.persistence.Memento;
 import org.phoebus.framework.spi.AppDescriptor;
 import org.phoebus.framework.spi.AppInstance;
@@ -30,14 +34,24 @@ public class EventLogInstance implements AppInstance {
   private final AppDescriptor app;
 
   // TODO: Refactor Tree constructor since we don't need to pass the list of servers anymore.
-  private static EventLog eventLog = new EventLog();
+  private static EventLogController eventLog = new EventLogController();
 
   private DockItem tab = null;
 
   public EventLogInstance(AppDescriptor app) {
     this.app = app;
     Node content = null;
-    content = eventLog.getRootPane();
+    ResourceBundle resourceBundle = NLS.getMessages(Messages.class);
+    FXMLLoader loader = new FXMLLoader();
+    loader.setResources(resourceBundle);
+    loader.setLocation(this.getClass().getResource("EventLog.fxml"));
+
+    try {
+      content = loader.load();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     logger.log(Level.WARNING, "EventLogInstance#1");
     tab = new DockItem(this, content);
     logger.log(Level.WARNING, "EventLogInstance#2");
@@ -51,7 +65,7 @@ public class EventLogInstance implements AppInstance {
     logger.log(Level.WARNING, "EventLogInstance#4");
   }
 
-  public static EventLog getEventLog() {
+  public static EventLogController getEventLog() {
     return eventLog;
   }
 

@@ -1,24 +1,24 @@
 package com.windhoverlabs.commander.applications.eventlog;
 
-import com.windhoverlabs.commander.applications.eventlog.EventLog.CMDR_Event;
+import com.windhoverlabs.commander.applications.eventlog.EventLogController.CMDR_Event;
 import com.windhoverlabs.commander.core.YamcsObject;
 import com.windhoverlabs.commander.core.YamcsObjectManager;
 import com.windhoverlabs.commander.core.YamcsServer;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.SubScene;
 import javafx.scene.control.Pagination;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import org.yamcs.client.Page;
 import org.yamcs.protobuf.Yamcs.Event;
 
-public class EventLog {
+public class EventLogController {
 
   private static final int MAX_PAGES = 16;
 
@@ -34,17 +34,22 @@ public class EventLog {
     }
   }
 
-  private final TableView<EventLog.CMDR_Event> tableView = new TableView<EventLog.CMDR_Event>();
+  private final TableView<EventLogController.CMDR_Event> tableView =
+      new TableView<EventLogController.CMDR_Event>();
 
-  TableColumn<EventLog.CMDR_Event, String> severityCol =
-      new TableColumn<EventLog.CMDR_Event, String>();
-  TableColumn<EventLog.CMDR_Event, String> annotationCol =
-      new TableColumn<EventLog.CMDR_Event, String>();
+  TableColumn<EventLogController.CMDR_Event, String> severityCol =
+      new TableColumn<EventLogController.CMDR_Event, String>();
+  TableColumn<EventLogController.CMDR_Event, String> annotationCol =
+      new TableColumn<EventLogController.CMDR_Event, String>();
 
-  TableColumn<EventLog.CMDR_Event, String> messageCol =
-      new TableColumn<EventLog.CMDR_Event, String>("Message");
+  TableColumn<EventLogController.CMDR_Event, String> timeStampCol =
+      new TableColumn<EventLogController.CMDR_Event, String>();
 
-  private ArrayList<EventLog.CMDR_Event> data = new ArrayList<EventLog.CMDR_Event>();
+  TableColumn<EventLogController.CMDR_Event, String> messageCol =
+      new TableColumn<EventLogController.CMDR_Event, String>("Message");
+
+  private ArrayList<EventLogController.CMDR_Event> data =
+      new ArrayList<EventLogController.CMDR_Event>();
   private static final int dataSize = 10_023;
 
   private int rowsPerPage = 100;
@@ -56,14 +61,14 @@ public class EventLog {
   private YamcsObject<YamcsServer> root;
 
   private Page<Event> currentPage;
-  private Pagination pagination;
-  private SubScene scene;
-  private Node rootPane;
+  @FXML private Pagination pagination;
+
+  @FXML private Node gridPane;
 
   private boolean isReady = false;
 
   public Node getRootPane() {
-    return rootPane;
+    return gridPane;
   }
 
   // TODO:Quick hack to run tests
@@ -75,18 +80,60 @@ public class EventLog {
     }
   }
 
-  public EventLog() {
-    messageCol.setCellValueFactory(event -> event.getValue().message);
+  @FXML
+  public void initialize() {
+    tableView.setId("eventsTable");
+    messageCol.setCellValueFactory(
+        (event) -> {
+          return event.getValue().message;
+        });
+
+    messageCol.setCellFactory(
+        column -> {
+          return new TableCell<EventLogController.CMDR_Event, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+              super.updateItem(item, empty); // This is mandatory
+
+              if (item == null || empty) { // If the cell is empty
+                setText(null);
+                setStyle("");
+              } else { // If the cell is not empty
+
+                setTextFill(Color.RED);
+
+                setText(item); // Put the String data in the cell
+                //
+                //                  //We get here all the info of the Person of this row
+                //                  CMDR_Event auxPerson =
+                // getTableView().getItems().get(getIndex());
+                //
+                //                  // Style all persons wich name is "Edgard"
+                //                  if (auxPerson.getName().equals("Edgard")) {
+                //                      setTextFill(Color.RED); //The text in red
+                //                      setStyle("-fx-background-color: yellow"); //The background
+                // of the cell in yellow
+                //                  } else {
+                //                      //Here I see if the row of this cell is selected or not
+                //
+                // if(getTableView().getSelectionModel().getSelectedItems().contains(auxPerson))
+                //                          setTextFill(Color.WHITE);
+                //                      else
+                //                          setTextFill(Color.BLACK);
+                //                  }
+              }
+            }
+          };
+        });
     tableView.getColumns().add(messageCol);
     createData();
-    root = YamcsObjectManager.getRoot();
-    //    pagination = new Pagination((data.size() / rowsPerPage + 1), 0);
-    pagination = new Pagination(MAX_PAGES, 0);
 
+    root = YamcsObjectManager.getRoot();
     pagination.setPageFactory(this::createPage);
-    pagination.setVisible(true);
-    rootPane = new BorderPane(pagination);
+    pagination.setPageCount(MAX_PAGES);
   }
+
+  public EventLogController() {}
 
   public void nextPage() {
     if (currentPage.hasNextPage()) {
@@ -136,45 +183,13 @@ public class EventLog {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    //        .whenComplete(
-    //            (page, exc) -> {
-    //              currentPage = page;
-    //              page.iterator()
-    //              .forEachRemaining(
-    //                  event -> {
-    //                    data.add(new CMDR_Event(event.getMessage()));
-    //                  });
-    //              currentPage.getNextPage().get((nextPage, exec)->
-    //              {
-    //                page.iterator()
-    //                .forEachRemaining(
-    //                    event -> {
-    //                      data.add(new CMDR_Event(event.getMessage()));
-    //                    });
-    //                currentPage = page;
-    //              });
-    //              tableView.setItems(FXCollections.observableArrayList(data));
-    //              isReady = true;
-    //              EventLogInstance.logger.log(Level.WARNING, "Events-->" + data.toString());
-    //              //              Collections.reverse(eventList); // Output is reverse
-    // chronological
-    //            });
   }
 
   private Node createPage(int pageIndex) {
-    EventLogInstance.logger.log(Level.WARNING, "createPage#1" + pageIndex);
-
     int fromIndex = pageIndex * rowsPerPage;
     int toIndex = Math.min(fromIndex + rowsPerPage, data.size());
-    //    int toIndex = 16;
-    EventLogInstance.logger.log(Level.WARNING, "createPage#2");
-
-    EventLogInstance.logger.log(Level.WARNING, "Events-->" + data.toString());
 
     tableView.setItems(FXCollections.observableArrayList(data.subList(fromIndex, toIndex)));
-
-    EventLogInstance.logger.log(Level.WARNING, "createPage#3");
-
-    return new BorderPane(tableView);
+    return tableView;
   }
 }
