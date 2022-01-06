@@ -37,7 +37,7 @@ public class EventLogInstance implements AppInstance {
   public EventLogInstance(AppDescriptor app) {
     this.app = app;
     Node content = null;
-    content = eventLog.getSubScene();
+    content = eventLog.getRootPane();
     logger.log(Level.WARNING, "EventLogInstance#1");
     tab = new DockItem(this, content);
     logger.log(Level.WARNING, "EventLogInstance#2");

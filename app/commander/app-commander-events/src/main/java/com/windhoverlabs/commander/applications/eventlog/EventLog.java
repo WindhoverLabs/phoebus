@@ -5,9 +5,10 @@ import com.windhoverlabs.commander.core.YamcsObject;
 import com.windhoverlabs.commander.core.YamcsObjectManager;
 import com.windhoverlabs.commander.core.YamcsServer;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.SubScene;
 import javafx.scene.control.Pagination;
@@ -19,15 +20,17 @@ import org.yamcs.protobuf.Yamcs.Event;
 
 public class EventLog {
 
+  private static final int MAX_PAGES = 16;
+
   public class CMDR_Event {
-    public String message;
+    public SimpleStringProperty message;
 
     public CMDR_Event(String newMessage) {
-      message = newMessage;
+      message = new SimpleStringProperty(newMessage);
     }
 
     public String toString() {
-      return message;
+      return message.getValue();
     }
   }
 
@@ -39,9 +42,9 @@ public class EventLog {
       new TableColumn<EventLog.CMDR_Event, String>();
 
   TableColumn<EventLog.CMDR_Event, String> messageCol =
-      new TableColumn<EventLog.CMDR_Event, String>();
+      new TableColumn<EventLog.CMDR_Event, String>("Message");
 
-  private ArrayList<EventLog.CMDR_Event> data;
+  private ArrayList<EventLog.CMDR_Event> data = new ArrayList<EventLog.CMDR_Event>();
   private static final int dataSize = 10_023;
 
   private int rowsPerPage = 100;
@@ -55,83 +58,123 @@ public class EventLog {
   private Page<Event> currentPage;
   private Pagination pagination;
   private SubScene scene;
+  private Node rootPane;
 
   private boolean isReady = false;
 
-  public Node getSubScene() {
-    return tableView;
+  public Node getRootPane() {
+    return rootPane;
   }
 
   // TODO:Quick hack to run tests
   public void updateEvents() {
     if (isReady) {
-      tableView.setItems(FXCollections.observableArrayList(data));
+      //      EventLogInstance.logger.log(Level.WARNING, "isReady-->" + data.toString());
+      //      tableView.setItems(FXCollections.observableArrayList(data));
       //      tableView.upd
     }
   }
 
   public EventLog() {
-    EventLogInstance.logger.log(Level.WARNING, "EventLog#1");
+    messageCol.setCellValueFactory(event -> event.getValue().message);
     tableView.getColumns().add(messageCol);
-    EventLogInstance.logger.log(Level.WARNING, "EventLog#2");
     createData();
-    EventLogInstance.logger.log(Level.WARNING, "EventLog#3");
     root = YamcsObjectManager.getRoot();
-    //    EventLogInstance.logger.log(Level.WARNING, "EventLog#4");
     //    pagination = new Pagination((data.size() / rowsPerPage + 1), 0);
-    //    EventLogInstance.logger.log(Level.WARNING, "EventLog#5");
-    //    pagination.setPageFactory(this::createPage);
-    //    EventLogInstance.logger.log(Level.WARNING, "EventLog#6");
-    //    pagination.setVisible(true);
-    //    scene = new SubScene(pagination, 1000, 700);
-    EventLogInstance.logger.log(Level.WARNING, "EventLog#7");
-    //    Scene scene = new Scene(new BorderPane(pagination), 1024, 768);
+    pagination = new Pagination(MAX_PAGES, 0);
+
+    pagination.setPageFactory(this::createPage);
+    pagination.setVisible(true);
+    rootPane = new BorderPane(pagination);
   }
 
   public void nextPage() {
     if (currentPage.hasNextPage()) {
+      currentPage.getNextPage().whenComplete((page, exec) -> {});
+
       currentPage
           .iterator()
           .forEachRemaining(
               event -> {
                 data.add(new CMDR_Event(event.getMessage()));
               });
-      //      EventLogInstance.logger.log(Level.WARNING, "Events-->" + data.toString());
     }
   }
 
   private void createData() {
+    try {
+      currentPage =
+          YamcsObjectManager.getServerFromName(currentServer)
+              .getInstance(currentInstance)
+              .getYamcsArchiveClient()
+              .listEvents()
+              .get();
 
-    YamcsObjectManager.getServerFromName(currentServer)
-        .getInstance(currentInstance)
-        .getYamcsArchiveClient()
-        .listEvents()
-        .whenComplete(
-            (page, exc) -> {
-              currentPage = page;
-              page.iterator()
-                  .forEachRemaining(
-                      event -> {
-                        data.add(new CMDR_Event(event.getMessage()));
-                      });
+      currentPage
+          .iterator()
+          .forEachRemaining(
+              event -> {
+                data.add(new CMDR_Event(event.getMessage()));
+              });
 
-              isReady = true;
-              EventLogInstance.logger.log(Level.WARNING, "Events-->" + data.toString());
-              //              Collections.reverse(eventList); // Output is reverse chronological
-            });
+      for (int page = 1; page < MAX_PAGES && currentPage.hasNextPage(); page++) {
+        currentPage = currentPage.getNextPage().get();
+        currentPage
+            .iterator()
+            .forEachRemaining(
+                event -> {
+                  data.add(new CMDR_Event(event.getMessage()));
+                });
+      }
+
+      tableView.setItems(FXCollections.observableArrayList(data));
+      isReady = true;
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (ExecutionException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    //        .whenComplete(
+    //            (page, exc) -> {
+    //              currentPage = page;
+    //              page.iterator()
+    //              .forEachRemaining(
+    //                  event -> {
+    //                    data.add(new CMDR_Event(event.getMessage()));
+    //                  });
+    //              currentPage.getNextPage().get((nextPage, exec)->
+    //              {
+    //                page.iterator()
+    //                .forEachRemaining(
+    //                    event -> {
+    //                      data.add(new CMDR_Event(event.getMessage()));
+    //                    });
+    //                currentPage = page;
+    //              });
+    //              tableView.setItems(FXCollections.observableArrayList(data));
+    //              isReady = true;
+    //              EventLogInstance.logger.log(Level.WARNING, "Events-->" + data.toString());
+    //              //              Collections.reverse(eventList); // Output is reverse
+    // chronological
+    //            });
   }
 
   private Node createPage(int pageIndex) {
-    EventLogInstance.logger.log(Level.WARNING, "createPage-->");
+    EventLogInstance.logger.log(Level.WARNING, "createPage#1" + pageIndex);
 
     int fromIndex = pageIndex * rowsPerPage;
     int toIndex = Math.min(fromIndex + rowsPerPage, data.size());
+    //    int toIndex = 16;
+    EventLogInstance.logger.log(Level.WARNING, "createPage#2");
+
+    EventLogInstance.logger.log(Level.WARNING, "Events-->" + data.toString());
+
     tableView.setItems(FXCollections.observableArrayList(data.subList(fromIndex, toIndex)));
 
-    return new BorderPane(tableView);
-  }
+    EventLogInstance.logger.log(Level.WARNING, "createPage#3");
 
-  private PseudoClass asPseudoClass(Class<?> clz) {
-    return PseudoClass.getPseudoClass(clz.getSimpleName().toLowerCase());
+    return new BorderPane(tableView);
   }
 }
