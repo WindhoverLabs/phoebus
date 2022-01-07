@@ -90,7 +90,7 @@ public class EventLogController {
                 setText(null);
                 setStyle("");
               } else { // If the cell is not empty
-                //We get here all the info of the event of this row
+                // We get here all the info of the event of this row
                 CMDR_Event event = getTableView().getItems().get(getIndex());
                 setTextFill(Color.RED);
                 setText(item); // Put the String data in the cell
