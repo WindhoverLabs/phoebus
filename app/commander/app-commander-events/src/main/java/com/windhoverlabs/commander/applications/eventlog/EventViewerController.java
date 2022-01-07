@@ -1,6 +1,6 @@
 package com.windhoverlabs.commander.applications.eventlog;
 
-import com.windhoverlabs.commander.applications.eventlog.EventLogController.CMDR_Event;
+import com.windhoverlabs.commander.applications.eventlog.EventViewerController.CMDR_Event;
 import com.windhoverlabs.commander.core.YamcsObject;
 import com.windhoverlabs.commander.core.YamcsObjectManager;
 import com.windhoverlabs.commander.core.YamcsServer;
@@ -18,7 +18,7 @@ import javafx.scene.paint.Color;
 import org.yamcs.client.Page;
 import org.yamcs.protobuf.Yamcs.Event;
 
-public class EventLogController {
+public class EventViewerController {
 
   private static final int MAX_PAGES = 16;
 
@@ -34,22 +34,22 @@ public class EventLogController {
     }
   }
 
-  private final TableView<EventLogController.CMDR_Event> tableView =
-      new TableView<EventLogController.CMDR_Event>();
+  private final TableView<EventViewerController.CMDR_Event> tableView =
+      new TableView<EventViewerController.CMDR_Event>();
 
-  TableColumn<EventLogController.CMDR_Event, String> severityCol =
-      new TableColumn<EventLogController.CMDR_Event, String>();
-  TableColumn<EventLogController.CMDR_Event, String> annotationCol =
-      new TableColumn<EventLogController.CMDR_Event, String>();
+  TableColumn<EventViewerController.CMDR_Event, String> severityCol =
+      new TableColumn<EventViewerController.CMDR_Event, String>();
+  TableColumn<EventViewerController.CMDR_Event, String> annotationCol =
+      new TableColumn<EventViewerController.CMDR_Event, String>();
 
-  TableColumn<EventLogController.CMDR_Event, String> timeStampCol =
-      new TableColumn<EventLogController.CMDR_Event, String>();
+  TableColumn<EventViewerController.CMDR_Event, String> timeStampCol =
+      new TableColumn<EventViewerController.CMDR_Event, String>();
 
-  TableColumn<EventLogController.CMDR_Event, String> messageCol =
-      new TableColumn<EventLogController.CMDR_Event, String>("Message");
+  TableColumn<EventViewerController.CMDR_Event, String> messageCol =
+      new TableColumn<EventViewerController.CMDR_Event, String>("Message");
 
-  private ArrayList<EventLogController.CMDR_Event> data =
-      new ArrayList<EventLogController.CMDR_Event>();
+  private ArrayList<EventViewerController.CMDR_Event> data =
+      new ArrayList<EventViewerController.CMDR_Event>();
   private static final int dataSize = 10_023;
 
   private int rowsPerPage = 100;
@@ -81,7 +81,7 @@ public class EventLogController {
 
     messageCol.setCellFactory(
         column -> {
-          return new TableCell<EventLogController.CMDR_Event, String>() {
+          return new TableCell<EventViewerController.CMDR_Event, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
               super.updateItem(item, empty); // This is mandatory
@@ -106,7 +106,7 @@ public class EventLogController {
     pagination.setPageCount(MAX_PAGES);
   }
 
-  public EventLogController() {}
+  public EventViewerController() {}
 
   @FXML
   private void updateData() {
