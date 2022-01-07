@@ -9,9 +9,12 @@ import javafx.collections.ObservableList;
  *
  * @author lgomez
  */
-public class YamcsObjectManager {
+public final class YamcsObjectManager {
   private static YamcsObject<YamcsServer> root;
   private static ObservableList<YamcsServer> servers = FXCollections.observableArrayList();
+  private static String defaultInstance = "";
+
+  private YamcsObjectManager() {}
 
   public static YamcsObject<YamcsServer> getRoot() {
     return root;

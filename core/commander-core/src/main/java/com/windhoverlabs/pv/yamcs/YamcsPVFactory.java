@@ -27,6 +27,7 @@ import org.epics.vtype.VStringArray;
 import org.epics.vtype.VType;
 import org.phoebus.pv.PV;
 import org.phoebus.pv.PVFactory;
+import org.phoebus.pv.PVPool;
 import org.yamcs.protobuf.Yamcs.NamedObjectId;
 
 /**
@@ -54,21 +55,31 @@ public class YamcsPVFactory implements PVFactory {
    * @return TODO
    */
   public boolean register(PV pv) {
-    String serverPath = extractServerNameFromPVName(pv);
-    String instanceName = extractInstanceNameFromPVName(pv);
-    CMDR_YamcsInstance pvInstance =
-        YamcsObjectManager.getInstanceFromName(serverPath, instanceName);
-    if (pvInstance == null) {
-      log.warning("Server not found");
-      return false;
+    CMDR_YamcsInstance pvInstance = null;
+    if (!isDefault(pv)) {
+      String serverPath = extractServerNameFromPVName(pv);
+      String instanceName = extractInstanceNameFromPVName(pv);
+      pvInstance = YamcsObjectManager.getInstanceFromName(serverPath, instanceName);
+      if (pvInstance == null) {
+        log.warning("Server not found");
+        return false;
+      }
+      pvInstance.subscribePV((YamcsPV) pv);
     }
-    pvInstance.subscribePV((YamcsPV) pv);
 
     return true;
   }
 
+  private boolean isDefault(PV pv) {
+    boolean isDefault = false;
+    if (!pv.getName().contains(PVPool.SEPARATOR)) {
+      isDefault = true;
+    }
+    return isDefault;
+  }
+
   private String extractServerNameFromPVName(PV pv) {
-    String serverPath = pv.getName().split("://")[1];
+    String serverPath = pv.getName().split(PVPool.SEPARATOR)[1];
     serverPath = serverPath.split(":")[0];
     return serverPath;
   }
