@@ -42,7 +42,6 @@ public class EventLogApp implements AppDescriptor {
         return null;
       }
     } else {
-      EventLogInstance.INSTANCE.getEventLog().updateEvents();
       EventLogInstance.INSTANCE.raise();
     }
     return EventLogInstance.INSTANCE;

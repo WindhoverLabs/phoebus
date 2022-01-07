@@ -71,15 +71,6 @@ public class EventLogController {
     return gridPane;
   }
 
-  // TODO:Quick hack to run tests
-  public void updateEvents() {
-    if (isReady) {
-      //      EventLogInstance.logger.log(Level.WARNING, "isReady-->" + data.toString());
-      //      tableView.setItems(FXCollections.observableArrayList(data));
-      //      tableView.upd
-    }
-  }
-
   @FXML
   public void initialize() {
     tableView.setId("eventsTable");
@@ -99,34 +90,14 @@ public class EventLogController {
                 setText(null);
                 setStyle("");
               } else { // If the cell is not empty
-
                 setTextFill(Color.RED);
-
                 setText(item); // Put the String data in the cell
-                //
-                //                  //We get here all the info of the Person of this row
-                //                  CMDR_Event auxPerson =
-                // getTableView().getItems().get(getIndex());
-                //
-                //                  // Style all persons wich name is "Edgard"
-                //                  if (auxPerson.getName().equals("Edgard")) {
-                //                      setTextFill(Color.RED); //The text in red
-                //                      setStyle("-fx-background-color: yellow"); //The background
-                // of the cell in yellow
-                //                  } else {
-                //                      //Here I see if the row of this cell is selected or not
-                //
-                // if(getTableView().getSelectionModel().getSelectedItems().contains(auxPerson))
-                //                          setTextFill(Color.WHITE);
-                //                      else
-                //                          setTextFill(Color.BLACK);
-                //                  }
               }
             }
           };
         });
     tableView.getColumns().add(messageCol);
-    createData();
+    updateData();
 
     root = YamcsObjectManager.getRoot();
     pagination.setPageFactory(this::createPage);
@@ -135,20 +106,9 @@ public class EventLogController {
 
   public EventLogController() {}
 
-  public void nextPage() {
-    if (currentPage.hasNextPage()) {
-      currentPage.getNextPage().whenComplete((page, exec) -> {});
-
-      currentPage
-          .iterator()
-          .forEachRemaining(
-              event -> {
-                data.add(new CMDR_Event(event.getMessage()));
-              });
-    }
-  }
-
-  private void createData() {
+  @FXML
+  private void updateData() {
+    data.clear();
     try {
       currentPage =
           YamcsObjectManager.getServerFromName(currentServer)
@@ -175,7 +135,6 @@ public class EventLogController {
       }
 
       tableView.setItems(FXCollections.observableArrayList(data));
-      isReady = true;
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
