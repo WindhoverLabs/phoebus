@@ -56,16 +56,17 @@ public class YamcsPVFactory implements PVFactory {
    */
   public boolean register(PV pv) {
     CMDR_YamcsInstance pvInstance = null;
-    if (!isDefault(pv)) {
-      String serverPath = extractServerNameFromPVName(pv);
-      String instanceName = extractInstanceNameFromPVName(pv);
-      pvInstance = YamcsObjectManager.getInstanceFromName(serverPath, instanceName);
-      if (pvInstance == null) {
-        log.warning("Server not found");
-        return false;
-      }
-      pvInstance.subscribePV((YamcsPV) pv);
+    String serverPath = extractServerNameFromPVName(pv);
+    System.out.println("Server path--------->" + serverPath);
+    System.out.println("Server path from pv--------->" + pv.getName());
+    String instanceName = extractInstanceNameFromPVName(pv);
+    pvInstance = YamcsObjectManager.getInstanceFromName(serverPath, instanceName);
+    if (pvInstance == null) {
+      log.warning("Instance not found");
+      return false;
     }
+
+    pvInstance.subscribePV((YamcsPV) pv);
 
     return true;
   }
@@ -79,14 +80,31 @@ public class YamcsPVFactory implements PVFactory {
   }
 
   private String extractServerNameFromPVName(PV pv) {
-    String serverPath = pv.getName().split(PVPool.SEPARATOR)[1];
+    String serverPath = pv.getName();
+    if (!isDefault(pv)) {
+      serverPath = pv.getName().split(PVPool.SEPARATOR)[1];
+    } else {
+      serverPath = serverPath.substring(2);
+    }
+
+    System.out.println("serverPath******1-->" + serverPath);
     serverPath = serverPath.split(":")[0];
+    System.out.println("serverPath******2-->" + serverPath);
     return serverPath;
   }
 
   private String extractInstanceNameFromPVName(PV pv) {
-    String InstancePath = pv.getName().split("://")[1];
+    String InstancePath = pv.getName();
+
+    if (!isDefault(pv)) {
+      InstancePath = pv.getName().split(PVPool.SEPARATOR)[1];
+    } else {
+      InstancePath = InstancePath.substring(2);
+    }
+
     InstancePath = InstancePath.split(":")[1].split("/")[0];
+    
+    System.out.println("Instance path-->" + InstancePath);
     return InstancePath;
   }
 
