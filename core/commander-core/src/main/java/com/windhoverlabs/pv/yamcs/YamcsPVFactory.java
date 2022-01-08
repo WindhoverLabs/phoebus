@@ -103,7 +103,7 @@ public class YamcsPVFactory implements PVFactory {
     }
 
     InstancePath = InstancePath.split(":")[1].split("/")[0];
-    
+
     System.out.println("Instance path-->" + InstancePath);
     return InstancePath;
   }
