@@ -7,6 +7,11 @@ import org.yamcs.protobuf.YamcsInstance;
 public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   public static String OBJECT_TYPE = "server";
   private YamcsClient yamcsClient;
+
+  public YamcsClient getYamcsClient() {
+    return yamcsClient;
+  }
+
   private YamcsServerConnection connection;
 
   private boolean isConnected;
@@ -47,6 +52,9 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
                   getItems()
                       .get(getItems().size() - 1)
                       .initYamcsSubscriptionService(yamcsClient, this.getName());
+                  getItems()
+                      .get(getItems().size() - 1)
+                      .initEventSubscription(yamcsClient, this.getName());
                 }
               }
             });

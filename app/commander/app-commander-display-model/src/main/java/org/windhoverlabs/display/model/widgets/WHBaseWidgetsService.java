@@ -9,21 +9,19 @@ package com.windhoverlabs.display.model.widgets;
 
 import java.util.Collection;
 import java.util.List;
-
 import org.csstudio.display.builder.model.WidgetDescriptor;
 import org.csstudio.display.builder.model.spi.WidgetsService;
 
-/** SPI for the Windhover Labs based widgets
- *  @author lgomez
+/**
+ * SPI for the Windhover Labs based widgets
+ *
+ * @author lgomez
  */
-public class WHBaseWidgetsService implements WidgetsService
-{
-    @Override
-    public Collection<WidgetDescriptor> getWidgetDescriptors()
-    {
-    	System.out.println("WHBaseWidgetsService");
-        return List.of(
-            WHTextUpdateWidget.WIDGET_DESCRIPTOR,
-            CommanderCommandActionButtonWidget.WIDGET_DESCRIPTOR);
-    }
+public class WHBaseWidgetsService implements WidgetsService {
+  @Override
+  public Collection<WidgetDescriptor> getWidgetDescriptors() {
+    System.out.println("WHBaseWidgetsService");
+    return List.of(
+        WHTextUpdateWidget.WIDGET_DESCRIPTOR, CommanderCommandActionButtonWidget.WIDGET_DESCRIPTOR);
+  }
 }
