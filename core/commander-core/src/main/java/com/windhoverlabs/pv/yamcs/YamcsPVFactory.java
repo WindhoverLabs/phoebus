@@ -57,8 +57,6 @@ public class YamcsPVFactory implements PVFactory {
   public boolean register(PV pv) {
     CMDR_YamcsInstance pvInstance = null;
     String serverPath = extractServerNameFromPVName(pv);
-    System.out.println("Server path--------->" + serverPath);
-    System.out.println("Server path from pv--------->" + pv.getName());
     String instanceName = extractInstanceNameFromPVName(pv);
     pvInstance = YamcsObjectManager.getInstanceFromName(serverPath, instanceName);
     if (pvInstance == null) {
@@ -71,9 +69,9 @@ public class YamcsPVFactory implements PVFactory {
     return true;
   }
 
-  private boolean isDefault(PV pv) {
+  private boolean isDefaultDataSource(String pv) {
     boolean isDefault = false;
-    if (!pv.getName().contains(PVPool.SEPARATOR)) {
+    if (!pv.contains(PVPool.SEPARATOR)) {
       isDefault = true;
     }
     return isDefault;
@@ -81,30 +79,17 @@ public class YamcsPVFactory implements PVFactory {
 
   private String extractServerNameFromPVName(PV pv) {
     String serverPath = pv.getName();
-    if (!isDefault(pv)) {
-      serverPath = pv.getName().split(PVPool.SEPARATOR)[1];
-    } else {
-      serverPath = serverPath.substring(2);
-    }
-
-    System.out.println("serverPath******1-->" + serverPath);
+    serverPath = serverPath.substring(2);
     serverPath = serverPath.split(":")[0];
-    System.out.println("serverPath******2-->" + serverPath);
+
     return serverPath;
   }
 
   private String extractInstanceNameFromPVName(PV pv) {
     String InstancePath = pv.getName();
-
-    if (!isDefault(pv)) {
-      InstancePath = pv.getName().split(PVPool.SEPARATOR)[1];
-    } else {
-      InstancePath = InstancePath.substring(2);
-    }
-
+    InstancePath = InstancePath.substring(2);
     InstancePath = InstancePath.split(":")[1].split("/")[0];
 
-    System.out.println("Instance path-->" + InstancePath);
     return InstancePath;
   }
 
@@ -122,17 +107,25 @@ public class YamcsPVFactory implements PVFactory {
 
   @Override
   public String getCoreName(final String name) {
-    int sep = name.indexOf('<');
-    if (sep > 0) return name.substring(0, sep);
-    sep = name.indexOf('(');
-    if (sep > 0) return name.substring(0, sep);
-    return name;
+    String actual_name = name;
+    if (isDefaultDataSource(actual_name)) {
+      actual_name = name;
+    } else {
+      actual_name = actual_name.substring("yamcs:".length());
+    }
+    return actual_name;
   }
 
   @Override
   public PV createPV(final String name, final String base_name) throws Exception {
 
     String actual_name = name;
+
+    if (isDefaultDataSource(actual_name)) {
+      actual_name = name;
+    } else {
+      actual_name = actual_name.substring("yamcs:".length());
+    }
 
     final Class<? extends VType> type = parseType("");
 
@@ -147,7 +140,6 @@ public class YamcsPVFactory implements PVFactory {
           yamcs_pvs.put(actual_name, pv);
         }
       } else {
-
         pv.checkInitializer(type, initial_value);
       }
     }

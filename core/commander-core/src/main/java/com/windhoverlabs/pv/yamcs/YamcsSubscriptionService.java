@@ -115,7 +115,8 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
    * @return
    */
   public static String getYamcsPvName(String pvName, String serverName) {
-    String subStr = "yamcs://" + serverName + ":" + instanceName;
+    String subStr = "//" + serverName + ":" + instanceName;
+
     return pvName.substring(subStr.length());
   }
 
@@ -205,14 +206,13 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
   }
 
   public static NamedObjectId identityOf(String pvName) {
-
     return NamedObjectId.newBuilder().setName(pvName).build();
-
-    //        if (pvName.startsWith("ops://")) {
-    //            return NamedObjectId.newBuilder()
-    //                    .setNamespace("MDB:OPS Name")
-    //                    .setName(pvName.substring("ops://".length()))
-    //                    .build();
+    //    if (pvName.startsWith("yamcs://")) {
+    //      return
+    // NamedObjectId.newBuilder().setName(pvName.substring("yamcs://".length())).build();
+    //    } else {
+    //      System.out.println("identityOf2" + pvName);
+    //    }
     //        } else if (pvName.startsWith("para://")) {
     //            return NamedObjectId.newBuilder()
     //                    .setName(pvName.substring("para://".length()))
