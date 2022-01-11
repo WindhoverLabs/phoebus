@@ -58,7 +58,11 @@ public class YamcsPVFactory implements PVFactory {
     CMDR_YamcsInstance pvInstance = null;
     String serverPath = extractServerNameFromPVName(pv);
     String instanceName = extractInstanceNameFromPVName(pv);
-    pvInstance = YamcsObjectManager.getInstanceFromName(serverPath, instanceName);
+    if (!instanceName.isEmpty()) {
+      pvInstance = YamcsObjectManager.getInstanceFromName(serverPath, instanceName);
+    } else {
+      pvInstance = YamcsObjectManager.getServerFromName(serverPath).getDefaultInstance();
+    }
     if (pvInstance == null) {
       log.warning("Instance not found");
       return false;
@@ -80,15 +84,30 @@ public class YamcsPVFactory implements PVFactory {
   private String extractServerNameFromPVName(PV pv) {
     String serverPath = pv.getName();
     serverPath = serverPath.substring(2);
-    serverPath = serverPath.split(":")[0];
 
+    if (serverPath.contains(":")) {
+      serverPath = serverPath.split(":")[0];
+    } else {
+      serverPath = serverPath.split("/")[0];
+    }
     return serverPath;
   }
 
+  /**
+   * If the default instance is being used on the PV, then an empty string is returned.
+   *
+   * @param pv
+   * @return
+   */
   private String extractInstanceNameFromPVName(PV pv) {
     String InstancePath = pv.getName();
     InstancePath = InstancePath.substring(2);
-    InstancePath = InstancePath.split(":")[1].split("/")[0];
+    if (InstancePath.contains(":")) {
+      InstancePath = InstancePath.split(":")[1].split("/")[0];
+    } else {
+      // No instance name means the user is using the default instance.
+      InstancePath = "";
+    }
 
     return InstancePath;
   }

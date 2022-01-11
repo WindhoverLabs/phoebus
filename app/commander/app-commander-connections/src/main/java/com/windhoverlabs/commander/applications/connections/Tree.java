@@ -48,6 +48,7 @@ public class Tree {
                 protected void updateItem(YamcsObject<?> item, boolean empty) {
                   super.updateItem(item, empty);
                   textProperty().unbind();
+                  this.setStyle("");
                   if (empty) {
                     setText(null);
                     itemTypes.stream()
@@ -55,6 +56,22 @@ public class Tree {
                         .forEach(pc -> pseudoClassStateChanged(pc, false));
                   } else {
                     textProperty().bind(item.nameProperty());
+                    // Indicate default instances
+                    if (item.getObjectType() == CMDR_YamcsInstance.OBJECT_TYPE) {
+                      String serverName = this.getTreeItem().getParent().getValue().getName();
+                      String instanceName = item.getName();
+                      if (YamcsObjectManager.getServerFromName(serverName).getDefaultInstance()
+                              != null
+                          && YamcsObjectManager.getServerFromName(serverName)
+                              .getDefaultInstance()
+                              .getName()
+                              .equals(instanceName)) {
+                        this.setStyle("-fx-font-weight: bold");
+                        System.out.println("$$$$$$$$$$" + serverName + ":" + instanceName);
+                      } else {
+                        this.setStyle("");
+                      }
+                    }
                     PseudoClass itemPC = asPseudoClass(item.getClass());
                     itemTypes.stream()
                         .map(Tree.this::asPseudoClass)
@@ -114,6 +131,23 @@ public class Tree {
     MenuItem connectInstance = new MenuItem("Connect");
     MenuItem disconnectInstance = new MenuItem("Disconnect");
     MenuItem setAsDefault = new MenuItem("Set As Default");
+    setAsDefault.setOnAction(
+        e -> {
+          TreeItem<YamcsObject<?>> selectedItem = treeView.getSelectionModel().getSelectedItem();
+
+          if (selectedItem == null) {
+            /* Nothing is selected. This is not supposed to happen. */
+          } else {
+            YamcsObject<?> selectedObject = selectedItem.getValue();
+
+            if (selectedObject.getObjectType() == CMDR_YamcsInstance.OBJECT_TYPE) {
+              String serverName = selectedItem.getParent().getValue().getName();
+              String instanceName = selectedItem.getValue().getName();
+              YamcsObjectManager.getServerFromName(serverName).setDefaultInstance(instanceName);
+              treeView.refresh();
+            }
+          }
+        });
 
     // add menu items to menu
     contextMenu.getItems().add(addServer);
