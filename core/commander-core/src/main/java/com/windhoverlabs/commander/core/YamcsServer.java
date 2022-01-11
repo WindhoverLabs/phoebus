@@ -78,10 +78,13 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
   public CMDR_YamcsInstance getInstance(String instanceName) {
     CMDR_YamcsInstance resultInstance = null;
-    for (CMDR_YamcsInstance instance : getItems()) {
-      if (instanceName.equals(instance.getName())) {
-        resultInstance = instance;
-        break;
+
+    if (instanceName != null) {
+      for (CMDR_YamcsInstance instance : getItems()) {
+        if (instanceName.equals(instance.getName())) {
+          resultInstance = instance;
+          break;
+        }
       }
     }
 
