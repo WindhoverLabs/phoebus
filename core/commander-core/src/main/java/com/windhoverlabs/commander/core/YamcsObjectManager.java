@@ -12,7 +12,15 @@ import javafx.collections.ObservableList;
 public final class YamcsObjectManager {
   private static YamcsObject<YamcsServer> root;
   private static ObservableList<YamcsServer> servers = FXCollections.observableArrayList();
-  private static String defaultInstance = "";
+  private static YamcsServer defaultServer = null;
+
+  public static YamcsServer getDefaultServer() {
+    return defaultServer;
+  }
+
+  public static void setDefaultServer(String defaultServer) {
+    YamcsObjectManager.defaultServer = getServerFromName(defaultServer);
+  }
 
   private YamcsObjectManager() {}
 

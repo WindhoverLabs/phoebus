@@ -51,7 +51,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
   private static final Logger log = Logger.getLogger(YamcsSubscriptionService.class.getName());
 
-  private static String instanceName;
+  private String instanceName;
 
   private Map<NamedObjectId, Set<YamcsPV>> pvsById = new LinkedHashMap<>();
 
@@ -114,9 +114,8 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
    * @param pvName
    * @return
    */
-  public static String getYamcsPvName(String pvName, String serverName) {
+  private String getYamcsPvName(String pvName, String serverName) {
     String subStr = "//" + serverName + ":" + instanceName;
-
     return pvName.substring(subStr.length());
   }
 
@@ -142,8 +141,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
   /** Async adds a Yamcs PV for receiving updates. */
   public void register(YamcsPV pv) {
     NamedObjectId id =
-        YamcsSubscriptionService.identityOf(
-            YamcsSubscriptionService.getYamcsPvName(pv.getName(), serverName));
+        YamcsSubscriptionService.identityOf(getYamcsPvName(pv.getName(), serverName));
     executor.execute(
         () -> {
           Set<YamcsPV> pvs = pvsById.computeIfAbsent(id, x -> new HashSet<>());

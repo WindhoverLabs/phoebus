@@ -38,6 +38,9 @@ import org.yamcs.protobuf.Yamcs.NamedObjectId;
 @SuppressWarnings("nls")
 public class YamcsPVFactory implements PVFactory {
   public static final String TYPE = "yamcs";
+  // Special string that may refer to default server or instance. This does NOT
+  // refer default data source.
+  public static final String DEFAULT = "default";
 
   private Map<NamedObjectId, Set<PV>> pvsById = new LinkedHashMap<>();
   private static final Logger log = Logger.getLogger(YamcsPVFactory.class.getName());
@@ -56,11 +59,15 @@ public class YamcsPVFactory implements PVFactory {
    */
   public boolean register(PV pv) {
     CMDR_YamcsInstance pvInstance = null;
-    String serverPath = extractServerNameFromPVName(pv);
-    String instanceName = extractInstanceNameFromPVName(pv);
+    String serverPath = extractServerNameFromPVName(pv.getName());
+    String instanceName = extractInstanceNameFromPVName(pv.getName());
     if (!instanceName.isEmpty()) {
       pvInstance = YamcsObjectManager.getInstanceFromName(serverPath, instanceName);
     } else {
+      System.out.println(
+          "$$$$$$$$Else-->1"
+              + YamcsObjectManager.getServerFromName(serverPath).getDefaultInstance());
+      System.out.println("$$$$$$$$Else-->2" + pv.getName());
       pvInstance = YamcsObjectManager.getServerFromName(serverPath).getDefaultInstance();
     }
     if (pvInstance == null) {
@@ -81,8 +88,8 @@ public class YamcsPVFactory implements PVFactory {
     return isDefault;
   }
 
-  private String extractServerNameFromPVName(PV pv) {
-    String serverPath = pv.getName();
+  private String extractServerNameFromPVName(String pv) {
+    String serverPath = pv;
     serverPath = serverPath.substring(2);
 
     if (serverPath.contains(":")) {
@@ -99,8 +106,8 @@ public class YamcsPVFactory implements PVFactory {
    * @param pv
    * @return
    */
-  private String extractInstanceNameFromPVName(PV pv) {
-    String InstancePath = pv.getName();
+  private String extractInstanceNameFromPVName(String pv) {
+    String InstancePath = pv;
     InstancePath = InstancePath.substring(2);
     if (InstancePath.contains(":")) {
       InstancePath = InstancePath.split(":")[1].split("/")[0];
@@ -126,31 +133,21 @@ public class YamcsPVFactory implements PVFactory {
 
   @Override
   public String getCoreName(final String name) {
-    String actual_name = name;
-    if (isDefaultDataSource(actual_name)) {
-      actual_name = name;
-    } else {
-      actual_name = actual_name.substring("yamcs:".length());
-    }
+    String actual_name = sanitizePVName(name);
     return actual_name;
   }
 
   @Override
   public PV createPV(final String name, final String base_name) throws Exception {
 
-    String actual_name = name;
-
-    if (isDefaultDataSource(actual_name)) {
-      actual_name = name;
-    } else {
-      actual_name = actual_name.substring("yamcs:".length());
-    }
+    String actual_name = sanitizePVName(name);
 
     final Class<? extends VType> type = parseType("");
 
     YamcsPV pv;
     // TODO Use ConcurrentHashMap, computeIfAbsent
     synchronized (yamcs_pvs) {
+      System.out.println("actual name-->" + actual_name);
       pv = yamcs_pvs.get(actual_name);
       List<String> initial_value = null;
       if (pv == null) {
@@ -164,6 +161,49 @@ public class YamcsPVFactory implements PVFactory {
     }
 
     return pv;
+  }
+
+  private String sanitizePVName(final String name) {
+    String actual_name = name;
+    if (isDefaultDataSource(actual_name)) {
+      actual_name = name;
+    } else {
+      actual_name = actual_name.substring("yamcs:".length());
+    }
+
+    String namePrefix = actual_name.substring(2);
+    // TODO:Sanitize further by making sure there is no '/' before the beginning of the PV name.
+    // Perhaps the GUI should enforce this...
+    namePrefix = namePrefix.substring(0, namePrefix.indexOf('/'));
+    if (namePrefix.contains(DEFAULT)) {
+      String serverName = extractServerNameFromPVName(actual_name);
+      String instanceName = extractInstanceNameFromPVName(actual_name);
+
+      if (serverName.equals(DEFAULT)) {
+        YamcsServer defaultServer = YamcsObjectManager.getDefaultServer();
+        if (defaultServer == null) {
+          log.warning(
+              "No default server found.\n"
+                  + "You may set a default server in the Connections app.");
+        } else {
+          actual_name = actual_name.replaceFirst(DEFAULT, defaultServer.getName());
+        }
+      }
+
+      if (instanceName.equals(DEFAULT)) {
+        serverName = extractServerNameFromPVName(actual_name);
+        YamcsServer server = YamcsObjectManager.getServerFromName(serverName);
+        CMDR_YamcsInstance defaultInstance = server.getDefaultInstance();
+        if (defaultInstance == null) {
+          log.warning(
+              "No default instance found.\n"
+                  + "You may set a default instance in the Connections app.");
+        } else {
+          actual_name = actual_name.replaceFirst(DEFAULT, defaultInstance.getName());
+        }
+      }
+    }
+    return actual_name;
   }
 
   public static Class<? extends VType> determineValueType(final List<String> items)
