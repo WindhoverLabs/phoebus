@@ -64,7 +64,7 @@ public class YamcsPVFactory implements PVFactory {
       pvInstance = YamcsObjectManager.getServerFromName(serverPath).getDefaultInstance();
     }
     if (pvInstance == null) {
-      log.warning("Instance not found");
+      log.warning(String.format("Instance not found for \"%s\" server", serverPath));
       return false;
     }
 
