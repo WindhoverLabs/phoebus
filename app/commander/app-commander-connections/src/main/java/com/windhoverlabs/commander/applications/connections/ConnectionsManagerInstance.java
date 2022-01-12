@@ -78,7 +78,6 @@ public class ConnectionsManagerInstance implements AppInstance {
     } catch (Exception e) {
       logger.warning("Error saving Yamcs connections...:" + e.toString());
     }
-    logger.info("Saving Yamcs connections...");
 
     // Save yamcs connections
     try {
@@ -88,7 +87,8 @@ public class ConnectionsManagerInstance implements AppInstance {
     }
   }
 
-  private void createYamcsConnectionMemento() throws Exception, FileNotFoundException {
+  public static void createYamcsConnectionMemento() throws Exception, FileNotFoundException {
+    logger.info("Saving Yamcs connections...");
     final XMLMementoTree yamcsConnectionsMemento = XMLMementoTree.create();
     yamcsConnectionsMemento.createChild(YAMCS_CONNECTIONS);
 
@@ -120,13 +120,14 @@ public class ConnectionsManagerInstance implements AppInstance {
     ObservableList<YamcsServer> serverList = YamcsObjectManager.getRoot().getItems();
 
     try {
+
       final XMLMementoTree yamcsConnectionsMemento =
           XMLMementoTree.read(
               new FileInputStream(new File(Locations.user(), YAMCS_CONNECTIONS_MEMENTO_FILENAME)));
+
       for (MementoTree child : yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).getChildren()) {
         // TODO: child.getString(YAMCS_CONNECTION_NAME) should never be null.
         YamcsServer server = new YamcsServer(child.getString(YAMCS_CONNECTION_NAME).orElse(null));
-
         server.connect(
             new YamcsServerConnection(
                 child.getString(YAMCS_CONNECTION_NAME).orElse(null),
