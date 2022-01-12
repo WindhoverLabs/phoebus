@@ -134,8 +134,9 @@ public class ConnectionsManagerInstance implements AppInstance {
                 child.getString(YAMCS_URL).orElse(null),
                 Integer.parseInt(child.getString(YAMCS_PORT).orElse(null))));
         // TODO:Probably not the best way of doing this...
-        server.setDefaultInstance(child.getString(YAMCS_DEFAULT_INSTANCE).orElse(null));
         serverList.add(server);
+        YamcsObjectManager.setDefaultInstance(
+            server.getName(), child.getString(YAMCS_DEFAULT_INSTANCE).orElse(null));
       }
     } catch (Exception e) {
       logger.warning("Error restoring yamcs servers:" + e);

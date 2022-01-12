@@ -143,7 +143,7 @@ public class Tree {
             if (selectedObject.getObjectType() == CMDR_YamcsInstance.OBJECT_TYPE) {
               String serverName = selectedItem.getParent().getValue().getName();
               String instanceName = selectedItem.getValue().getName();
-              YamcsObjectManager.getServerFromName(serverName).setDefaultInstance(instanceName);
+              YamcsObjectManager.setDefaultInstance(serverName, instanceName);
               treeView.refresh();
             }
           }
