@@ -10,8 +10,10 @@ import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -29,33 +31,9 @@ public class EventViewerController {
 
   private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-  //  final ScheduledFuture<?> beeperHandle =
-  //      scheduler.scheduleAtFixedRate(
-  //          () -> {
-  //            streamEvents();
-  //          },
-  //          10,
-  //          10,
-  //          TimeUnit.SECONDS);
-
-  //    scheduler.schedule(new Runnable() {
-  //      public void run() { beeperHandle.cancel(true); }
-  //    }, 60 * 60, TimeUnit.SECONDS);
   public static final Logger log = Logger.getLogger(EventViewerController.class.getPackageName());
 
   private static final int MAX_PAGES = 100;
-
-  //  public class CMDR_Event {
-  //    public SimpleStringProperty message;
-  //
-  //    public CMDR_Event(String newMessage) {
-  //      message = new SimpleStringProperty(newMessage);
-  //    }
-  //
-  //    public String toString() {
-  //      return message.getValue();
-  //    }
-  //  }
 
   private final TableView<CMDR_Event> tableView = new TableView<CMDR_Event>();
 
@@ -78,13 +56,14 @@ public class EventViewerController {
   private String currentInstance = "yamcs-cfs";
 
   private YamcsObject<YamcsServer> root;
+  private boolean scrollLock = true;
 
   private Page<Event> currentPage;
   //  @FXML private Pagination pagination;
 
   @FXML private GridPane gridPane;
 
-  @FXML private ToggleButton streamButton;
+  @FXML private ToggleButton scrollLockButton;
 
   private boolean isReady = false;
 
@@ -94,39 +73,7 @@ public class EventViewerController {
 
   @FXML
   public void initialize() {
-
-    //    subscription = YamcsPlugin.getYamcsClient().createEventSubscription();
-    //    subscription.addMessageListener(event -> {
-    //        Display.getDefault().asyncExec(() -> processEvent(event));
-    //    });
-    //    scheduler.schedule(
-    //        () -> {
-    //          streamEvents();
-    //        },
-    //        10,
-    //        TimeUnit.SECONDS);
     tableView.setId("eventsTable");
-    //    tableView.
-    //    streamButton.setOnAction(
-    //        e -> {
-    //          if (streamButton.isSelected()) {
-    //            YamcsObjectManager.getDefaultInstance()
-    //                .getEventSubscription()
-    //                .addMessageListener(
-    //                    new MessageListener<Event>() {
-    //                      @Override
-    //                      public void onMessage(Event message) {
-    //                        log.warning("Streaming events...");
-    //                        data.add(new CMDR_Event(message.getMessage()));
-    //                        log.warning("data size-->" + data.size());
-    //                      }
-    //                    });
-    //            if (YamcsObjectManager.getDefaultInstance() != null) {
-    //              tableView.setItems(YamcsObjectManager.getDefaultInstance().getEvents());
-    //              //              streamEvents();
-    //            }
-    //          }
-    //        });
     messageCol.setCellValueFactory(
         (event) -> {
           return event.getValue().getMessage();
@@ -179,36 +126,25 @@ public class EventViewerController {
           return new SimpleStringProperty(event.getValue().getGenerationTime().toString());
         });
     tableView.getColumns().addAll(messageCol, generationTimeCol);
-    //    updateData();
+    YamcsObjectManager.getDefaultInstance()
+        .getEvents()
+        .addListener(
+            new ListChangeListener<Object>() {
+              @Override
+              public void onChanged(Change<?> c) {
+                System.out.println("items changed");
+                Platform.runLater(
+                    () -> {
+                      if (scrollLockButton.isSelected()) {
+                        tableView.scrollTo(tableView.getItems().size() - 1);
+                      }
+                    });
+              }
+            });
     tableView.setItems(YamcsObjectManager.getDefaultInstance().getEvents());
-    //    tableView.setItems(generateEvents(1000000));
     gridPane.add(tableView, 0, 1);
     root = YamcsObjectManager.getRoot();
-    //    pagination.setPageFactory(this::createPage);
-    //    pagination.setPageCount(MAX_PAGES);
   }
-
-  //  private void streamEvents() {
-  //    System.out.println("streamEvents");
-  //    if (YamcsObjectManager.getDefaultInstance() != null) {
-  //      data.clear();
-  //      YamcsObjectManager.getDefaultInstance()
-  //          .getYamcsArchiveClient()
-  //          .streamEvents(
-  //              (message) -> {
-  //                log.warning("Streaming events...");
-  //                data.add(new CMDR_Event(message.getMessage()));
-  //                log.warning("data size-->" + data.size());
-  //                Platform.runLater(
-  //                    () -> {
-  //                      tableView.refresh();
-  //                      System.out.println("tableView--> size" + tableView.getItems().size());
-  //                    });
-  //              },
-  //              null,
-  //              null);
-  //    }
-  //  }
 
   public EventViewerController() {}
 
