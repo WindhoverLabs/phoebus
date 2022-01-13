@@ -35,7 +35,8 @@ public class ConnectionsManagerInstance implements AppInstance {
   private static final String YAMCS_CONNECTIONS = "yamcs_connections",
       YAMCS_URL = "url",
       YAMCS_PORT = "port",
-      YAMCS_CONNECTION_NAME = "name";
+      YAMCS_CONNECTION_NAME = "name",
+      YAMCS_DEFAULT_INSTANCE = "default_instance";
 
   static ConnectionsManagerInstance INSTANCE = null;
 
@@ -77,7 +78,6 @@ public class ConnectionsManagerInstance implements AppInstance {
     } catch (Exception e) {
       logger.warning("Error saving Yamcs connections...:" + e.toString());
     }
-    logger.info("Saving Yamcs connections...");
 
     // Save yamcs connections
     try {
@@ -87,7 +87,8 @@ public class ConnectionsManagerInstance implements AppInstance {
     }
   }
 
-  private void createYamcsConnectionMemento() throws Exception, FileNotFoundException {
+  public static void createYamcsConnectionMemento() throws Exception, FileNotFoundException {
+    logger.info("Saving Yamcs connections...");
     final XMLMementoTree yamcsConnectionsMemento = XMLMementoTree.create();
     yamcsConnectionsMemento.createChild(YAMCS_CONNECTIONS);
 
@@ -102,6 +103,9 @@ public class ConnectionsManagerInstance implements AppInstance {
       connection.setString(YAMCS_URL, s.getConnection().getUrl());
       connection.setString(YAMCS_PORT, Integer.toString(s.getConnection().getPort()));
       connection.setString(YAMCS_CONNECTION_NAME, s.getName());
+      if (s.getDefaultInstance() != null) {
+        connection.setString(YAMCS_DEFAULT_INSTANCE, s.getDefaultInstance().getName());
+      }
     }
 
     yamcsConnectionsMemento.write(
@@ -116,9 +120,11 @@ public class ConnectionsManagerInstance implements AppInstance {
     ObservableList<YamcsServer> serverList = YamcsObjectManager.getRoot().getItems();
 
     try {
+
       final XMLMementoTree yamcsConnectionsMemento =
           XMLMementoTree.read(
               new FileInputStream(new File(Locations.user(), YAMCS_CONNECTIONS_MEMENTO_FILENAME)));
+
       for (MementoTree child : yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).getChildren()) {
         // TODO: child.getString(YAMCS_CONNECTION_NAME) should never be null.
         YamcsServer server = new YamcsServer(child.getString(YAMCS_CONNECTION_NAME).orElse(null));
@@ -127,7 +133,10 @@ public class ConnectionsManagerInstance implements AppInstance {
                 child.getString(YAMCS_CONNECTION_NAME).orElse(null),
                 child.getString(YAMCS_URL).orElse(null),
                 Integer.parseInt(child.getString(YAMCS_PORT).orElse(null))));
+        // TODO:Probably not the best way of doing this...
         serverList.add(server);
+        YamcsObjectManager.setDefaultInstance(
+            server.getName(), child.getString(YAMCS_DEFAULT_INSTANCE).orElse(null));
       }
     } catch (Exception e) {
       logger.warning("Error restoring yamcs servers:" + e);

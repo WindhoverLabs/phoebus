@@ -9,7 +9,7 @@ import org.phoebus.ui.spi.MenuEntry;
 public class EventLogMenuEntry implements MenuEntry {
   @Override
   public String getName() {
-    return EventLogApp.Name;
+    return EventViewerApp.Name;
   }
 
   @Override
@@ -19,12 +19,12 @@ public class EventLogMenuEntry implements MenuEntry {
 
   @Override
   public Image getIcon() {
-    return ImageCache.getImage(EventLogApp.class, "/icons/filebrowser.png");
+    return ImageCache.getImage(EventViewerApp.class, "/icons/filebrowser.png");
   }
 
   @Override
   public Void call() throws Exception {
-    ApplicationService.createInstance(EventLogApp.Name);
+    ApplicationService.createInstance(EventViewerApp.Name);
     return null;
   }
 }

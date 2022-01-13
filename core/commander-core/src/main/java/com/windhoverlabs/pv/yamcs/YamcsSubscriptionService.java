@@ -51,7 +51,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
   private static final Logger log = Logger.getLogger(YamcsSubscriptionService.class.getName());
 
-  private static String instanceName;
+  private String instanceName;
 
   private Map<NamedObjectId, Set<YamcsPV>> pvsById = new LinkedHashMap<>();
 
@@ -114,8 +114,8 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
    * @param pvName
    * @return
    */
-  public static String getYamcsPvName(String pvName, String serverName) {
-    String subStr = "yamcs://" + serverName + ":" + instanceName;
+  private String getYamcsPvName(String pvName, String serverName) {
+    String subStr = "//" + serverName + ":" + instanceName;
     return pvName.substring(subStr.length());
   }
 
@@ -141,8 +141,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
   /** Async adds a Yamcs PV for receiving updates. */
   public void register(YamcsPV pv) {
     NamedObjectId id =
-        YamcsSubscriptionService.identityOf(
-            YamcsSubscriptionService.getYamcsPvName(pv.getName(), serverName));
+        YamcsSubscriptionService.identityOf(getYamcsPvName(pv.getName(), serverName));
     executor.execute(
         () -> {
           Set<YamcsPV> pvs = pvsById.computeIfAbsent(id, x -> new HashSet<>());
@@ -205,14 +204,13 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
   }
 
   public static NamedObjectId identityOf(String pvName) {
-
     return NamedObjectId.newBuilder().setName(pvName).build();
-
-    //        if (pvName.startsWith("ops://")) {
-    //            return NamedObjectId.newBuilder()
-    //                    .setNamespace("MDB:OPS Name")
-    //                    .setName(pvName.substring("ops://".length()))
-    //                    .build();
+    //    if (pvName.startsWith("yamcs://")) {
+    //      return
+    // NamedObjectId.newBuilder().setName(pvName.substring("yamcs://".length())).build();
+    //    } else {
+    //      System.out.println("identityOf2" + pvName);
+    //    }
     //        } else if (pvName.startsWith("para://")) {
     //            return NamedObjectId.newBuilder()
     //                    .setName(pvName.substring("para://".length()))

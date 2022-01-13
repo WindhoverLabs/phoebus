@@ -7,6 +7,7 @@ import org.yamcs.protobuf.YamcsInstance;
 public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   public static String OBJECT_TYPE = "server";
   private YamcsClient yamcsClient;
+  private CMDR_YamcsInstance defaultInstance;
 
   public YamcsClient getYamcsClient() {
     return yamcsClient;
@@ -77,13 +78,24 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
   public CMDR_YamcsInstance getInstance(String instanceName) {
     CMDR_YamcsInstance resultInstance = null;
-    for (CMDR_YamcsInstance instance : getItems()) {
-      if (instanceName.equals(instance.getName())) {
-        resultInstance = instance;
-        break;
+
+    if (instanceName != null) {
+      for (CMDR_YamcsInstance instance : getItems()) {
+        if (instanceName.equals(instance.getName())) {
+          resultInstance = instance;
+          break;
+        }
       }
     }
 
     return resultInstance;
+  }
+
+  public void setDefaultInstance(String instanceName) {
+    defaultInstance = getInstance(instanceName);
+  }
+
+  public CMDR_YamcsInstance getDefaultInstance() {
+    return defaultInstance;
   }
 }

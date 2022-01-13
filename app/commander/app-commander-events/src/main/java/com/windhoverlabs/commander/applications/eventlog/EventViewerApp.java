@@ -9,9 +9,9 @@ import org.phoebus.framework.spi.AppDescriptor;
 import org.phoebus.framework.spi.AppInstance;
 
 @SuppressWarnings("nls")
-public class EventLogApp implements AppDescriptor {
+public class EventViewerApp implements AppDescriptor {
 
-  public static final String Name = "Event Log";
+  public static final String Name = "Events";
 
   public static final String DisplayName = Messages.DisplayName;
 
@@ -22,7 +22,7 @@ public class EventLogApp implements AppDescriptor {
   @Preference public static boolean show_hidden;
 
   static {
-    AnnotatedPreferences.initialize(EventLogApp.class, "/eventlog_preferences.properties");
+    AnnotatedPreferences.initialize(EventViewerApp.class, "/eventlog_preferences.properties");
   }
 
   @Override
@@ -33,17 +33,17 @@ public class EventLogApp implements AppDescriptor {
   @Override
   public AppInstance create() {
 
-    if (EventLogInstance.INSTANCE == null) {
+    if (EventViewerInstance.INSTANCE == null) {
       try {
-        EventLogInstance.INSTANCE = new EventLogInstance(this);
+        EventViewerInstance.INSTANCE = new EventViewerInstance(this);
       } catch (Exception ex) {
-        Logger.getLogger(EventLogApp.class.getPackageName())
+        Logger.getLogger(EventViewerApp.class.getPackageName())
             .log(Level.WARNING, "Cannot create Error Log", ex);
         return null;
       }
     } else {
-      EventLogInstance.INSTANCE.raise();
+      EventViewerInstance.INSTANCE.raise();
     }
-    return EventLogInstance.INSTANCE;
+    return EventViewerInstance.INSTANCE;
   }
 }

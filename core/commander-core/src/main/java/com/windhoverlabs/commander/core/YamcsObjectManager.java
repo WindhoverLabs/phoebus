@@ -1,5 +1,6 @@
 package com.windhoverlabs.commander.core;
 
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -10,9 +11,33 @@ import javafx.collections.ObservableList;
  * @author lgomez
  */
 public final class YamcsObjectManager {
+  /** Logger for all file browser code */
+  public static final Logger log = Logger.getLogger(YamcsObjectManager.class.getPackageName());
+
   private static YamcsObject<YamcsServer> root;
   private static ObservableList<YamcsServer> servers = FXCollections.observableArrayList();
-  private static String defaultInstance = "";
+  private static CMDR_YamcsInstance defaultInstance = null;
+  // At the moment we do not support setting a default server directly by the outside
+  private static YamcsServer defaultServer = null;
+
+  public static YamcsServer getDefaulServer() {
+    return defaultServer;
+  }
+
+  public static CMDR_YamcsInstance getDefaultInstance() {
+    return defaultInstance;
+  }
+
+  public static void setDefaultInstance(String server, String instance) {
+    defaultServer = getServerFromName(server);
+    if (defaultServer == null) {
+      log.warning("Server " + "\"" + server + "\" not found");
+      return;
+    }
+
+    defaultServer.setDefaultInstance(instance);
+    YamcsObjectManager.defaultInstance = getServerFromName(server).getDefaultInstance();
+  }
 
   private YamcsObjectManager() {}
 
