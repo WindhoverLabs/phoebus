@@ -2,6 +2,7 @@ package com.windhoverlabs.commander.core;
 
 import com.windhoverlabs.pv.yamcs.YamcsPV;
 import com.windhoverlabs.pv.yamcs.YamcsSubscriptionService;
+import java.time.Instant;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,7 +10,7 @@ import org.yamcs.client.EventSubscription;
 import org.yamcs.client.YamcsClient;
 import org.yamcs.client.archive.ArchiveClient;
 import org.yamcs.client.processor.ProcessorClient;
-import org.yamcs.protobuf.Yamcs.Event;
+import org.yamcs.protobuf.SubscribeEventsRequest;
 
 public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   public static final Logger logger = Logger.getLogger(CMDR_YamcsInstance.class.getPackageName());
@@ -23,7 +24,11 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     return yamcsArchiveClient;
   }
 
-  private static ObservableList<Event> events = FXCollections.observableArrayList();
+  private ObservableList<CMDR_Event> events = FXCollections.observableArrayList();
+
+  public ObservableList<CMDR_Event> getEvents() {
+    return events;
+  }
 
   public ProcessorClient getYamcsProcessor() {
     return yamcsProcessor;
@@ -62,21 +67,23 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     eventSubscription = yamcsClient.createEventSubscription();
     eventSubscription.addMessageListener(
         event -> {
-          events.add(event);
-          System.out.println("Current events:" + events);
+          event.getSeverity();
+          events.add(
+              new CMDR_Event(
+                  event.getMessage(),
+                  Instant.ofEpochSecond(
+                      event.getGenerationTime().getSeconds(), event.getGenerationTime().getNanos()),
+                  event.getSeverity()));
         });
 
     yamcsArchiveClient = yamcsClient.createArchiveClient(getName());
 
-    //    yamcsClient.createArchiveClient(getName()).listEvents().whenComplete((page, response) -> {
-    //      page.iterator().forEachRemaining(events::add);
-    //      System.out.println("Current events:" + events);
-    //    });
+    eventSubscription.sendMessage(
+        SubscribeEventsRequest.newBuilder().setInstance(getName()).build());
+  }
 
-    // yamcsClient.eve
-
-    // eventSubscription.sendMessage(
-    // SubscribeEventsRequest.newBuilder().setInstance(getName()).build());
+  public EventSubscription getEventSubscription() {
+    return eventSubscription;
   }
 
   public void subscribePV(YamcsPV pv) {

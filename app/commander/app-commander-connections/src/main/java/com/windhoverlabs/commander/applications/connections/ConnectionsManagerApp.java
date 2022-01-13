@@ -1,6 +1,7 @@
 package com.windhoverlabs.commander.applications.connections;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.phoebus.framework.preferences.AnnotatedPreferences;
@@ -45,5 +46,19 @@ public class ConnectionsManagerApp implements AppDescriptor {
     } else ConnectionsManagerInstance.INSTANCE.raise();
 
     return ConnectionsManagerInstance.INSTANCE;
+  }
+
+  @Override
+  public void stop() {
+    try {
+      ConnectionsManagerInstance.createYamcsConnectionMemento();
+      ConnectionsManagerInstance.INSTANCE = null;
+    } catch (FileNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 }

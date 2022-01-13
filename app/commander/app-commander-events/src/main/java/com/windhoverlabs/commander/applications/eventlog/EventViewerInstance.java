@@ -20,31 +20,31 @@ import org.phoebus.ui.docking.DockPane;
 
 /** @author lgomez */
 @SuppressWarnings("nls")
-public class EventLogInstance implements AppInstance {
+public class EventViewerInstance implements AppInstance {
   private static final String YAMCS_EVENTS_MEMENTO_FILENAME = "yamcs_events_memento";
 
   /** Logger for all file browser code */
-  public static final Logger logger = Logger.getLogger(EventLogInstance.class.getPackageName());
+  public static final Logger logger = Logger.getLogger(EventViewerInstance.class.getPackageName());
 
   /** Memento tags */
   private static final String YAMCS_EVENTS = "yamcs_events", YAMCS_EVENT_MESSAGE = "message";
 
-  static EventLogInstance INSTANCE;
+  static EventViewerInstance INSTANCE;
 
   private final AppDescriptor app;
 
   // TODO: Refactor Tree constructor since we don't need to pass the list of servers anymore.
-  private static EventLogController eventLog = new EventLogController();
+  private static EventViewerController eventLog = new EventViewerController();
 
   private DockItem tab = null;
 
-  public EventLogInstance(AppDescriptor app) {
+  public EventViewerInstance(AppDescriptor app) {
     this.app = app;
     Node content = null;
     ResourceBundle resourceBundle = NLS.getMessages(Messages.class);
     FXMLLoader loader = new FXMLLoader();
     loader.setResources(resourceBundle);
-    loader.setLocation(this.getClass().getResource("EventLog.fxml"));
+    loader.setLocation(this.getClass().getResource("EventView.fxml"));
 
     try {
       content = loader.load();
@@ -65,7 +65,7 @@ public class EventLogInstance implements AppInstance {
     logger.log(Level.WARNING, "EventLogInstance#4");
   }
 
-  public static EventLogController getEventLog() {
+  public static EventViewerController getEventLog() {
     return eventLog;
   }
 
