@@ -354,6 +354,7 @@
 									<directory>${basedir}</directory>
 									<includes>
 										<include>settings.ini</include>
+										<include>site_splash.png</include>
 									</includes>
 								</resource>
 							</resources>
