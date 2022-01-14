@@ -17,7 +17,7 @@
    <children>
       <HBox maxHeight="-Infinity" prefHeight="25.0" prefWidth="190.0">
          <children>
-            <ToggleButton fx:id="scrollLockButton" mnemonicParsing="false" styleClass=".play-button" text="Lock" />
+            <ToggleButton fx:id="scrollLockButton" mnemonicParsing="false" styleClass=".play-button" text="Scroll Lock" />
          </children>
       </HBox>
    </children>

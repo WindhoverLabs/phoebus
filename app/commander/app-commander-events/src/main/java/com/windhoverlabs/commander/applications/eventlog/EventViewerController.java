@@ -145,7 +145,7 @@ public class EventViewerController {
               public void onChanged(Change<?> c) {
                 Platform.runLater(
                     () -> {
-                      if (scrollLockButton.isSelected()) {
+                      if (!scrollLockButton.isSelected()) {
                         tableView.scrollTo(tableView.getItems().size() - 1);
                       }
                     });

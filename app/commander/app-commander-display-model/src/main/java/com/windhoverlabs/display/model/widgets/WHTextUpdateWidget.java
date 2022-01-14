@@ -65,7 +65,6 @@ public class WHTextUpdateWidget extends PVWidget {
           "Displays current value of PV as text(Windhover version)") {
         @Override
         public Widget createWidget() {
-          System.out.println("custom widget");
           return new WHTextUpdateWidget();
         }
       };
