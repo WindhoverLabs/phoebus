@@ -76,7 +76,8 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
                   event.getType(),
                   Instant.ofEpochSecond(
                       event.getReceptionTime().getSeconds(), event.getReceptionTime().getNanos()),
-                  event.getSource()));
+                  event.getSource(),
+                  this.getName()));
         });
 
     yamcsArchiveClient = yamcsClient.createArchiveClient(getName());

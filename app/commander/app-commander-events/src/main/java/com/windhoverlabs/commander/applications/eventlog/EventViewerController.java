@@ -40,6 +40,7 @@ public class EventViewerController {
   TableColumn<CMDR_Event, String> messageCol = new TableColumn<CMDR_Event, String>("Message");
   TableColumn<CMDR_Event, String> typeCol = new TableColumn<CMDR_Event, String>("Type");
   TableColumn<CMDR_Event, String> sourceCol = new TableColumn<CMDR_Event, String>("Source");
+  TableColumn<CMDR_Event, String> instanceCol = new TableColumn<CMDR_Event, String>("Instance");
 
   private ObservableList<CMDR_Event> data =
       FXCollections.observableArrayList(new ArrayList<CMDR_Event>());
@@ -71,7 +72,7 @@ public class EventViewerController {
             @Override
             protected void updateItem(String item, boolean empty) {
               super.updateItem(item, empty); // This is mandatory
-
+              setTextFill(Color.BLACK);
               if (item == null || empty) { // If the cell is empty
                 setText(null);
                 setStyle("");
@@ -127,9 +128,20 @@ public class EventViewerController {
         (event) -> {
           return new SimpleStringProperty(event.getValue().getSource().toString());
         });
+    instanceCol.setCellValueFactory(
+        (event) -> {
+          return new SimpleStringProperty(YamcsObjectManager.getDefaultInstance().getName());
+        });
     tableView
         .getColumns()
-        .addAll(messageCol, generationTimeCol, receptionTimeCol, severityCol, typeCol, sourceCol);
+        .addAll(
+            messageCol,
+            generationTimeCol,
+            receptionTimeCol,
+            severityCol,
+            typeCol,
+            sourceCol,
+            instanceCol);
     YamcsObjectManager.getDefaultInstance()
         .getEvents()
         .addListener(
@@ -161,7 +173,8 @@ public class EventViewerController {
               EventSeverity.INFO,
               "FAKE",
               Instant.now(),
-              "FAKE"));
+              "FAKE_SOURCE",
+              "FAKE_INSTANCE"));
     }
     return events;
   }

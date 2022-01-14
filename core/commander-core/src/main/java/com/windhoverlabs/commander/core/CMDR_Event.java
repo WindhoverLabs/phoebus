@@ -9,6 +9,7 @@ public class CMDR_Event {
 
   private Instant generationTime;
   private Instant receptionTime;
+  private String instanceName;
 
   EventSeverity severity;
   String type;
@@ -19,13 +20,15 @@ public class CMDR_Event {
       EventSeverity newSeverity,
       String newType,
       Instant newReceptionTime,
-      String newSource) {
+      String newSource,
+      String newInstanceName) {
     message = newMessage;
     generationTime = newGenerationTime;
     severity = newSeverity;
     type = newType;
     receptionTime = newReceptionTime;
     source = newSource;
+    instanceName = newInstanceName;
   }
 
   public Instant getReceptionTime() {
