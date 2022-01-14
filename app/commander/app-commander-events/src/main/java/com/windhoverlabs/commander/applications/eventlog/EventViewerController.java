@@ -1,9 +1,7 @@
 package com.windhoverlabs.commander.applications.eventlog;
 
 import com.windhoverlabs.commander.core.CMDR_Event;
-import com.windhoverlabs.commander.core.YamcsObject;
 import com.windhoverlabs.commander.core.YamcsObjectManager;
-import com.windhoverlabs.commander.core.YamcsServer;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -23,8 +21,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import org.yamcs.client.Page;
-import org.yamcs.protobuf.Yamcs.Event;
 import org.yamcs.protobuf.Yamcs.Event.EventSeverity;
 
 public class EventViewerController {
@@ -33,39 +29,29 @@ public class EventViewerController {
 
   public static final Logger log = Logger.getLogger(EventViewerController.class.getPackageName());
 
-  private static final int MAX_PAGES = 100;
-
   private final TableView<CMDR_Event> tableView = new TableView<CMDR_Event>();
 
-  TableColumn<CMDR_Event, String> severityCol = new TableColumn<CMDR_Event, String>();
+  TableColumn<CMDR_Event, String> severityCol = new TableColumn<CMDR_Event, String>("Severity");
   TableColumn<CMDR_Event, String> annotationCol = new TableColumn<CMDR_Event, String>();
-
   TableColumn<CMDR_Event, String> generationTimeCol =
       new TableColumn<CMDR_Event, String>("Generation Time");
-
+  TableColumn<CMDR_Event, String> receptionTimeCol =
+      new TableColumn<CMDR_Event, String>("Reception Time");
   TableColumn<CMDR_Event, String> messageCol = new TableColumn<CMDR_Event, String>("Message");
+  TableColumn<CMDR_Event, String> typeCol = new TableColumn<CMDR_Event, String>("Type");
+  TableColumn<CMDR_Event, String> sourceCol = new TableColumn<CMDR_Event, String>("Source");
 
   private ObservableList<CMDR_Event> data =
       FXCollections.observableArrayList(new ArrayList<CMDR_Event>());
   private static final int dataSize = 10_023;
 
-  private int rowsPerPage = 100;
-
   // TODO:Eventually these will be in spinner nodes. These are the event filters.
   private String currentServer = "sitl";
   private String currentInstance = "yamcs-cfs";
 
-  private YamcsObject<YamcsServer> root;
-  private boolean scrollLock = true;
-
-  private Page<Event> currentPage;
-  //  @FXML private Pagination pagination;
-
   @FXML private GridPane gridPane;
 
   @FXML private ToggleButton scrollLockButton;
-
-  private boolean isReady = false;
 
   public Node getRootPane() {
     return gridPane;
@@ -76,7 +62,7 @@ public class EventViewerController {
     tableView.setId("eventsTable");
     messageCol.setCellValueFactory(
         (event) -> {
-          return event.getValue().getMessage();
+          return new SimpleStringProperty(event.getValue().getMessage());
         });
 
     messageCol.setCellFactory(
@@ -100,12 +86,11 @@ public class EventViewerController {
                     setTextFill(Color.DARKRED);
                     break;
                   case ERROR:
-                    setTextFill(Color.ORANGE);
+                    setTextFill(Color.DARKRED);
                     break;
                   case INFO:
                     break;
                   case SEVERE:
-                    //                    setTextFill(Color.);
                     break;
                   case WARNING:
                     setTextFill(Color.ORANGERED);
@@ -113,6 +98,7 @@ public class EventViewerController {
                   case WATCH:
                     break;
                   default:
+                    setTextFill(Color.BLACK);
                     break;
                 }
                 setText(item); // Put the String data in the cell
@@ -125,14 +111,31 @@ public class EventViewerController {
         (event) -> {
           return new SimpleStringProperty(event.getValue().getGenerationTime().toString());
         });
-    tableView.getColumns().addAll(messageCol, generationTimeCol);
+    receptionTimeCol.setCellValueFactory(
+        (event) -> {
+          return new SimpleStringProperty(event.getValue().getReceptionTime().toString());
+        });
+    severityCol.setCellValueFactory(
+        (event) -> {
+          return new SimpleStringProperty(event.getValue().getSeverity().toString());
+        });
+    typeCol.setCellValueFactory(
+        (event) -> {
+          return new SimpleStringProperty(event.getValue().getType().toString());
+        });
+    sourceCol.setCellValueFactory(
+        (event) -> {
+          return new SimpleStringProperty(event.getValue().getSource().toString());
+        });
+    tableView
+        .getColumns()
+        .addAll(messageCol, generationTimeCol, receptionTimeCol, severityCol, typeCol, sourceCol);
     YamcsObjectManager.getDefaultInstance()
         .getEvents()
         .addListener(
             new ListChangeListener<Object>() {
               @Override
               public void onChanged(Change<?> c) {
-                System.out.println("items changed");
                 Platform.runLater(
                     () -> {
                       if (scrollLockButton.isSelected()) {
@@ -143,19 +146,9 @@ public class EventViewerController {
             });
     tableView.setItems(YamcsObjectManager.getDefaultInstance().getEvents());
     gridPane.add(tableView, 0, 1);
-    root = YamcsObjectManager.getRoot();
   }
 
   public EventViewerController() {}
-
-  private Node createPage(int pageIndex) {
-    int fromIndex = pageIndex * rowsPerPage;
-    int toIndex = Math.min(fromIndex + rowsPerPage, data.size());
-
-    //    tableView.setItems(data.subList(fromIndex, toIndex));
-    tableView.setItems(data);
-    return tableView;
-  }
 
   private ObservableList<CMDR_Event> generateEvents(int numberOfEvents) {
     ObservableList<CMDR_Event> events = FXCollections.observableArrayList();
@@ -163,7 +156,12 @@ public class EventViewerController {
       DecimalFormat formatter = new DecimalFormat("#,###.00");
       events.add(
           new CMDR_Event(
-              "Fake Events" + formatter.format(i + 1), Instant.now(), EventSeverity.INFO));
+              "Fake Events" + formatter.format(i + 1),
+              Instant.now(),
+              EventSeverity.INFO,
+              "FAKE",
+              Instant.now(),
+              "FAKE"));
     }
     return events;
   }
