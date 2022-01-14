@@ -115,7 +115,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
    * @return
    */
   private String getYamcsPvName(String pvName, String serverName) {
-    String subStr = "//" + serverName + ":" + instanceName;
+    String subStr = "/" + serverName + ":" + instanceName;
     return pvName.substring(subStr.length());
   }
 
