@@ -285,3 +285,14 @@ Additionally:
 
 In an effort to maintain a consistent coding style, this project follows the [Google Java Coding Style](https://google.github.io/styleguide/javaguide.html). This is also enforced in our CI pipeline. Any push that does not comply with this style, *will* fail. Developers can easily
 format their code by running ` mvn com.coveo:fmt-maven-plugin:format`.
+
+## Quick Displays Guide
+Assumptions:
+- You are comfortable using [YAMCS](https://docs.yamcs.org/).
+- You have built phoebus by following the instructions above or downloaded the [nightly build](https://github.com/WindhoverLabs/phoebus/releases).
+
+This guide should walk one through creating a display, adding a button and writing a script that will send a command to YAMCS.
+
+1. Open phoebus by running `./phoebus-product/phoebus.sh`
+2. Go to **Applications->Utility->File Browser**
+
