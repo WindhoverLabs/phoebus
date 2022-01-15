@@ -9,6 +9,9 @@ import com.windhoverlabs.yamcs.commanding.CommandParser.ParseResult;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
+import org.csstudio.display.builder.model.Widget;
+import org.phoebus.framework.macros.MacroHandler;
+import org.phoebus.framework.macros.Macros;
 import org.yamcs.client.processor.ProcessorClient;
 import org.yamcs.client.processor.ProcessorClient.CommandBuilder;
 import org.yamcs.protobuf.IssueCommandRequest.Assignment;
@@ -106,5 +109,30 @@ public class Yamcs {
       }
     }
     builder.issue();
+  }
+
+  public static void issueCommand(Widget widget, String commandText) {
+    /* TODO: Finish this. */
+    try {
+      Macros macros = widget.getEffectiveMacros();
+      String expanded_commandText = MacroHandler.replace(macros, commandText);
+
+      issueCommand(expanded_commandText);
+    } catch (Exception e) {
+      log.warning("FINISH HIM!");
+    }
+  }
+
+  /* TODO: Expand the macros too. */
+  public static void issueCommand(Widget widget, String commandText, Map<String, Object> args) {
+    /* TODO: Finish this. */
+    try {
+      Macros macros = widget.getEffectiveMacros();
+      String expanded_commandText = MacroHandler.replace(macros, commandText);
+
+      issueCommand(expanded_commandText, args);
+    } catch (Exception e) {
+      log.warning("FINISH HIM!");
+    }
   }
 }
