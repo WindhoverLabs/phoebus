@@ -86,7 +86,7 @@ public class YamcsPVFactory implements PVFactory {
 
   private String extractServerNameFromPVName(String pv) {
     String serverPath = pv;
-    serverPath = serverPath.substring(2);
+    serverPath = serverPath.substring(1);
 
     if (serverPath.contains(":")) {
       serverPath = serverPath.split(":")[0];
@@ -162,7 +162,7 @@ public class YamcsPVFactory implements PVFactory {
     if (isDefaultDataSource(actual_name)) {
       actual_name = name;
     } else {
-      actual_name = actual_name.substring("yamcs:".length());
+      actual_name = actual_name.substring("yamcs:/".length());
     }
 
     // Perhaps the GUI should enforce this...
@@ -176,7 +176,7 @@ public class YamcsPVFactory implements PVFactory {
       } else {
         String serverName = YamcsObjectManager.getDefaulServer().getName();
         String instanceName = defaultInstance.getName();
-        actual_name = "//" + serverName + ":" + instanceName + actual_name;
+        actual_name = "/" + serverName + ":" + instanceName + actual_name;
       }
     }
 

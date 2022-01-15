@@ -1,12 +1,10 @@
-package com.windhoverlabs.commander.applications.eventlog;
+package com.windhoverlabs.commander.applications.events;
 
 import com.windhoverlabs.commander.core.CMDR_Event;
 import com.windhoverlabs.commander.core.YamcsObjectManager;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -24,9 +22,6 @@ import javafx.scene.paint.Color;
 import org.yamcs.protobuf.Yamcs.Event.EventSeverity;
 
 public class EventViewerController {
-
-  private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
   public static final Logger log = Logger.getLogger(EventViewerController.class.getPackageName());
 
   private final TableView<CMDR_Event> tableView = new TableView<CMDR_Event>();
@@ -150,7 +145,7 @@ public class EventViewerController {
               public void onChanged(Change<?> c) {
                 Platform.runLater(
                     () -> {
-                      if (scrollLockButton.isSelected()) {
+                      if (!scrollLockButton.isSelected()) {
                         tableView.scrollTo(tableView.getItems().size() - 1);
                       }
                     });

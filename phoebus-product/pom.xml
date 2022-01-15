@@ -38,53 +38,9 @@
 			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.windhoverlabs</groupId>
-			<artifactId>app-commander-display-model</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.windhoverlabs</groupId>
-			<artifactId>app-commander-display-representation-javafx</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.windhoverlabs</groupId>
-			<artifactId>app-commander-mission-planner</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>org.phoebus</groupId>
 			<artifactId>app-probe</artifactId>
 			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-logbook-inmemory</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-logbook-olog-ui</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-logbook-elog</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-logbook-olog-client</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-logbook-olog-client-es</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.phoebus</groupId>
@@ -94,16 +50,6 @@
 		<dependency>
 			<groupId>org.phoebus</groupId>
 			<artifactId>app-pvtree</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-log-configuration</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-email-ui</artifactId>
 			<version>4.6.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -143,11 +89,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.phoebus</groupId>
-			<artifactId>app-display-navigation</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
 			<artifactId>app-display-adapters</artifactId>
 			<version>4.6.6-SNAPSHOT</version>
 		</dependency>
@@ -159,26 +100,6 @@
 		<dependency>
 			<groupId>org.phoebus</groupId>
 			<artifactId>app-display-convert-edm</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-scan-ui</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-alarm-ui</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-alarm-logging-ui</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-alarm-datasouce</artifactId>
 			<version>4.6.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -213,21 +134,6 @@
 			<artifactId>app-trends-rich-adapters</artifactId>
 			<version>4.6.6-SNAPSHOT</version>
 			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-channel-views</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-channel-channelfinder</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-save-and-restore-ui</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.phoebus</groupId>

@@ -1,4 +1,4 @@
-package com.windhoverlabs.commander.applications.eventlog;
+package com.windhoverlabs.commander.applications.events;
 
 import javafx.scene.image.Image;
 import org.phoebus.framework.workbench.ApplicationService;
@@ -6,7 +6,7 @@ import org.phoebus.ui.javafx.ImageCache;
 import org.phoebus.ui.spi.MenuEntry;
 
 @SuppressWarnings("nls")
-public class EventLogMenuEntry implements MenuEntry {
+public class EventViewerMenuEntry implements MenuEntry {
   @Override
   public String getName() {
     return EventViewerApp.Name;

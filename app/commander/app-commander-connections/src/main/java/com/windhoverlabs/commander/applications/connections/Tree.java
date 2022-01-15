@@ -67,7 +67,6 @@ public class Tree {
                               .getName()
                               .equals(instanceName)) {
                         this.setStyle("-fx-font-weight: bold");
-                        System.out.println("$$$$$$$$$$" + serverName + ":" + instanceName);
                       } else {
                         this.setStyle("");
                       }
@@ -79,15 +78,6 @@ public class Tree {
                   }
                 }
               };
-
-          cell.hoverProperty()
-              .addListener(
-                  (obs, wasHovered, isNowHovered) -> {
-                    if (isNowHovered && (!cell.isEmpty())) {
-                      System.out.println("Mouse hover on " + cell.getItem().getName());
-                    }
-                  });
-
           return cell;
         });
 

@@ -1,4 +1,4 @@
-package com.windhoverlabs.commander.applications.eventlog;
+package com.windhoverlabs.commander.applications.events;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -52,17 +52,13 @@ public class EventViewerInstance implements AppInstance {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    logger.log(Level.WARNING, "EventLogInstance#1");
     tab = new DockItem(this, content);
-    logger.log(Level.WARNING, "EventLogInstance#2");
     DockPane.getActiveDockPane().addTab(tab);
-    logger.log(Level.WARNING, "EventLogInstance#3");
     tab.addCloseCheck(
         () -> {
           INSTANCE = null;
           return CompletableFuture.completedFuture(true);
         });
-    logger.log(Level.WARNING, "EventLogInstance#4");
   }
 
   public static EventViewerController getEventLog() {

@@ -1,2 +1,1 @@
-#TODO:Add Menu Entries
-com.windhoverlabs.commander.applications.eventlog.EventLogMenuEntry
+com.windhoverlabs.commander.applications.events.EventViewerMenuEntry
