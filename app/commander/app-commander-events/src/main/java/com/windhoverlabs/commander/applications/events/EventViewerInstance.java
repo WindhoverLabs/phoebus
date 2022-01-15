@@ -1,4 +1,4 @@
-package com.windhoverlabs.commander.applications.eventlog;
+package com.windhoverlabs.commander.applications.events;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

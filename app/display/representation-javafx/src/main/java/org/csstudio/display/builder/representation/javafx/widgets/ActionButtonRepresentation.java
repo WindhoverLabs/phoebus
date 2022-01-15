@@ -338,7 +338,6 @@ public class ActionButtonRepresentation extends RegionBaseRepresentation<Pane, A
     private void handleAction(ActionInfo action)
     {
         // Keyboard presses are not supressed so check if the widget is enabled
-    	System.out.println("$$$$handleAction$$$");
     	//send command to yamcs
     	
         if (! enabled)

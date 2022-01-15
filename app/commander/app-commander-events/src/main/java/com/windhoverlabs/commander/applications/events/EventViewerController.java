@@ -1,4 +1,4 @@
-package com.windhoverlabs.commander.applications.eventlog;
+package com.windhoverlabs.commander.applications.events;
 
 import com.windhoverlabs.commander.core.CMDR_Event;
 import com.windhoverlabs.commander.core.YamcsObjectManager;

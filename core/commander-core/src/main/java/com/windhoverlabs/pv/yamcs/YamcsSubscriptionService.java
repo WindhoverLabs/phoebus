@@ -80,7 +80,8 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
         () -> {
           if (subscriptionDirty.getAndSet(false) && subscription != null) {
             Set<NamedObjectId> ids = getRequestedIdentifiers();
-            log.fine(String.format("Modifying subscription to %s", ids));
+            // TODO:Make log level configurable
+            //            log.info(String.format("Modifying subscription to %s", ids));
             subscription.sendMessage(
                 SubscribeParametersRequest.newBuilder()
                     .setAction(Action.REPLACE)
