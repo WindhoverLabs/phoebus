@@ -3,6 +3,7 @@ package com.windhoverlabs.yamcs.script;
 import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
 import com.windhoverlabs.commander.core.YamcsObjectManager;
 import com.windhoverlabs.commander.core.YamcsServer;
+import com.windhoverlabs.pv.yamcs.YamcsPVFactory;
 import com.windhoverlabs.pv.yamcs.YamcsPlugin;
 import com.windhoverlabs.yamcs.commanding.CommandParser;
 import com.windhoverlabs.yamcs.commanding.CommandParser.ParseResult;
@@ -68,6 +69,7 @@ public class Yamcs {
    * Sample use:
    *
    * <p>Yamcs.issueCommand('sitl:yamcs-cfs/YSS/SIMULATOR/SWITCH_VOLTAGE_ON', {"voltage_num": 1});
+   * Yamcs.issueCommand('/YSS/SIMULATOR/SWITCH_VOLTAGE_ON', {"voltage_num": 1});
    */
   public static void issueCommand(String command, Map<String, Object> args) {
 
@@ -82,6 +84,9 @@ public class Yamcs {
     try {
       // TODO: Clean this up a bit
       serverName = command.split(":")[0];
+      if (serverName.contains("/")) {
+        serverName = serverName.substring(serverName.indexOf("/") + 1);
+      }
       instanceName = command.split(":")[1].split("/")[0];
     } catch (Exception e) {
       log.warning(
@@ -129,9 +134,11 @@ public class Yamcs {
     try {
       Macros macros = widget.getEffectiveMacros();
       String expanded_commandText = MacroHandler.replace(macros, commandText);
+      expanded_commandText = YamcsPVFactory.sanitizePVName(expanded_commandText);
 
       issueCommand(expanded_commandText, args);
     } catch (Exception e) {
+      // TODO
       log.warning("FINISH HIM!");
     }
   }

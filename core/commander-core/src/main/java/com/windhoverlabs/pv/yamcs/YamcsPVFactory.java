@@ -76,7 +76,7 @@ public class YamcsPVFactory implements PVFactory {
     return true;
   }
 
-  private boolean isDefaultDataSource(String pv) {
+  private static boolean isDefaultDataSource(String pv) {
     boolean isDefault = false;
     if (!pv.contains(PVPool.SEPARATOR)) {
       isDefault = true;
@@ -157,7 +157,7 @@ public class YamcsPVFactory implements PVFactory {
     return pv;
   }
 
-  private String sanitizePVName(final String name) {
+  public static String sanitizePVName(final String name) {
     String actual_name = name;
     if (isDefaultDataSource(actual_name)) {
       actual_name = name;
