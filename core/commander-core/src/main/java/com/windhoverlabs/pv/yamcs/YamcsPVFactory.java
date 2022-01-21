@@ -64,6 +64,18 @@ public class YamcsPVFactory implements PVFactory {
     if (!instanceName.isEmpty()) {
       pvInstance = YamcsObjectManager.getInstanceFromName(serverPath, instanceName);
     } else {
+      // YamcsObjectManager.getServerFromName(serverPath).addListener(()->
+      //      {
+      //      pvInstance = YamcsObjectManager.getServerFromName(serverPath).getDefaultInstance();
+      //    }
+      //    if (pvInstance == null) {
+      //      log.warning(String.format("Instance not found for \"%s\" server", serverPath));
+      //      return false;
+      //    }
+      //
+      //    pvInstance.subscribePV((YamcsPV) pv);
+      //    Maybe rename function to registerWhenReady??
+      //      });
       pvInstance = YamcsObjectManager.getServerFromName(serverPath).getDefaultInstance();
     }
     if (pvInstance == null) {

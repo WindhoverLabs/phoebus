@@ -8,6 +8,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   public static String OBJECT_TYPE = "server";
   private YamcsClient yamcsClient;
   private CMDR_YamcsInstance defaultInstance;
+  // YamcsConnectionListener listener;
 
   public YamcsClient getYamcsClient() {
     return yamcsClient;
@@ -56,6 +57,9 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
                   getItems()
                       .get(getItems().size() - 1)
                       .initEventSubscription(yamcsClient, this.getName());
+                  // Maybe add an instance field to the listener, to know which instances
+                  // to call the listener on
+                  //                  listener.exec()
                 }
               }
             });
