@@ -33,6 +33,11 @@ public class YamcsServerConnection {
     name = newName;
   }
 
+  public YamcsServerConnection(String newUrl, int newPort) {
+    url = newUrl;
+    port = newPort;
+  }
+
   public YamcsConnectionStatus getStatus() {
     return status;
   }
