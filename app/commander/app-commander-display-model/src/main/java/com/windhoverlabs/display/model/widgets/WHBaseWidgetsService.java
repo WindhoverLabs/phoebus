@@ -20,7 +20,6 @@ import org.csstudio.display.builder.model.spi.WidgetsService;
 public class WHBaseWidgetsService implements WidgetsService {
   @Override
   public Collection<WidgetDescriptor> getWidgetDescriptors() {
-    System.out.println("WHBaseWidgetsService");
     return List.of(
         WHTextUpdateWidget.WIDGET_DESCRIPTOR, CommanderCommandActionButtonWidget.WIDGET_DESCRIPTOR);
   }
