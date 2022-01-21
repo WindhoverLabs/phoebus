@@ -1,11 +1,8 @@
 package com.windhoverlabs.yamcs.studio.data.vtype;
 
-/**
- * A collection of {@code double}s.
- */
+/** A collection of {@code double}s. */
 public interface CollectionDouble extends CollectionNumber {
 
-    @Override
-    IteratorDouble iterator();
-
+  @Override
+  IteratorDouble iterator();
 }

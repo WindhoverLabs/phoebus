@@ -5,75 +5,97 @@ import org.yamcs.client.YamcsClient;
 import org.yamcs.protobuf.YamcsInstance;
 
 public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
-	public static String OBJECT_TYPE = "server";
-	private YamcsClient yamcsClient;
-	private YamcsServerConnection connection;
+  public static String OBJECT_TYPE = "server";
+  private YamcsClient yamcsClient;
+  private CMDR_YamcsInstance defaultInstance;
 
-	private boolean isConnected;
+  public YamcsClient getYamcsClient() {
+    return yamcsClient;
+  }
 
-	public boolean isConnected() {
-		return isConnected;
-	}
+  private YamcsServerConnection connection;
 
+  private boolean isConnected;
 
-	public YamcsServer(String name) {
-		super(name);
-	}
+  public boolean isConnected() {
+    return isConnected;
+  }
 
-	@Override
-	public void createAndAddChild(String name) {
-		getItems().add(new CMDR_YamcsInstance(name));
-	}
+  public YamcsServer(String name) {
+    super(name);
+  }
 
-	@Override
-	public String getObjectType() {
-		return OBJECT_TYPE;
-	}
+  @Override
+  public void createAndAddChild(String name) {
+    getItems().add(new CMDR_YamcsInstance(name));
+  }
 
-	public void connect(YamcsServerConnection newConnection) {
-		connection = newConnection;
-		if (yamcsClient != null) {
-			yamcsClient.close();
-		}
-		yamcsClient = YamcsClient.newBuilder(connection.getUrl(), connection.getPort()).build();
+  @Override
+  public String getObjectType() {
+    return OBJECT_TYPE;
+  }
 
-		yamcsClient.listInstances().whenComplete((response, exc) -> {
+  public void connect(YamcsServerConnection newConnection) {
+    connection = newConnection;
+    if (yamcsClient != null) {
+      yamcsClient.close();
+    }
+    yamcsClient = YamcsClient.newBuilder(connection.getUrl(), connection.getPort()).build();
 
-			if (exc == null) {
-				for (YamcsInstance instance : response) {
-					createAndAddChild(instance.getName());
-					getItems().get(getItems().size() - 1).initProcessorClient(yamcsClient);
-					getItems().get(getItems().size() - 1).initYamcsSubscriptionService(yamcsClient, this.getName());
-				}
-			}
-		});
+    yamcsClient
+        .listInstances()
+        .whenComplete(
+            (response, exc) -> {
+              if (exc == null) {
+                for (YamcsInstance instance : response) {
+                  createAndAddChild(instance.getName());
+                  getItems().get(getItems().size() - 1).initProcessorClient(yamcsClient);
+                  getItems()
+                      .get(getItems().size() - 1)
+                      .initYamcsSubscriptionService(yamcsClient, this.getName());
+                  getItems()
+                      .get(getItems().size() - 1)
+                      .initEventSubscription(yamcsClient, this.getName());
+                }
+              }
+            });
 
-		try {
-			yamcsClient.connectWebSocket();
+    try {
+      yamcsClient.connectWebSocket();
 
-		} catch (ClientException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return;
-		}
+    } catch (ClientException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      return;
+    }
 
-		isConnected = true;
-	}
+    isConnected = true;
+  }
 
-	public YamcsServerConnection getConnection() {
-		return connection;
-	}
+  public YamcsServerConnection getConnection() {
+    return connection;
+  }
 
-	public CMDR_YamcsInstance getInstance(String instanceName) {
-		CMDR_YamcsInstance resultInstance = null;
-		for (CMDR_YamcsInstance instance : getItems()) {
-			if (instanceName.equals(instance.getName())) {
-				resultInstance = instance;
-				break;
-			}
-		}
+  public CMDR_YamcsInstance getInstance(String instanceName) {
+    CMDR_YamcsInstance resultInstance = null;
 
-		return resultInstance;
-	}
+    if (instanceName != null) {
+      for (CMDR_YamcsInstance instance : getItems()) {
+        if (instanceName.equals(instance.getName())) {
+          resultInstance = instance;
+          break;
+        }
+      }
+    }
 
+    return resultInstance;
+  }
+
+  public void setDefaultInstance(String instanceName) {
+    defaultInstance = getInstance(instanceName);
+  }
+
+  public CMDR_YamcsInstance getDefaultInstance() {
+    return defaultInstance;
+  }
 }

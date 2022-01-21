@@ -1,10 +1,8 @@
 package com.windhoverlabs.yamcs.studio.data.vtype;
 
-/**
- * A collection of {@code byte}s.
- */
+/** A collection of {@code byte}s. */
 public interface CollectionByte extends CollectionNumber {
 
-    @Override
-    IteratorByte iterator();
+  @Override
+  IteratorByte iterator();
 }

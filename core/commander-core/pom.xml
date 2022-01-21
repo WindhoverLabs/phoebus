@@ -5,9 +5,40 @@
 		<artifactId>core</artifactId>
 		<version>4.6.6-SNAPSHOT</version>
 	</parent>
-	<groupId>org.windhoverlabs</groupId>
+	<groupId>com.windhoverlabs</groupId>
 	<artifactId>commander-core</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
+
+	<developers>
+		<developer>
+			<name>Lorenzo Gomez</name>
+			<email>lgomez@windhoverlabs.com</email>
+			<organization>Windhover Labs</organization>
+			<organizationUrl>https://www.windhoverlabs.com</organizationUrl>
+		</developer>
+		<developer>
+			<name>Mathew Benson</name>
+			<email>mbenson@windhoverlabs.com</email>
+			<organization>Windhover Labs</organization>
+			<organizationUrl>https://www.windhoverlabs.com</organizationUrl>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:git:git://github.com/WindhoverLabs/phoebus.git</connection>
+		<developerConnection>scm:git:ssh://github.com:WindhoverLabs/phoebus.git</developerConnection>
+		<url>https://github.com/WindhoverLabs/phoebus/tree/develop</url>
+		<tag>commander-core-0.1.0</tag>
+	</scm>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.yamcs</groupId>
@@ -37,6 +68,7 @@
 			<artifactId>yamcs-core</artifactId>
 			<scope>test</scope>
 			<version>5.5.1</version>
+
 		</dependency>
 		<dependency>
 			<groupId>org.epics</groupId>
@@ -52,7 +84,13 @@
 			<groupId>org.phoebus</groupId>
 			<artifactId>core-pv</artifactId>
 			<version>4.6.6-SNAPSHOT</version>
+</dependency>
+		<dependency>
+			<groupId>org.phoebus</groupId>
+			<artifactId>app-display-representation</artifactId>
+			<version>4.6.6-SNAPSHOT</version>
 		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -75,7 +113,7 @@
 				</executions>
 			</plugin>
 
-			<plugin>
+			<!--plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
@@ -96,7 +134,7 @@
 				<configuration>
 					<tarLongFileMode>posix</tarLongFileMode>
 				</configuration>
-			</plugin>
+			</plugin-->
 		</plugins>
 
 		<resources>

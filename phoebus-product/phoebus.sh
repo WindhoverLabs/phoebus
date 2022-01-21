@@ -30,7 +30,7 @@ fi
 JAR=`echo ${TOP}/product-*.jar`
 
 # To get one instance, use server mode
-OPT="-server 4918"
+OPT="-server 4918 -settings ${TOP}/settings.ini"
 
 
 filter1="-help"
