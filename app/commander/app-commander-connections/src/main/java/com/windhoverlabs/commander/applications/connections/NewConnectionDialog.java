@@ -63,8 +63,7 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
           if (button.getButtonData() == ButtonData.OK_DONE) {
             try {
               newConnection =
-                  new YamcsServerConnection(
-                      serverUrl.getText(), Integer.parseInt(port.getText()));
+                  new YamcsServerConnection(serverUrl.getText(), Integer.parseInt(port.getText()));
               newConnection.setName(serverName.getText());
               newConnection.setStatus(YamcsConnectionStatus.Connected);
             } catch (NumberFormatException e) {
