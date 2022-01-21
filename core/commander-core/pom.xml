@@ -66,9 +66,14 @@
 		<dependency>
 			<groupId>org.yamcs</groupId>
 			<artifactId>yamcs-core</artifactId>
-			<scope>test</scope>
-			<version>5.5.1</version>
-
+			<!--scope>test</scope-->
+			<version>5.5.4</version>
+		</dependency>
+				<dependency>
+			<groupId>org.yamcs</groupId>
+			<artifactId>yamcs-api</artifactId>
+			<!--scope>test</scope-->
+			<version>5.5.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.epics</groupId>

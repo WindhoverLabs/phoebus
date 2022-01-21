@@ -71,7 +71,9 @@ public abstract class AbstractIntegrationTest {
     }
     yamcsClient.connectWebSocket();
 
-    packetGenerator = PacketProvider.instance[0].mdbPacketGenerator;
+    packetGenerator =
+        com.windhoverlabs.commander.core.AbstractIntegrationTest.PacketProvider.instance[0]
+            .mdbPacketGenerator;
     packetGenerator.setGenerationTime(TimeEncoding.INVALID_INSTANT);
     packetGenerator2 = PacketProvider.instance[1].mdbPacketGenerator;
     packetGenerator2.setGenerationTime(TimeEncoding.INVALID_INSTANT);
@@ -82,6 +84,24 @@ public abstract class AbstractIntegrationTest {
         .getParameterProcessorManager()
         .getAlarmServer()
         .clearAll();
+  }
+
+  public static synchronized void setupTest(String configPrefix) {
+    //    prefix = configPrefix;
+    //    configurations.clear(); // forget any known config (useful in the maven unit tests called
+    // in the same VM)
+    //
+    //    if (System.getProperty("java.util.logging.config.file") == null) {
+    //        try {
+    //
+    // LogManager.getLogManager().readConfiguration(resolver.getConfigurationStream("/logging.properties"));
+    //        } catch (Exception e) {
+    //            // do nothing, the default java builtin logging is used
+    //        }
+    //    }
+
+    //    CMDR_YamcsConfigurationResolver.class.
+    TimeEncoding.setUp();
   }
 
   protected static void setupYamcs() throws Exception {

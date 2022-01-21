@@ -15,28 +15,38 @@ services:
 
 dataLinks:
   - name: tm_realtime
-    class: org.yamcs.AbstractIntegrationTest$PacketProvider
+    class: com.windhoverlabs.commander.core.AbstractIntegrationTest$PacketProvider
     num: 0
     stream: tm_realtime
   - name: tm2_realtime
-    class: org.yamcs.AbstractIntegrationTest$PacketProvider
+    class: com.windhoverlabs.commander.core.AbstractIntegrationTest$PacketProvider
     num: 1
     stream: tm2_realtime
             
   - name: pp_realtime
-    class: org.yamcs.AbstractIntegrationTest$ParameterProvider
+    class: com.windhoverlabs.commander.core.AbstractIntegrationTest$ParameterProvider
     stream: pp_realtime
     num: 0
   - name: tc_realtime
-    class: org.yamcs.AbstractIntegrationTest$TcDataLink
+    class: com.windhoverlabs.commander.core.AbstractIntegrationTest$TcDataLink
     num: 0
     stream: tc_realtime
 
 mdb:
-  - type: "sheet"
-    args: 
-      file: "mdb/refmdb.xls"
-      enableAliasReferences: false
+  #- type: "sheet"
+    #args: 
+     # file: "mdb/refmdb.xls"
+     # enableAliasReferences: false
+    # Configuration of the active loaders
+    # Valid loaders are: sheet, xtce or fully qualified name of the class
+    - type: "xtce"
+      spec: "mdb/cfs-ccsds.xml"
+      subLoaders:
+      - type: "xtce"
+        spec: "mdb/PPD.xml"
+#      - type: "xtce"
+#        spec: "mdb/CPD.xml"
+
 
 streamConfig:
   tm: 
@@ -44,7 +54,7 @@ streamConfig:
      processor: realtime
    - name: tm2_realtime
      processor: realtime
-     rootContainer: /REFMDB/tm2
+     #rootContainer: /REFMDB/tm2
    - name: tm_dump
   cmdHist: ["cmdhist_realtime",  "cmdhist_dump"]
   event: ["events_realtime", "events_dump"]
