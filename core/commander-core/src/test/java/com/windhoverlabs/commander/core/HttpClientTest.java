@@ -52,9 +52,9 @@ public class HttpClientTest extends AbstractIntegrationTest {
   public void testYamcsServer() {
     YamcsServer newServer = new YamcsServer("sitl");
     assertThat(newServer.getName(), equalTo("sitl"));
-    
+
     YamcsServerConnection newConnection = new YamcsServerConnection("localhost", 9190);
-    
+
     newServer.connect(newConnection);
   }
 }
