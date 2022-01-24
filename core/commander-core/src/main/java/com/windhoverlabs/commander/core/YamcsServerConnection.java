@@ -11,6 +11,7 @@ public class YamcsServerConnection {
   private int port;
   private String user;
   private String password;
+
   private String name;
 
   private YamcsConnectionStatus status;
@@ -76,6 +77,10 @@ public class YamcsServerConnection {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public String getPassword() {
+    return password;
   }
 
   public String toString() {
