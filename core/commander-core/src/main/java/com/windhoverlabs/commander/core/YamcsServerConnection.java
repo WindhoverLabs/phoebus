@@ -28,6 +28,13 @@ public class YamcsServerConnection {
     user = newUser;
   }
 
+  public YamcsServerConnection(String newUrl, int newPort, String newUser, String newPassword) {
+    url = newUrl;
+    port = newPort;
+    user = newUser;
+    password = newPassword;
+  }
+
   public YamcsServerConnection(String newName, String newUrl, int newPort) {
     url = newUrl;
     port = newPort;
