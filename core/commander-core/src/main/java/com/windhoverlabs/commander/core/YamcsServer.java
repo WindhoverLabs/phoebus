@@ -8,18 +8,13 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   public static String OBJECT_TYPE = "server";
   private YamcsClient yamcsClient;
   private CMDR_YamcsInstance defaultInstance;
+  private ConnectionState serverState = ConnectionState.DISCONNECTED;
 
   public YamcsClient getYamcsClient() {
     return yamcsClient;
   }
 
   private YamcsServerConnection connection;
-
-  private boolean isConnected;
-
-  public boolean isConnected() {
-    return isConnected;
-  }
 
   public YamcsServer(String name) {
     super(name);
@@ -37,6 +32,8 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
   public void connect(YamcsServerConnection newConnection) {
     connection = newConnection;
+
+    // TODO:Not sure if this is necessary given our non-global model of instances
     if (yamcsClient != null) {
       yamcsClient.close();
     }
@@ -71,14 +68,20 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
     try {
       yamcsClient.connectWebSocket();
+      serverState = ConnectionState.CONNECTED;
 
     } catch (ClientException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
       return;
     }
+  }
 
-    isConnected = true;
+  public void disconnect() {
+    // TODO: unInit resources such as event subscriptions, parameter subscriptions, etc
+    if (yamcsClient != null) {
+      yamcsClient.close();
+    }
   }
 
   public YamcsServerConnection getConnection() {
@@ -106,5 +109,9 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
   public CMDR_YamcsInstance getDefaultInstance() {
     return defaultInstance;
+  }
+
+  public ConnectionState getServerState() {
+    return serverState;
   }
 }
