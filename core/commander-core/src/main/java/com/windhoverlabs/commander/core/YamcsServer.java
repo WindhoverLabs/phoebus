@@ -81,6 +81,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
     // TODO: unInit resources such as event subscriptions, parameter subscriptions, etc
     if (yamcsClient != null) {
       yamcsClient.close();
+      serverState = ConnectionState.DISCONNECTED;
     }
   }
 
