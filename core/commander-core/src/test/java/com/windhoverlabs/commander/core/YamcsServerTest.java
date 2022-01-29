@@ -2,37 +2,57 @@ package com.windhoverlabs.commander.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-
+import static org.hamcrest.Matchers.notNullValue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.yamcs.client.ClientException;
 
 public class YamcsServerTest extends AbstractIntegrationTest {
   private YamcsServer newServer;
+  YamcsServerConnection newConnection;
 
   @Override
+  @BeforeEach
   public void before() throws ClientException {
     super.before();
     newServer = new YamcsServer("sitl");
     assertThat(newServer.getName(), equalTo("sitl"));
 
-    YamcsServerConnection newConnection =
-        new YamcsServerConnection("localhost", 9190, "admin", "rootpassword");
-
-    newServer.connect(newConnection);
+    newConnection = new YamcsServerConnection("localhost", 9190, "admin", "rootpassword");
+  }
+  
+  @BeforeAll
+  public void initYamcs() throws Exception {
+    setupYamcs();
   }
 
   @Test
   public void testYamcsServerConnect() throws InterruptedException, ExecutionException {
+    newServer.connect(newConnection);
     assertThat(
         "YamcsServer is connected", newServer.getServerState(), equalTo(ConnectionState.CONNECTED));
 
-    CompletableFuture<String> future = new CompletableFuture<>();
+    newServer.disconnect();
 
+    assertThat(
+        "YamcsServer is disconnected",
+        newServer.getServerState(),
+        equalTo(ConnectionState.DISCONNECTED));
+
+  }
+
+  @Test
+  public void testYamcsServerInstances() throws InterruptedException, ExecutionException {
+    newServer.connect(newConnection);
+    assertThat(
+        "YamcsServer is connected", newServer.getServerState(), equalTo(ConnectionState.CONNECTED));
+    CompletableFuture<String> future = new CompletableFuture<>();
+  
     ScheduledThreadPoolExecutor executorService = new ScheduledThreadPoolExecutor(1);
     executorService.submit(
         new Runnable() {
@@ -48,10 +68,11 @@ public class YamcsServerTest extends AbstractIntegrationTest {
             }
           }
         });
-
+  
     assertThat("future is successful", future.get(), equalTo("Success"));
     assertThat(
-        "YamcsServer instance is not null", newServer.getInstance(yamcsInstance), notNullValue());
+        "YamcsServer instance is not null", newServer.getInstance(yamcsInstance),
+   notNullValue());
     assertThat(
         "yamcs instance is equal to YamcsServer item",
         newServer.getItems().get(0),

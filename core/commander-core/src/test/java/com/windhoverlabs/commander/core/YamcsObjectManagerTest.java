@@ -3,13 +3,12 @@ package com.windhoverlabs.commander.core;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 public class YamcsObjectManagerTest {
 
-  @Before
+  @BeforeEach
   public void addInstances() {
     YamcsObjectManager.getRoot().getItems().add(new YamcsServer("sitl"));
     YamcsObjectManager.getRoot()
@@ -19,7 +18,7 @@ public class YamcsObjectManagerTest {
         .add(new CMDR_YamcsInstance("yamcs-cfs"));
   }
 
-  @After
+  @AfterEach
   public void removeInstances() {
     YamcsObjectManager.getRoot().getItems().remove(0);
   }
