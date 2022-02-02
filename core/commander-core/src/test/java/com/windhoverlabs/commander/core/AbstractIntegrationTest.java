@@ -10,10 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.yamcs.YConfiguration;
 import org.yamcs.client.ClientException;
 import org.yamcs.client.ConnectionListener;
@@ -54,8 +51,8 @@ public abstract class AbstractIntegrationTest {
   }
 
   /**
-   * 
-   * Add  @BeforeAll to subclasses
+   * Add @BeforeAll to subclasses
+   *
    * @throws Exception
    */
   public static void beforeClass() throws Exception {
@@ -64,6 +61,7 @@ public abstract class AbstractIntegrationTest {
 
   /**
    * Add @BeforeEach to subclasses
+   *
    * @throws ClientException
    */
   public void before() throws ClientException {
@@ -104,7 +102,11 @@ public abstract class AbstractIntegrationTest {
     yamcs.start();
   }
 
-  @AfterEach
+  /**
+   * Add @AfterEach to subclasses
+   *
+   * @throws ClientException
+   */
   public void after() throws InterruptedException {
     yamcsClient.close();
     assertTrue(connectionListener.onDisconnect.tryAcquire(5, TimeUnit.SECONDS));
