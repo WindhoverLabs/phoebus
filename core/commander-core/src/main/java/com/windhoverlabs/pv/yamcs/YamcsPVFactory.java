@@ -64,7 +64,13 @@ public class YamcsPVFactory implements PVFactory {
     if (!instanceName.isEmpty()) {
       pvInstance = YamcsObjectManager.getInstanceFromName(serverPath, instanceName);
     } else {
-      pvInstance = YamcsObjectManager.getServerFromName(serverPath).getDefaultInstance();
+      YamcsServer pvServer = YamcsObjectManager.getServerFromName(serverPath);
+
+      if (pvServer != null) {
+        pvInstance = YamcsObjectManager.getServerFromName(serverPath).getDefaultInstance();
+      } else {
+        pvInstance = null;
+      }
     }
     if (pvInstance == null) {
       log.warning(String.format("Instance not found for \"%s\" server", serverPath));
