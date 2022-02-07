@@ -8,11 +8,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.layout.Pane;
+import org.phoebus.framework.nls.NLS;
 import org.phoebus.framework.persistence.Memento;
 import org.phoebus.framework.persistence.MementoTree;
 import org.phoebus.framework.persistence.XMLMementoTree;
@@ -42,16 +47,23 @@ public class ConnectionsManagerInstance implements AppInstance {
 
   private final AppDescriptor app;
 
-  // TODO: Refactor Tree constructor since we don't need to pass the list of servers anymore.
-  private static Tree serverTree = new Tree(restoreServers());
-
   private DockItem tab = null;
 
   public ConnectionsManagerInstance(AppDescriptor app) {
     this.app = app;
 
-    Node content;
-    content = serverTree.getTreeView();
+    Node content = new Pane();
+    ResourceBundle resourceBundle = NLS.getMessages(Messages.class);
+    FXMLLoader loader = new FXMLLoader();
+    loader.setResources(resourceBundle);
+    loader.setLocation(this.getClass().getResource("ConnectionsManagerView.fxml"));
+
+    try {
+      content = loader.load();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
 
     tab = new DockItem(this, content);
     DockPane.getActiveDockPane().addTab(tab);
@@ -92,7 +104,7 @@ public class ConnectionsManagerInstance implements AppInstance {
     final XMLMementoTree yamcsConnectionsMemento = XMLMementoTree.create();
     yamcsConnectionsMemento.createChild(YAMCS_CONNECTIONS);
 
-    YamcsObject<YamcsServer> treeRoot = serverTree.getRoot();
+    YamcsObject<YamcsServer> treeRoot = YamcsObjectManager.getRoot();
 
     for (YamcsServer s : treeRoot.getItems()) {
       yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).createChild(s.getConnection().getName());
@@ -143,9 +155,5 @@ public class ConnectionsManagerInstance implements AppInstance {
     }
 
     return serverList;
-  }
-
-  public static Tree getServerTree() {
-    return serverTree;
   }
 }

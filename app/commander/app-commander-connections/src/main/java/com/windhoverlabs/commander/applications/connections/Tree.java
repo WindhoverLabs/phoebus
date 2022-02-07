@@ -10,18 +10,19 @@ import com.windhoverlabs.commander.core.YamcsServerConnection;
 import java.util.Arrays;
 import java.util.List;
 import javafx.collections.ListChangeListener.Change;
-import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
+import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
 public class Tree {
 
-  private final TreeView<YamcsObject<?>> treeView;
+  @FXML private TreeView<YamcsObject<?>> treeView;
 
   private final List<Class<? extends YamcsObject<?>>> itemTypes =
       Arrays.asList(YamcsServer.class, CMDR_YamcsInstance.class);
@@ -29,15 +30,18 @@ public class Tree {
   // TODO: Move this root handling to another model class. This would make it easier to decouple
   private YamcsObject<?> root;
 
-  public Tree(ObservableList<YamcsServer> servers) {
-    treeView = new TreeView<>();
-
+  @FXML
+  public void initialize() {
     root = YamcsObjectManager.getRoot();
 
     TreeItem<YamcsObject<?>> treeRoot = createItem(root);
 
     treeView.setRoot(treeRoot);
     treeView.setShowRoot(false);
+
+    Tooltip t = new Tooltip("Rich-click to add a new connection");
+
+    treeView.setTooltip(t);
 
     treeView.setCellFactory(
         tv -> {
@@ -85,7 +89,7 @@ public class Tree {
     ContextMenu contextMenu = new ContextMenu();
 
     // create menuitems
-    MenuItem addServer = new MenuItem("Add Server");
+    MenuItem addServer = new MenuItem("Add Connection");
     addServer.setOnAction(
         e -> {
           NewConnectionDialog dialog = new NewConnectionDialog();

@@ -28,6 +28,7 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
   final GridPane layout = new GridPane();
 
   public NewConnectionDialog() {
+    this.setTitle("New Connection");
     ButtonType testConnectionButtonType = new ButtonType("Test Connection", ButtonData.OTHER);
     ButtonType connectButtonType = new ButtonType("Connect", ButtonData.OK_DONE);
 
