@@ -19,6 +19,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.util.Callback;
 
 public class Tree {
 
@@ -92,7 +93,15 @@ public class Tree {
     MenuItem addServer = new MenuItem("Add Connection");
     addServer.setOnAction(
         e -> {
-          NewConnectionDialog dialog = new NewConnectionDialog();
+          Callback<YamcsServerConnection, Boolean> callback =
+              new Callback<YamcsServerConnection, Boolean>() {
+
+                @Override
+                public Boolean call(YamcsServerConnection connection) {
+                  return YamcsServer.testConnection(connection);
+                }
+              };
+          NewConnectionDialog dialog = new NewConnectionDialog(callback);
           YamcsServerConnection newServer = dialog.showAndWait().orElse(null);
           if (newServer == null) return;
 

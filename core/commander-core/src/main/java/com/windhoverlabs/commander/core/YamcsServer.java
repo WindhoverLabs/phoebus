@@ -115,4 +115,32 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   public ConnectionState getServerState() {
     return serverState;
   }
+
+  /**
+   * Attempt to connect.
+   *
+   * @param newConnection
+   * @return true if the connection attempt is successful. Otherwise, this function returns false.
+   */
+  public static boolean testConnection(YamcsServerConnection newConnection) {
+
+    YamcsClient yamcsClient = null;
+    try {
+      yamcsClient = YamcsClient.newBuilder(newConnection.getUrl(), newConnection.getPort()).build();
+
+      if (newConnection.getPassword() != null && newConnection.getUser() != null) {
+
+        yamcsClient.login(newConnection.getUser(), newConnection.getPassword().toCharArray());
+      }
+
+    } catch (ClientException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      return false;
+    }
+
+    yamcsClient.close();
+
+    return true;
+  }
 }

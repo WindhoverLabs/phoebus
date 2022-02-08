@@ -16,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.util.Callback;
 
 public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
   private final TextField serverUrl = new TextField();
@@ -27,7 +28,7 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
 
   final GridPane layout = new GridPane();
 
-  public NewConnectionDialog() {
+  public NewConnectionDialog(Callback<YamcsServerConnection, Boolean> testConnectionCallback) {
     this.setTitle("New Connection");
     ButtonType testConnectionButtonType = new ButtonType("Test Connection", ButtonData.OTHER);
     ButtonType connectButtonType = new ButtonType("Connect", ButtonData.OK_DONE);
@@ -53,7 +54,14 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
     testConnectionButton.addEventFilter(
         ActionEvent.ACTION,
         event -> {
-          event.consume();
+          YamcsServerConnection newConnection =
+              new YamcsServerConnection(serverUrl.getText(), Integer.parseInt(port.getText()));
+
+          if (testConnectionCallback.call(newConnection)) {
+            System.out.println("test true");
+          } else {
+            System.out.println("test false");
+          }
         });
 
     Platform.runLater(() -> serverUrl.requestFocus());

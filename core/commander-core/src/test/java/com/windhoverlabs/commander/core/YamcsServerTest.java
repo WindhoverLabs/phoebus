@@ -47,6 +47,16 @@ public class YamcsServerTest extends AbstractIntegrationTest {
         equalTo(ConnectionState.DISCONNECTED));
   }
 
+  @BeforeAll
+  public static void testYamcsServerTestConnection()
+      throws InterruptedException, ExecutionException {
+    YamcsServerConnection newConnection =
+        new YamcsServerConnection("localhost", 9190, "admin", "rootpassword");
+
+    assertThat(
+        "connection test is successful", YamcsServer.testConnection(newConnection), equalTo(true));
+  }
+
   @Test
   public void testYamcsServerInstances() throws InterruptedException, ExecutionException {
     newServer.connect(newConnection);
