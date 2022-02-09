@@ -59,7 +59,9 @@ public class YamcsServerTest extends AbstractIntegrationTest {
     newConnection = new YamcsServerConnection("not_localhost", 9190, "admin", "rootpassword");
 
     assertThat(
-        "connection test is not successful", YamcsServer.testConnection(newConnection), equalTo(false));
+        "connection test is not successful",
+        YamcsServer.testConnection(newConnection),
+        equalTo(false));
   }
 
   @Test
