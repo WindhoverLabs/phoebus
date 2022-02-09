@@ -6,6 +6,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -56,12 +58,16 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
         event -> {
           YamcsServerConnection newConnection =
               new YamcsServerConnection(serverUrl.getText(), Integer.parseInt(port.getText()));
-
+          Alert dialog = new Alert(AlertType.INFORMATION);
           if (testConnectionCallback.call(newConnection)) {
-            System.out.println("test true");
+            dialog.setContentText("Connection is OK.");
           } else {
-            System.out.println("test false");
+            dialog.setAlertType(AlertType.ERROR);
+            dialog.setContentText("Connection test failed.");
           }
+
+          dialog.showAndWait();
+          event.consume();
         });
 
     Platform.runLater(() -> serverUrl.requestFocus());

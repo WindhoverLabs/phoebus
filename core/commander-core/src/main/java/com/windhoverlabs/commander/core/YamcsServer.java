@@ -133,9 +133,10 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
         yamcsClient.login(newConnection.getUser(), newConnection.getPassword().toCharArray());
       }
 
+      yamcsClient.connectWebSocket();
+
     } catch (ClientException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
       return false;
     }
 
