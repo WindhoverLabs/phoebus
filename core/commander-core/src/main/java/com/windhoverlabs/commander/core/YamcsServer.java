@@ -1,5 +1,7 @@
 package com.windhoverlabs.commander.core;
 
+import com.windhoverlabs.pv.yamcs.YamcsAware;
+import java.util.ArrayList;
 import org.yamcs.client.ClientException;
 import org.yamcs.client.YamcsClient;
 import org.yamcs.protobuf.YamcsInstance;
@@ -9,6 +11,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   private YamcsClient yamcsClient;
   private CMDR_YamcsInstance defaultInstance;
   private ConnectionState serverState = ConnectionState.DISCONNECTED;
+  private ArrayList<YamcsAware> listeners = new ArrayList<YamcsAware>();
 
   public YamcsClient getYamcsClient() {
     return yamcsClient;
@@ -28,6 +31,10 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   @Override
   public String getObjectType() {
     return OBJECT_TYPE;
+  }
+
+  public void addListener(YamcsAware newListener) {
+    listeners.add(newListener);
   }
 
   public void connect(YamcsServerConnection newConnection) {
@@ -106,6 +113,11 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
   public void setDefaultInstance(String instanceName) {
     defaultInstance = getInstance(instanceName);
+    if (defaultInstance != null) {
+      for (YamcsAware listener : listeners) {
+        listener.changeDefaultInstance();
+      }
+    }
   }
 
   public CMDR_YamcsInstance getDefaultInstance() {
@@ -135,7 +147,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
       yamcsClient.connectWebSocket();
 
-    } catch (ClientException e) {
+    } catch (Exception e) {
       // TODO Auto-generated catch block
       return false;
     }

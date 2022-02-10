@@ -5,8 +5,8 @@ import org.yamcs.protobuf.Mdb.SignificanceInfo.SignificanceLevelType;
 import org.yamcs.protobuf.ProcessorInfo;
 
 /**
- * Marks a component as being aware of the global UI state. This state includes the connected
- * instance and/or processor.
+ * Marks a component as being aware of the global YamcsObjectManager state. This state includes the
+ * connected instance and/or processor.
  */
 public interface YamcsAware {
 
@@ -20,8 +20,10 @@ public interface YamcsAware {
   /** Called when the yamcs is connection went lost */
   default void onYamcsDisconnected() {}
 
-  /** The globally activated instance has changed. This is always called on the UI thread. */
+  /** The activated instance has changed. */
   default void changeInstance(String instance) {}
+
+  default void changeDefaultInstance() {}
 
   /**
    * The globally activated processor has changed. This is always called on the UI thread.

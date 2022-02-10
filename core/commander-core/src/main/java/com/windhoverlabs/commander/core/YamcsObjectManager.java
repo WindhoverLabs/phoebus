@@ -1,5 +1,7 @@
 package com.windhoverlabs.commander.core;
 
+import com.windhoverlabs.pv.yamcs.YamcsAware;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +22,8 @@ public final class YamcsObjectManager {
   // At the moment we do not support setting a default server directly by the outside
   private static YamcsServer defaultServer = null;
 
+  private static ArrayList<YamcsAware> listeners = new ArrayList<YamcsAware>();
+
   public static YamcsServer getDefaulServer() {
     return defaultServer;
   }
@@ -35,8 +39,11 @@ public final class YamcsObjectManager {
       return;
     }
 
-    defaultServer.setDefaultInstance(instance);
-    YamcsObjectManager.defaultInstance = getServerFromName(server).getDefaultInstance();
+    for (YamcsServer s : root.getItems()) {
+      s.setDefaultInstance(null);
+    }
+    YamcsObjectManager.defaultInstance = getServerFromName(server).getInstance(instance);
+    defaultServer.setDefaultInstance(YamcsObjectManager.defaultInstance.getName());
   }
 
   private YamcsObjectManager() {}
@@ -61,11 +68,23 @@ public final class YamcsObjectManager {
 
           @Override
           public void createAndAddChild(String name) {
-            getItems().add(new YamcsServer(name));
+            YamcsServer newServer = new YamcsServer(name);
+            try {
+              for (YamcsAware l : listeners) {
+                newServer.addListener(l);
+              }
+            } catch (Exception e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+            getItems().add(newServer);
           }
         };
   }
 
+  public static void addYamcsListener(YamcsAware newListener) {
+    listeners.add(newListener);
+  }
   /**
    * Traverse through allServers and find the server object that matches name
    *

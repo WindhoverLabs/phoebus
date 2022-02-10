@@ -81,7 +81,7 @@ public class ConnectionsManagerInstance implements AppInstance {
 
   @Override
   public void restore(final Memento memento) {
-    // TODO: Move "new Tree(restoreServers());" here.
+    restoreServers();
   }
 
   @Override

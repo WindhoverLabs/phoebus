@@ -2,6 +2,7 @@ package com.windhoverlabs.commander.applications.events;
 
 import com.windhoverlabs.commander.core.CMDR_Event;
 import com.windhoverlabs.commander.core.YamcsObjectManager;
+import com.windhoverlabs.pv.yamcs.YamcsAware;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -137,21 +138,31 @@ public class EventViewerController {
             typeCol,
             sourceCol,
             instanceCol);
-    YamcsObjectManager.getDefaultInstance()
-        .getEvents()
-        .addListener(
-            new ListChangeListener<Object>() {
-              @Override
-              public void onChanged(Change<?> c) {
-                Platform.runLater(
-                    () -> {
-                      if (!scrollLockButton.isSelected()) {
-                        tableView.scrollTo(tableView.getItems().size() - 1);
+
+    YamcsAware yamcsListener =
+        new YamcsAware() {
+          public void changeDefaultInstance() {
+            YamcsObjectManager.getDefaultInstance()
+                .getEvents()
+                .addListener(
+                    new ListChangeListener<Object>() {
+                      @Override
+                      public void onChanged(Change<?> c) {
+                        Platform.runLater(
+                            () -> {
+                              if (!scrollLockButton.isSelected()) {
+                                tableView.scrollTo(tableView.getItems().size() - 1);
+                              }
+                            });
                       }
                     });
-              }
-            });
-    tableView.setItems(YamcsObjectManager.getDefaultInstance().getEvents());
+            tableView.setItems(YamcsObjectManager.getDefaultInstance().getEvents());
+            tableView.refresh();
+          }
+        };
+
+    YamcsObjectManager.addYamcsListener(yamcsListener);
+
     gridPane.add(tableView, 0, 1);
   }
 
