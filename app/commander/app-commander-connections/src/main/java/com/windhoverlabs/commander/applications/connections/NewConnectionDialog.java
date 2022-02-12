@@ -1,7 +1,6 @@
 package com.windhoverlabs.commander.applications.connections;
 
 import com.windhoverlabs.commander.core.YamcsServerConnection;
-import com.windhoverlabs.commander.core.YamcsServerConnection.YamcsConnectionStatus;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -72,16 +71,26 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
 
     Platform.runLater(() -> serverUrl.requestFocus());
 
+    Button connectButton = (Button) getDialogPane().lookupButton(connectButtonType);
+
+    connectButton.addEventFilter(
+        ActionEvent.ACTION,
+        event -> {
+          if (!validateConnect()) {
+            event.consume();
+          }
+        });
+
     setResultConverter(
         button -> {
           YamcsServerConnection newConnection = null;
-          if (button.getButtonData() == ButtonData.OK_DONE) {
+          if (button.getText() == "Connect") {
             try {
               newConnection =
                   new YamcsServerConnection(serverUrl.getText(), Integer.parseInt(port.getText()));
+
               newConnection.setName(serverName.getText());
-              newConnection.setStatus(YamcsConnectionStatus.Connected);
-            } catch (NumberFormatException e) {
+            } catch (Exception e) {
               Logger // Initial focus on name
                   .getLogger(getClass().getName())
                   .log(Level.WARNING, "Cannot format string to integer", e);
@@ -92,42 +101,61 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
         });
   }
 
-  private void addServerUrlField() {
-    serverUrl.setPromptText("168.2.5.100");
-    layout.add(new Label("Server Url:"), 0, 0);
-    serverUrl.setTooltip(new Tooltip("Name of the server url to connect to."));
-    GridPane.setHgrow(serverUrl, Priority.ALWAYS);
-    layout.add(serverUrl, 1, 0);
-  }
+  private boolean validateConnect() {
+    boolean isValid = true;
+    if (serverUrl.getText() == null
+        || serverUrl.getText().trim().isEmpty()
+        || serverName.getText().trim().isEmpty()
+        || port.getText().trim().isEmpty()) {
+      isValid = false;
+    }
 
-  private void addPortField() {
-    port.setPromptText("1234");
-    layout.add(new Label("Port:"), 0, 1);
-    port.setTooltip(new Tooltip("Port number to connect to."));
-    GridPane.setHgrow(port, Priority.ALWAYS);
-    layout.add(port, 1, 1);
+    if (serverName.getText().trim().isEmpty()) {
+      String Style = serverName.getStyle();
+
+      if (!Style.contains("error")) {
+        serverName.setStyle("error");
+      }
+    }
+    return isValid;
   }
 
   private void addServerNameField() {
     serverName.setPromptText("Alice");
-    layout.add(new Label("Name:"), 0, 2);
+    layout.add(new Label("Name:"), 0, 0);
     serverName.setTooltip(new Tooltip("Server name is used for pvs."));
     GridPane.setHgrow(serverName, Priority.ALWAYS);
-    layout.add(serverName, 1, 2);
+    layout.add(serverName, 1, 0);
+  }
+
+  private void addServerUrlField() {
+    serverUrl.setPromptText("168.2.5.100");
+    layout.add(new Label("Server Url:"), 0, 1);
+    serverUrl.setTooltip(new Tooltip("Name of the server url to connect to."));
+    GridPane.setHgrow(serverUrl, Priority.ALWAYS);
+    layout.add(serverUrl, 1, 1);
+  }
+
+  private void addPortField() {
+    port.setPromptText("1234");
+    layout.add(new Label("Port:"), 0, 2);
+    port.setTooltip(new Tooltip("Port number to connect to."));
+    GridPane.setHgrow(port, Priority.ALWAYS);
+    layout.add(port, 1, 2);
   }
 
   private void addUserField() {
-    layout.add(new Label("Username:"), 0, 3);
+    layout.add(new Label("Username:"), 0, 4);
     user.setTooltip(new Tooltip("Username, if necessary."));
     GridPane.setHgrow(user, Priority.ALWAYS);
-    layout.add(user, 1, 3);
+    layout.add(user, 1, 4);
   }
 
   // TODO PLEASE. Make a decision on policy before releasing this to users.
   private void addPasswordField() {
-    layout.add(new Label("password:"), 0, 4);
+    layout.add(new Label("Password:"), 0, 5);
     password.setTooltip(new Tooltip("Password, if necessary."));
     GridPane.setHgrow(password, Priority.ALWAYS);
-    layout.add(password, 1, 4);
+    layout.add(password, 1, 5);
   }
 }

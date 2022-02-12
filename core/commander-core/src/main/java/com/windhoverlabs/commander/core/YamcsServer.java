@@ -2,6 +2,8 @@ package com.windhoverlabs.commander.core;
 
 import com.windhoverlabs.pv.yamcs.YamcsAware;
 import java.util.ArrayList;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import org.yamcs.client.ClientException;
 import org.yamcs.client.YamcsClient;
 import org.yamcs.protobuf.YamcsInstance;
@@ -12,6 +14,11 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   private CMDR_YamcsInstance defaultInstance;
   private ConnectionState serverState = ConnectionState.DISCONNECTED;
   private ArrayList<YamcsAware> listeners = new ArrayList<YamcsAware>();
+  private StringProperty serverStateStrProperty = new SimpleStringProperty();
+
+  public StringProperty getServerStateStrProperty() {
+    return serverStateStrProperty;
+  }
 
   public YamcsClient getYamcsClient() {
     return yamcsClient;
@@ -19,8 +26,15 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
   private YamcsServerConnection connection;
 
+  public void setConnection(YamcsServerConnection connection) {
+    if (serverState == ConnectionState.DISCONNECTED) {
+      this.connection = connection;
+    }
+  }
+
   public YamcsServer(String name) {
     super(name);
+    serverStateStrProperty.set(this.toString());
   }
 
   @Override
@@ -82,6 +96,55 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
       e.printStackTrace();
       return;
     }
+
+    serverStateStrProperty.set(this.toString());
+  }
+
+  public void connect() {
+    // TODO:Not sure if this is necessary given our non-global model of instances
+    if (yamcsClient != null) {
+      yamcsClient.close();
+    }
+    yamcsClient = YamcsClient.newBuilder(connection.getUrl(), connection.getPort()).build();
+
+    if (connection.getPassword() != null && connection.getUser() != null) {
+      try {
+        yamcsClient.login(connection.getUser(), connection.getPassword().toCharArray());
+      } catch (ClientException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+        return;
+      }
+    }
+    yamcsClient
+        .listInstances()
+        .whenComplete(
+            (response, exc) -> {
+              if (exc == null) {
+                for (YamcsInstance instance : response) {
+                  createAndAddChild(instance.getName());
+                  getItems().get(getItems().size() - 1).initProcessorClient(yamcsClient);
+                  getItems()
+                      .get(getItems().size() - 1)
+                      .initYamcsSubscriptionService(yamcsClient, this.getName());
+                  getItems()
+                      .get(getItems().size() - 1)
+                      .initEventSubscription(yamcsClient, this.getName());
+                }
+              }
+            });
+
+    try {
+      yamcsClient.connectWebSocket();
+      serverState = ConnectionState.CONNECTED;
+
+    } catch (ClientException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      return;
+    }
+
+    serverStateStrProperty.set(this.toString());
   }
 
   public void disconnect() {
@@ -90,6 +153,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
       yamcsClient.close();
       serverState = ConnectionState.DISCONNECTED;
     }
+    serverStateStrProperty.set(this.toString());
   }
 
   public YamcsServerConnection getConnection() {
@@ -113,11 +177,6 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
   public void setDefaultInstance(String instanceName) {
     defaultInstance = getInstance(instanceName);
-    if (defaultInstance != null) {
-      for (YamcsAware listener : listeners) {
-        listener.changeDefaultInstance();
-      }
-    }
   }
 
   public CMDR_YamcsInstance getDefaultInstance() {
@@ -155,5 +214,9 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
     yamcsClient.close();
 
     return true;
+  }
+
+  public String toString() {
+    return getName() + " | " + getServerState();
   }
 }

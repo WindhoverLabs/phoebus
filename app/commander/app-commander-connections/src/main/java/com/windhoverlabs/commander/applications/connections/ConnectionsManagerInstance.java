@@ -64,7 +64,10 @@ public class ConnectionsManagerInstance implements AppInstance {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
+    DockPane.getActiveDockPane()
+        .getScene()
+        .getStylesheets()
+        .add(getClass().getResource("text-field-red-border.css").toExternalForm());
     tab = new DockItem(this, content);
     DockPane.getActiveDockPane().addTab(tab);
     tab.addCloseCheck(
@@ -140,15 +143,18 @@ public class ConnectionsManagerInstance implements AppInstance {
       for (MementoTree child : yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).getChildren()) {
         // TODO: child.getString(YAMCS_CONNECTION_NAME) should never be null.
         YamcsServer server = new YamcsServer(child.getString(YAMCS_CONNECTION_NAME).orElse(null));
-        server.connect(
+        server.setConnection(
             new YamcsServerConnection(
                 child.getString(YAMCS_CONNECTION_NAME).orElse(null),
                 child.getString(YAMCS_URL).orElse(null),
                 Integer.parseInt(child.getString(YAMCS_PORT).orElse(null))));
         // TODO:Probably not the best way of doing this...
         serverList.add(server);
-        YamcsObjectManager.setDefaultInstance(
-            server.getName(), child.getString(YAMCS_DEFAULT_INSTANCE).orElse(null));
+        if (child.getString(YAMCS_DEFAULT_INSTANCE).orElse(null) != null) {
+
+          YamcsObjectManager.setDefaultInstance(
+              server.getName(), child.getString(YAMCS_DEFAULT_INSTANCE).orElse(null));
+        }
       }
     } catch (Exception e) {
       logger.warning("Error restoring yamcs servers:" + e);

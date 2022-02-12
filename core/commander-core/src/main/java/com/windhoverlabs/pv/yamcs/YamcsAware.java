@@ -10,6 +10,10 @@ import org.yamcs.protobuf.ProcessorInfo;
  */
 public interface YamcsAware {
 
+  default void onYamcsObjectManagerInit() {
+    changeDefaultInstance();
+  }
+
   default void onYamcsConnecting() {}
 
   default void onYamcsConnectionFailed(Throwable t) {}

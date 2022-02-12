@@ -14,8 +14,6 @@ public class YamcsServerConnection {
 
   private String name;
 
-  private YamcsConnectionStatus status;
-
   public YamcsServerConnection(YamcsServerConnection newConnection) {
     url = newConnection.getUrl();
     port = newConnection.getPort();
@@ -44,14 +42,6 @@ public class YamcsServerConnection {
   public YamcsServerConnection(String newUrl, int newPort) {
     url = newUrl;
     port = newPort;
-  }
-
-  public YamcsConnectionStatus getStatus() {
-    return status;
-  }
-
-  public void setStatus(YamcsConnectionStatus newStatus) {
-    this.status = newStatus;
   }
 
   public String getUser() {

@@ -13,6 +13,7 @@ import javafx.collections.ObservableList;
  * @author lgomez
  */
 public final class YamcsObjectManager {
+
   /** Logger for all file browser code */
   public static final Logger log = Logger.getLogger(YamcsObjectManager.class.getPackageName());
 
@@ -23,6 +24,8 @@ public final class YamcsObjectManager {
   private static YamcsServer defaultServer = null;
 
   private static ArrayList<YamcsAware> listeners = new ArrayList<YamcsAware>();
+  private static ArrayList<YamcsObjectManagerAware> managerListeners =
+      new ArrayList<YamcsObjectManagerAware>();
 
   public static YamcsServer getDefaulServer() {
     return defaultServer;
@@ -44,6 +47,12 @@ public final class YamcsObjectManager {
     }
     YamcsObjectManager.defaultInstance = getServerFromName(server).getInstance(instance);
     defaultServer.setDefaultInstance(YamcsObjectManager.defaultInstance.getName());
+
+    if (defaultInstance != null) {
+      for (YamcsAware listener : listeners) {
+        listener.changeDefaultInstance();
+      }
+    }
   }
 
   private YamcsObjectManager() {}
@@ -84,6 +93,10 @@ public final class YamcsObjectManager {
 
   public static void addYamcsListener(YamcsAware newListener) {
     listeners.add(newListener);
+  }
+
+  public static void addManagerListener(YamcsObjectManagerAware newListener) {
+    managerListeners.add(newListener);
   }
   /**
    * Traverse through allServers and find the server object that matches name

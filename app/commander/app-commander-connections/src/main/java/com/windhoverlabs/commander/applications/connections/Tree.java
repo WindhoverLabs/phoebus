@@ -75,6 +75,8 @@ public class Tree {
                       } else {
                         this.setStyle("");
                       }
+                    } else if (item.getObjectType() == YamcsServer.OBJECT_TYPE) {
+                      textProperty().bind(((YamcsServer) item).getServerStateStrProperty());
                     }
                     PseudoClass itemPC = asPseudoClass(item.getClass());
                     itemTypes.stream()
@@ -123,6 +125,7 @@ public class Tree {
             if (selectedObject.getObjectType() != YamcsServer.OBJECT_TYPE) {
               /* Server is not selected. This is not supposed to happen. */
             } else {
+              ((YamcsServer) selectedObject).disconnect();
               root.getItems().remove(selectedObject);
             }
           }
@@ -132,6 +135,22 @@ public class Tree {
     MenuItem connectAll = new MenuItem("Connect All");
     MenuItem disconnectAll = new MenuItem("Disconnect All");
     MenuItem connectInstance = new MenuItem("Connect");
+    connectInstance.setOnAction(
+        e -> {
+          TreeItem<YamcsObject<?>> selectedItem = treeView.getSelectionModel().getSelectedItem();
+
+          if (selectedItem == null) {
+            /* Nothing is selected. This is not supposed to happen. */
+          } else {
+            YamcsObject<?> selectedObject = selectedItem.getValue();
+
+            if (selectedObject.getObjectType() != YamcsServer.OBJECT_TYPE) {
+              /* Server is not selected. This is not supposed to happen. */
+            } else {
+              ((YamcsServer) selectedObject).connect();
+            }
+          }
+        });
     MenuItem disconnectInstance = new MenuItem("Disconnect");
     MenuItem setAsDefault = new MenuItem("Set As Default");
     setAsDefault.setOnAction(
