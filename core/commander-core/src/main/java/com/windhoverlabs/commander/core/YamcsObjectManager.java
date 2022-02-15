@@ -20,12 +20,27 @@ public final class YamcsObjectManager {
   private static YamcsObject<YamcsServer> root;
   private static ObservableList<YamcsServer> servers = FXCollections.observableArrayList();
 
+  private static ArrayList<String> instances = new ArrayList<String>();
+
   public static ObservableList<YamcsServer> getServers() {
     return servers;
   }
 
   private static CMDR_YamcsInstance defaultInstance = null;
   private static String defaultInstanceName = null;
+  private static String defaultServerName = null;
+
+  public static String getDefaultServerName() {
+    return defaultServerName;
+  }
+
+  public static void setDefaultServerName(String defaultServerName) {
+    YamcsObjectManager.defaultServerName = defaultServerName;
+  }
+
+  public static void setDefaultInstanceName(String defaultInstanceName) {
+    YamcsObjectManager.defaultInstanceName = defaultInstanceName;
+  }
 
   public static String getDefaultInstanceName() {
     return defaultInstanceName;

@@ -12,6 +12,8 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   public static String OBJECT_TYPE = "server";
   private YamcsClient yamcsClient;
   private CMDR_YamcsInstance defaultInstance = null;
+  // TODO: It's starting to look like this class and YamcsObjectManager should be the same class...
+
   private ConnectionState serverState = ConnectionState.DISCONNECTED;
   private ArrayList<YamcsAware> listeners = new ArrayList<YamcsAware>();
   private StringProperty serverStateStrProperty = new SimpleStringProperty();
@@ -195,7 +197,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
     return resultInstance;
   }
 
-  public void setDefaultInstance(String instanceName) {
+  void setDefaultInstance(String instanceName) {
     defaultInstance = getInstance(instanceName);
   }
 

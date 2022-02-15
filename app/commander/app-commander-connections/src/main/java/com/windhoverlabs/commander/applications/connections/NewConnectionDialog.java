@@ -130,7 +130,7 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
 
   private void addServerUrlField() {
     serverUrl.setPromptText("168.2.5.100");
-    layout.add(new Label("Server Url:"), 0, 1);
+    layout.add(new Label("Address:"), 0, 1);
     serverUrl.setTooltip(new Tooltip("Name of the server url to connect to."));
     GridPane.setHgrow(serverUrl, Priority.ALWAYS);
     layout.add(serverUrl, 1, 1);

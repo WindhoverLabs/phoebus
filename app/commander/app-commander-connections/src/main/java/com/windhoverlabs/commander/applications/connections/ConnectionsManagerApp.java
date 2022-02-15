@@ -22,9 +22,12 @@ public class ConnectionsManagerApp implements AppDescriptor {
   /** Show hidden files (File.isHidden)? */
   @Preference public static boolean show_hidden;
 
+  static Logger logger;
+
   static {
     AnnotatedPreferences.initialize(
         ConnectionsManagerApp.class, "/connections_preferences.properties");
+    logger = Logger.getLogger(ConnectionsManagerInstance.class.getPackageName());
   }
 
   @Override

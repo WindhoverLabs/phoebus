@@ -30,15 +30,15 @@ import org.phoebus.ui.docking.DockPane;
 /** @author lgomez */
 @SuppressWarnings("nls")
 public class ConnectionsManagerInstance implements AppInstance {
+  static final Logger logger;
+
   static {
     restoreServers();
+    /** Logger for all file browser code */
+    logger = Logger.getLogger(ConnectionsManagerInstance.class.getPackageName());
   }
 
   private static final String YAMCS_CONNECTIONS_MEMENTO_FILENAME = "yamcs_connections_memento";
-
-  /** Logger for all file browser code */
-  public static final Logger logger =
-      Logger.getLogger(ConnectionsManagerInstance.class.getPackageName());
 
   /** Memento tags */
   private static final String YAMCS_CONNECTIONS = "yamcs_connections",
@@ -88,7 +88,8 @@ public class ConnectionsManagerInstance implements AppInstance {
 
   @Override
   public void restore(final Memento memento) {
-    restoreServers();
+    // NOTE: Do not use this hook for now. This does not get invoked
+    // in cases when the user closes phoebus and the Connections app was never opened.
   }
 
   @Override
@@ -113,6 +114,12 @@ public class ConnectionsManagerInstance implements AppInstance {
 
     YamcsObject<YamcsServer> treeRoot = YamcsObjectManager.getRoot();
 
+    if (YamcsObjectManager.getDefaultInstanceName() != null) {
+      yamcsConnectionsMemento
+          .getChild(YAMCS_CONNECTIONS)
+          .setString(YAMCS_DEFAULT_INSTANCE, YamcsObjectManager.getDefaultInstanceName());
+    }
+
     for (YamcsServer s : treeRoot.getItems()) {
       yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).createChild(s.getConnection().getName());
 
@@ -122,7 +129,11 @@ public class ConnectionsManagerInstance implements AppInstance {
       connection.setString(YAMCS_URL, s.getConnection().getUrl());
       connection.setString(YAMCS_PORT, Integer.toString(s.getConnection().getPort()));
       connection.setString(YAMCS_CONNECTION_NAME, s.getName());
-      if (YamcsObjectManager.getDefaultInstanceName() != null) {
+
+      // Ensure we match the instance default
+      if (YamcsObjectManager.getDefaultInstanceName() != null
+          && YamcsObjectManager.getDefaultServerName() != null
+          && s.getName().equals(YamcsObjectManager.getDefaultServerName())) {
         connection.setString(YAMCS_DEFAULT_INSTANCE, YamcsObjectManager.getDefaultInstanceName());
       }
     }
@@ -143,6 +154,18 @@ public class ConnectionsManagerInstance implements AppInstance {
           XMLMementoTree.read(
               new FileInputStream(new File(Locations.user(), YAMCS_CONNECTIONS_MEMENTO_FILENAME)));
 
+      if (yamcsConnectionsMemento
+              .getChild(YAMCS_CONNECTIONS)
+              .getString(YAMCS_DEFAULT_INSTANCE)
+              .orElse(null)
+          != null) {
+
+        YamcsObjectManager.setDefaultInstanceName(
+            yamcsConnectionsMemento
+                .getChild(YAMCS_CONNECTIONS)
+                .getString(YAMCS_DEFAULT_INSTANCE)
+                .orElse(null));
+      }
       for (MementoTree child : yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).getChildren()) {
         // TODO: child.getString(YAMCS_CONNECTION_NAME) should never be null.
         YamcsServer server = new YamcsServer(child.getString(YAMCS_CONNECTION_NAME).orElse(null));
@@ -153,6 +176,7 @@ public class ConnectionsManagerInstance implements AppInstance {
                 Integer.parseInt(child.getString(YAMCS_PORT).orElse(null))));
         // TODO:Probably not the best way of doing this...
         serverList.add(server);
+
         if (child.getString(YAMCS_DEFAULT_INSTANCE).orElse(null) != null) {
 
           YamcsObjectManager.setDefaultInstance(
@@ -160,7 +184,8 @@ public class ConnectionsManagerInstance implements AppInstance {
         }
       }
     } catch (Exception e) {
-      logger.warning("Error restoring yamcs servers:" + e);
+      // this.logger could be null at this point
+      ConnectionsManagerApp.logger.warning("Error restoring yamcs servers:" + e);
     }
 
     return serverList;
