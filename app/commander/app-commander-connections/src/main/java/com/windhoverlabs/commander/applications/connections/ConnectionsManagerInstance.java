@@ -30,6 +30,10 @@ import org.phoebus.ui.docking.DockPane;
 /** @author lgomez */
 @SuppressWarnings("nls")
 public class ConnectionsManagerInstance implements AppInstance {
+  static {
+    restoreServers();
+  }
+
   private static final String YAMCS_CONNECTIONS_MEMENTO_FILENAME = "yamcs_connections_memento";
 
   /** Logger for all file browser code */
@@ -118,8 +122,8 @@ public class ConnectionsManagerInstance implements AppInstance {
       connection.setString(YAMCS_URL, s.getConnection().getUrl());
       connection.setString(YAMCS_PORT, Integer.toString(s.getConnection().getPort()));
       connection.setString(YAMCS_CONNECTION_NAME, s.getName());
-      if (s.getDefaultInstance() != null) {
-        connection.setString(YAMCS_DEFAULT_INSTANCE, s.getDefaultInstance().getName());
+      if (YamcsObjectManager.getDefaultInstanceName() != null) {
+        connection.setString(YAMCS_DEFAULT_INSTANCE, YamcsObjectManager.getDefaultInstanceName());
       }
     }
 
@@ -133,7 +137,6 @@ public class ConnectionsManagerInstance implements AppInstance {
 
   private static ObservableList<YamcsServer> restoreServers() {
     ObservableList<YamcsServer> serverList = YamcsObjectManager.getRoot().getItems();
-
     try {
 
       final XMLMementoTree yamcsConnectionsMemento =
