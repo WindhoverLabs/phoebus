@@ -19,7 +19,18 @@ public final class YamcsObjectManager {
 
   private static YamcsObject<YamcsServer> root;
   private static ObservableList<YamcsServer> servers = FXCollections.observableArrayList();
+
+  public static ObservableList<YamcsServer> getServers() {
+    return servers;
+  }
+
   private static CMDR_YamcsInstance defaultInstance = null;
+  private static String defaultInstanceName = null;
+
+  public static String getDefaultInstanceName() {
+    return defaultInstanceName;
+  }
+
   // At the moment we do not support setting a default server directly by the outside
   private static YamcsServer defaultServer = null;
 
@@ -45,8 +56,14 @@ public final class YamcsObjectManager {
     for (YamcsServer s : root.getItems()) {
       s.setDefaultInstance(null);
     }
-    YamcsObjectManager.defaultInstance = getServerFromName(server).getInstance(instance);
-    defaultServer.setDefaultInstance(YamcsObjectManager.defaultInstance.getName());
+    defaultInstanceName = instance;
+    defaultInstance = getServerFromName(server).getInstance(instance);
+    if (defaultInstance == null) {
+      // Should not happen.
+      log.warning("Instance " + "\"" + instance + "\" not found");
+      return;
+    }
+    defaultServer.setDefaultInstance(defaultInstanceName);
 
     if (defaultInstance != null) {
       for (YamcsAware listener : listeners) {

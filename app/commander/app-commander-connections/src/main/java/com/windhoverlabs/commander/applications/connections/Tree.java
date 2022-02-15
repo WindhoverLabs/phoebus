@@ -132,10 +132,46 @@ public class Tree {
         });
 
     SeparatorMenuItem sep = new SeparatorMenuItem();
-    MenuItem connectAll = new MenuItem("Connect All");
-    MenuItem disconnectAll = new MenuItem("Disconnect All");
-    MenuItem connectInstance = new MenuItem("Connect");
-    connectInstance.setOnAction(
+    MenuItem connectAllServers = new MenuItem("Connect All Servers");
+
+    connectAllServers.setOnAction(
+        e -> {
+          TreeItem<YamcsObject<?>> selectedItem = treeView.getSelectionModel().getSelectedItem();
+
+          if (selectedItem == null) {
+            /* Nothing is selected. This is not supposed to happen. */
+          } else {
+            YamcsObject<?> selectedObject = selectedItem.getValue();
+
+            if (selectedObject.getObjectType() != YamcsServer.OBJECT_TYPE) {
+              /* Server is not selected. This is not supposed to happen. */
+            } else {
+              for (YamcsServer s : YamcsObjectManager.getRoot().getItems()) {
+                s.connect();
+              }
+            }
+          }
+        });
+
+    MenuItem disconnectAllServers = new MenuItem("Disconnect All Servers");
+    disconnectAllServers.setOnAction(
+        e -> {
+          TreeItem<YamcsObject<?>> selectedItem = treeView.getSelectionModel().getSelectedItem();
+
+          if (selectedItem == null) {
+            /* Nothing is selected. This is not supposed to happen. */
+          } else {
+            YamcsObject<?> selectedObject = selectedItem.getValue();
+
+            if (selectedObject.getObjectType() != YamcsServer.OBJECT_TYPE) {
+              /* Server is not selected. This is not supposed to happen. */
+            } else {
+              ((YamcsServer) selectedObject).disconnect();
+            }
+          }
+        });
+    MenuItem connectServer = new MenuItem("Connect");
+    connectServer.setOnAction(
         e -> {
           TreeItem<YamcsObject<?>> selectedItem = treeView.getSelectionModel().getSelectedItem();
 
@@ -151,7 +187,22 @@ public class Tree {
             }
           }
         });
-    MenuItem disconnectInstance = new MenuItem("Disconnect");
+    MenuItem disconnectServer = new MenuItem("Disconnect");
+    disconnectServer.setOnAction(
+        e -> {
+          TreeItem<YamcsObject<?>> selectedItem = treeView.getSelectionModel().getSelectedItem();
+          if (selectedItem == null) {
+            /* Nothing is selected. This is not supposed to happen. */
+          } else {
+            YamcsObject<?> selectedObject = selectedItem.getValue();
+
+            if (selectedObject.getObjectType() != YamcsServer.OBJECT_TYPE) {
+              /* Server is not selected. This is not supposed to happen. */
+            } else {
+              ((YamcsServer) selectedObject).disconnect();
+            }
+          }
+        });
     MenuItem setAsDefault = new MenuItem("Set As Default");
     setAsDefault.setOnAction(
         e -> {
@@ -175,10 +226,10 @@ public class Tree {
     contextMenu.getItems().add(addServer);
     contextMenu.getItems().add(removeServer);
     contextMenu.getItems().add(sep);
-    contextMenu.getItems().add(connectAll);
-    contextMenu.getItems().add(disconnectAll);
-    contextMenu.getItems().add(connectInstance);
-    contextMenu.getItems().add(disconnectInstance);
+    contextMenu.getItems().add(connectAllServers);
+    contextMenu.getItems().add(disconnectAllServers);
+    contextMenu.getItems().add(connectServer);
+    contextMenu.getItems().add(disconnectServer);
     contextMenu.getItems().add(setAsDefault);
 
     // setContextMenu to label
@@ -192,10 +243,10 @@ public class Tree {
             /* Nothing is selected. */
             addServer.setDisable(false);
             removeServer.setDisable(true);
-            connectAll.setDisable(false);
-            disconnectAll.setDisable(false);
-            connectInstance.setDisable(true);
-            disconnectInstance.setDisable(true);
+            connectAllServers.setDisable(false);
+            disconnectAllServers.setDisable(false);
+            connectServer.setDisable(true);
+            disconnectServer.setDisable(true);
             setAsDefault.setDisable(true);
           } else {
             YamcsObject<?> selectedObject = selectedItem.getValue();
@@ -204,37 +255,37 @@ public class Tree {
               /* This is the root node. This shouldn't be possible. */
               addServer.setDisable(true);
               removeServer.setDisable(true);
-              connectAll.setDisable(true);
-              disconnectAll.setDisable(true);
-              connectInstance.setDisable(true);
-              disconnectInstance.setDisable(true);
+              connectAllServers.setDisable(true);
+              disconnectAllServers.setDisable(true);
+              connectServer.setDisable(true);
+              disconnectServer.setDisable(true);
               setAsDefault.setDisable(true);
             } else if (selectedObject.getObjectType() == YamcsServer.OBJECT_TYPE) {
               /* This is a server node. */
               addServer.setDisable(false);
               removeServer.setDisable(false);
-              connectAll.setDisable(false);
-              disconnectAll.setDisable(false);
-              connectInstance.setDisable(false);
-              disconnectInstance.setDisable(false);
+              connectAllServers.setDisable(false);
+              disconnectAllServers.setDisable(false);
+              connectServer.setDisable(false);
+              disconnectServer.setDisable(false);
               setAsDefault.setDisable(true);
             } else if (selectedObject.getObjectType() == CMDR_YamcsInstance.OBJECT_TYPE) {
               /* This is a instance node. */
               addServer.setDisable(true);
               removeServer.setDisable(true);
-              connectAll.setDisable(false);
-              disconnectAll.setDisable(false);
-              connectInstance.setDisable(false);
-              disconnectInstance.setDisable(false);
+              connectAllServers.setDisable(false);
+              disconnectAllServers.setDisable(false);
+              connectServer.setDisable(false);
+              disconnectServer.setDisable(false);
               setAsDefault.setDisable(false);
             } else {
               /* I don't know what this is. */
               addServer.setDisable(false);
               removeServer.setDisable(false);
-              connectAll.setDisable(false);
-              disconnectAll.setDisable(false);
-              connectInstance.setDisable(false);
-              disconnectInstance.setDisable(false);
+              connectAllServers.setDisable(false);
+              disconnectAllServers.setDisable(false);
+              connectServer.setDisable(false);
+              disconnectServer.setDisable(false);
               setAsDefault.setDisable(false);
             }
           }

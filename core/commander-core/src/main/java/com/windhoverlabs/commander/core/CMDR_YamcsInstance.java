@@ -19,6 +19,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   private YamcsSubscriptionService paramSubscriptionService;
   private EventSubscription eventSubscription;
   private ArchiveClient yamcsArchiveClient;
+  private CMDR_YamcsInstanceState instanceState;
 
   public ArchiveClient getYamcsArchiveClient() {
     return yamcsArchiveClient;
@@ -84,6 +85,18 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
     eventSubscription.sendMessage(
         SubscribeEventsRequest.newBuilder().setInstance(getName()).build());
+  }
+
+  public void activate(YamcsClient yamcsClient, String serverName) {
+    initProcessorClient(yamcsClient);
+    initYamcsSubscriptionService(yamcsClient, serverName);
+    initEventSubscription(yamcsClient, serverName);
+    instanceState = CMDR_YamcsInstanceState.ACTIVATED;
+  }
+
+  public void deActivate(YamcsClient yamcsClient, String serverName) {
+    // TODO:unInit resources...
+    instanceState = CMDR_YamcsInstanceState.DEACTIVATED;
   }
 
   public EventSubscription getEventSubscription() {

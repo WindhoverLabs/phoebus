@@ -2,11 +2,6 @@ package com.windhoverlabs.commander.core;
 
 public class YamcsServerConnection {
 
-  public enum YamcsConnectionStatus {
-    Connected,
-    Disconnected;
-  };
-
   private String url;
   private int port;
   private String user;

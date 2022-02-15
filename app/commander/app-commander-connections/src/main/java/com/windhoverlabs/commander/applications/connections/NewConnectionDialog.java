@@ -40,9 +40,9 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
     setResizable(true);
     layout.setPrefWidth(600);
 
+    addServerNameField();
     addServerUrlField();
     addPortField();
-    addServerNameField();
     addUserField();
     addPasswordField();
 

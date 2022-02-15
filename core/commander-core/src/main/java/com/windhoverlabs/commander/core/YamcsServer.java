@@ -11,7 +11,7 @@ import org.yamcs.protobuf.YamcsInstance;
 public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   public static String OBJECT_TYPE = "server";
   private YamcsClient yamcsClient;
-  private CMDR_YamcsInstance defaultInstance;
+  private CMDR_YamcsInstance defaultInstance = null;
   private ConnectionState serverState = ConnectionState.DISCONNECTED;
   private ArrayList<YamcsAware> listeners = new ArrayList<YamcsAware>();
   private StringProperty serverStateStrProperty = new SimpleStringProperty();
@@ -76,6 +76,18 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
               if (exc == null) {
                 for (YamcsInstance instance : response) {
                   createAndAddChild(instance.getName());
+
+                  // TODO:Don't really like doing this here...We should either make
+                  // YamcsObjectManager
+                  // package-private or move all of the code from YamcsObjectManager to this class.
+                  //                  if (YamcsObjectManager.getDefaultInstance() != null
+                  //                      && YamcsObjectManager.getDefaultInstance()
+                  //                          .getName()
+                  //                          .equals(instance.getName())) {
+                  //                    YamcsObjectManager.setDefaultInstance(
+                  //                        getName(),
+                  // YamcsObjectManager.getDefaultInstance().getName());
+                  //                  }
                   getItems().get(getItems().size() - 1).initProcessorClient(yamcsClient);
                   getItems()
                       .get(getItems().size() - 1)
@@ -123,6 +135,14 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
               if (exc == null) {
                 for (YamcsInstance instance : response) {
                   createAndAddChild(instance.getName());
+
+                  // TODO:Don't really like doing this here...We should either make
+                  // YamcsObjectManager
+                  // package-private or move all of the code from YamcsObjectManager to this class.
+                  if (YamcsObjectManager.getDefaultInstanceName() != null
+                      && YamcsObjectManager.getDefaultInstanceName().equals(instance.getName())) {
+                    YamcsObjectManager.setDefaultInstance(getName(), instance.getName());
+                  }
                   getItems().get(getItems().size() - 1).initProcessorClient(yamcsClient);
                   getItems()
                       .get(getItems().size() - 1)
