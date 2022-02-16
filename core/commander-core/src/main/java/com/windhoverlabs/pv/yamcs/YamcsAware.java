@@ -16,6 +16,7 @@ public interface YamcsAware {
 
   default void onYamcsConnecting() {}
 
+  // Called when we fail to connect to the server.
   default void onYamcsConnectionFailed(Throwable t) {}
 
   /** Called when we the global connection to yamcs was succesfully established */

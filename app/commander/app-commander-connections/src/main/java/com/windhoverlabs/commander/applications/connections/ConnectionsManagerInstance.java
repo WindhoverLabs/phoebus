@@ -114,12 +114,6 @@ public class ConnectionsManagerInstance implements AppInstance {
 
     YamcsObject<YamcsServer> treeRoot = YamcsObjectManager.getRoot();
 
-    if (YamcsObjectManager.getDefaultInstanceName() != null) {
-      yamcsConnectionsMemento
-          .getChild(YAMCS_CONNECTIONS)
-          .setString(YAMCS_DEFAULT_INSTANCE, YamcsObjectManager.getDefaultInstanceName());
-    }
-
     for (YamcsServer s : treeRoot.getItems()) {
       yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).createChild(s.getConnection().getName());
 

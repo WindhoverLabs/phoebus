@@ -72,6 +72,7 @@ public final class YamcsObjectManager {
       s.setDefaultInstance(null);
     }
     defaultInstanceName = instance;
+    defaultServerName = server;
     defaultInstance = getServerFromName(server).getInstance(instance);
     if (defaultInstance == null) {
       // Should not happen.

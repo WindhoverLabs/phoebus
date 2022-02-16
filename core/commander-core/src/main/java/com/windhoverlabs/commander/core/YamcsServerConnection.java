@@ -76,6 +76,6 @@ public class YamcsServerConnection {
   }
 
   public String toString() {
-    return String.format("%s:%d\n", url, port);
+    return String.format("%s:%d", url, port);
   }
 }

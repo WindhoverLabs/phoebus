@@ -7,11 +7,14 @@ import com.windhoverlabs.commander.core.YamcsObject;
 import com.windhoverlabs.commander.core.YamcsObjectManager;
 import com.windhoverlabs.commander.core.YamcsServer;
 import com.windhoverlabs.commander.core.YamcsServerConnection;
+import com.windhoverlabs.pv.yamcs.YamcsAware;
 import java.util.Arrays;
 import java.util.List;
 import javafx.collections.ListChangeListener.Change;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
@@ -109,7 +112,10 @@ public class Tree {
 
           root.createAndAddChild(newServer.getName());
 
-          ((YamcsServer) root.getItems().get(root.getItems().size() - 1)).connect(newServer);
+          YamcsServer lastAddedChild =
+              (YamcsServer) root.getItems().get(root.getItems().size() - 1);
+          lastAddedChild.setConnection(newServer);
+          attemptToConnect(lastAddedChild);
         });
 
     MenuItem removeServer = new MenuItem("Remove Server");
@@ -147,7 +153,7 @@ public class Tree {
               /* Server is not selected. This is not supposed to happen. */
             } else {
               for (YamcsServer s : YamcsObjectManager.getRoot().getItems()) {
-                s.connect();
+                attemptToConnect(s);
               }
             }
           }
@@ -183,7 +189,8 @@ public class Tree {
             if (selectedObject.getObjectType() != YamcsServer.OBJECT_TYPE) {
               /* Server is not selected. This is not supposed to happen. */
             } else {
-              ((YamcsServer) selectedObject).connect();
+
+              attemptToConnect(((YamcsServer) selectedObject));
             }
           }
         });
@@ -216,6 +223,7 @@ public class Tree {
             if (selectedObject.getObjectType() == CMDR_YamcsInstance.OBJECT_TYPE) {
               String serverName = selectedItem.getParent().getValue().getName();
               String instanceName = selectedItem.getValue().getName();
+              System.out.println("Set As Default-->" + serverName + ":" + instanceName);
               YamcsObjectManager.setDefaultInstance(serverName, instanceName);
               treeView.refresh();
             }
@@ -292,6 +300,14 @@ public class Tree {
         });
   }
 
+  private void attemptToConnect(YamcsServer s) {
+    if (!s.connect()) {
+      Alert errorDialog = new Alert(AlertType.ERROR);
+      errorDialog.setContentText("Failed to connect to:" + "\"" + s.getConnection() + "\"");
+      errorDialog.showAndWait();
+    }
+  }
+
   public TreeView<YamcsObject<?>> getTreeView() {
     return treeView;
   }
@@ -302,6 +318,9 @@ public class Tree {
 
     TreeItem<YamcsObject<?>> item = new TreeItem<>(object);
     item.setExpanded(true);
+    YamcsAware listener = new YamcsAware() {
+          //      onYamcsConnectionFailed
+        };
     item.getChildren().addAll(object.getItems().stream().map(this::createItem).collect(toList()));
 
     // update tree item's children list if game object's list changes:
