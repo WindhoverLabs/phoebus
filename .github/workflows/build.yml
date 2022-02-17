@@ -70,8 +70,8 @@ jobs:
       uses: mknejp/delete-release-assets@v1
       with:
         token: ${{ github.token }}
-        tag: nightly # This may also be of the form 'refs/tags/staging'
-        assets: '*zip'
+        tag: Commander-nightly-build # This may also be of the form 'refs/tags/staging'
+        assets: '*.zip'
         fail-if-no-release: false
 
     - name: Upload binaries to release
