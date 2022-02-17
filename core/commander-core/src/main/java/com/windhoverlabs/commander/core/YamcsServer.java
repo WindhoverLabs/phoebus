@@ -192,7 +192,30 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
     try {
       yamcsClient.connectWebSocket();
-      serverState = ConnectionState.CONNECTED;
+
+      yamcsClient.addConnectionListener(
+          new ConnectionListener() {
+
+            @Override
+            public void connecting() {
+              // TODO Call of the subscribers
+            }
+
+            @Override
+            public void connected() {
+              serverState = ConnectionState.CONNECTED;
+            }
+
+            @Override
+            public void connectionFailed(ClientException exception) {
+              log.warning("Failed to connect to " + getName());
+            }
+
+            @Override
+            public void disconnected() {
+              disconnect();
+            }
+          });
 
     } catch (ClientException e) {
       // TODO Auto-generated catch block
