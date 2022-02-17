@@ -57,12 +57,27 @@ jobs:
           https://scan.coverity.com/builds?project=WindhoverLabs%2Fphoebus
 
 
+    - name: Run latest-tag
+      uses: EndBug/latest-tag@latest
+      with:
+        # You can change the name of the tag with this input.
+        # Default: 'latest'
+        tag-name: Commander-nightly-build
+
+    - name: Delete old release assets
+      uses: mknejp/delete-release-assets@v1
+      with:
+        token: ${{ github.token }}
+        tag: nightly # This may also be of the form 'refs/tags/staging'
+        assets: '*zip'
+        fail-if-no-release: false
+
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@2.2.1
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: phoebus-product/target/product-4.6.6-SNAPSHOT.zip
-        asset_name: Commander_v0.1.0-SNAPSHOT-nightly-linux-x86_64.zip
+        asset_name: Commander_${{github.sha}}-SNAPSHOT-nightly-linux-x86_64.zip
         tag: Commander-nightly-build
         overwrite: true
         body: "Latest and greatest nightly build. This is NOT a stable version."
