@@ -47,7 +47,7 @@ public class Tree {
     treeView.setRoot(treeRoot);
     treeView.setShowRoot(false);
 
-    Tooltip t = new Tooltip("Rich-click to add a new connection");
+    Tooltip t = new Tooltip("Right-click to add a new connection");
 
     treeView.setTooltip(t);
 
