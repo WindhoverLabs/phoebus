@@ -3,6 +3,7 @@ package com.windhoverlabs.commander.applications.connections;
 import static java.util.stream.Collectors.toList;
 
 import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
+import com.windhoverlabs.commander.core.ConnectionState;
 import com.windhoverlabs.commander.core.YamcsObject;
 import com.windhoverlabs.commander.core.YamcsObjectManager;
 import com.windhoverlabs.commander.core.YamcsServer;
@@ -10,6 +11,7 @@ import com.windhoverlabs.commander.core.YamcsServerConnection;
 import com.windhoverlabs.pv.yamcs.YamcsAware;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 import javafx.collections.ListChangeListener.Change;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
@@ -27,6 +29,8 @@ import javafx.util.Callback;
 public class Tree {
 
   @FXML private TreeView<YamcsObject<?>> treeView;
+
+  Logger logger = Logger.getLogger(Tree.class.getPackageName());
 
   private final List<Class<? extends YamcsObject<?>>> itemTypes =
       Arrays.asList(YamcsServer.class, CMDR_YamcsInstance.class);
@@ -223,9 +227,42 @@ public class Tree {
             if (selectedObject.getObjectType() == CMDR_YamcsInstance.OBJECT_TYPE) {
               String serverName = selectedItem.getParent().getValue().getName();
               String instanceName = selectedItem.getValue().getName();
-              System.out.println("Set As Default-->" + serverName + ":" + instanceName);
               YamcsObjectManager.setDefaultInstance(serverName, instanceName);
               treeView.refresh();
+            }
+          }
+        });
+
+    MenuItem editServer = new MenuItem("Edit Server");
+    editServer.setOnAction(
+        e -> {
+          TreeItem<YamcsObject<?>> selectedItem = treeView.getSelectionModel().getSelectedItem();
+
+          if (selectedItem == null) {
+
+          } else {
+            // TODO: Should not be necessary to check the object type in this case...
+            if (selectedItem.getValue().getObjectType().equals(YamcsServer.OBJECT_TYPE)) {
+              Callback<YamcsServerConnection, Boolean> callback =
+                  new Callback<YamcsServerConnection, Boolean>() {
+
+                    @Override
+                    public Boolean call(YamcsServerConnection connection) {
+                      return YamcsServer.testConnection(connection);
+                    }
+                  };
+              String oldServerName =
+                  ((YamcsServer) selectedItem.getValue()).getConnection().getName();
+              EditConnectionDialog editDialog =
+                  new EditConnectionDialog(
+                      callback, ((YamcsServer) selectedItem.getValue()).getConnection());
+              YamcsServerConnection newServer = editDialog.showAndWait().orElse(null);
+              if (newServer == null) return;
+
+              YamcsObjectManager.setConnectionObjForServer(
+                  newServer, oldServerName, newServer.getName());
+            } else {
+
             }
           }
         });
@@ -239,6 +276,7 @@ public class Tree {
     contextMenu.getItems().add(connectServer);
     contextMenu.getItems().add(disconnectServer);
     contextMenu.getItems().add(setAsDefault);
+    contextMenu.getItems().add(editServer);
 
     // setContextMenu to label
     treeView.setContextMenu(contextMenu);
@@ -274,18 +312,37 @@ public class Tree {
               removeServer.setDisable(false);
               connectAllServers.setDisable(false);
               disconnectAllServers.setDisable(false);
-              connectServer.setDisable(false);
-              disconnectServer.setDisable(false);
+              if (((YamcsServer) selectedObject)
+                  .getServerState()
+                  .equals(ConnectionState.DISCONNECTED)) {
+                connectServer.setDisable(false);
+                disconnectServer.setDisable(true);
+                editServer.setDisable(false);
+              } else {
+                connectServer.setDisable(true);
+                disconnectServer.setDisable(false);
+                editServer.setDisable(true);
+              }
               setAsDefault.setDisable(true);
             } else if (selectedObject.getObjectType() == CMDR_YamcsInstance.OBJECT_TYPE) {
               /* This is a instance node. */
               addServer.setDisable(true);
               removeServer.setDisable(true);
-              connectAllServers.setDisable(false);
-              disconnectAllServers.setDisable(false);
-              connectServer.setDisable(false);
-              disconnectServer.setDisable(false);
-              setAsDefault.setDisable(false);
+              connectAllServers.setDisable(true);
+              disconnectAllServers.setDisable(true);
+              connectServer.setDisable(true);
+              disconnectServer.setDisable(true);
+
+              if (YamcsObjectManager.getDefaultInstance() != null
+                  && YamcsObjectManager.getDefaultInstance()
+                      .getName()
+                      .equals(selectedObject.getName())) {
+                setAsDefault.setDisable(true);
+              } else {
+                setAsDefault.setDisable(false);
+              }
+
+              editServer.setDisable(true);
             } else {
               /* I don't know what this is. */
               addServer.setDisable(false);
@@ -295,16 +352,21 @@ public class Tree {
               connectServer.setDisable(false);
               disconnectServer.setDisable(false);
               setAsDefault.setDisable(false);
+              editServer.setDisable(false);
             }
           }
         });
   }
 
   private void attemptToConnect(YamcsServer s) {
-    if (!s.connect()) {
-      Alert errorDialog = new Alert(AlertType.ERROR);
-      errorDialog.setContentText("Failed to connect to:" + "\"" + s.getConnection() + "\"");
-      errorDialog.showAndWait();
+    if (s.getServerState().equals(ConnectionState.DISCONNECTED)) {
+      if (!s.connect()) {
+        Alert errorDialog = new Alert(AlertType.ERROR);
+        errorDialog.setContentText("Failed to connect to:" + "\"" + s.getConnection() + "\"");
+        errorDialog.showAndWait();
+      }
+    } else {
+      logger.warning("");
     }
   }
 

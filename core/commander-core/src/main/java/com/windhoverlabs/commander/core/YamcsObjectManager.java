@@ -22,6 +22,14 @@ public final class YamcsObjectManager {
 
   private static ArrayList<String> instances = new ArrayList<String>();
 
+  public static void setConnectionObjForServer(
+      YamcsServerConnection newConnection, String oldServerName, String newServerName) {
+    getServerFromName(oldServerName).setConnection(newConnection);
+    if (defaultServerName != null && defaultServerName.equals(oldServerName)) {
+      defaultServerName = oldServerName;
+    }
+  }
+
   public static ObservableList<YamcsServer> getServers() {
     return servers;
   }

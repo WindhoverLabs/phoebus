@@ -27,14 +27,16 @@ public class EditConnectionDialog extends Dialog<YamcsServerConnection> {
   // TODO:Make a decision on policy.
   private final PasswordField password = new PasswordField();
 
-  final GridPane layout = new GridPane();
+  private final GridPane layout = new GridPane();
+  private YamcsServerConnection connectionToEdit = null;
 
   public EditConnectionDialog(
       Callback<YamcsServerConnection, Boolean> testConnectionCallback,
-      YamcsServerConnection connectionToEdit) {
+      YamcsServerConnection newConnectionToEdit) {
     this.setTitle("Edit Connection");
+    connectionToEdit = newConnectionToEdit;
     ButtonType testConnectionButtonType = new ButtonType("Test Connection", ButtonData.OTHER);
-    ButtonType connectButtonType = new ButtonType("Connect", ButtonData.OK_DONE);
+    ButtonType saveButtonType = new ButtonType("Save Changes", ButtonData.OK_DONE);
 
     layout.setColumnIndex(layout, null);
     layout.setHgap(5);
@@ -51,7 +53,7 @@ public class EditConnectionDialog extends Dialog<YamcsServerConnection> {
     getDialogPane().setContent(layout);
     getDialogPane()
         .getButtonTypes()
-        .addAll(connectButtonType, ButtonType.CANCEL, testConnectionButtonType);
+        .addAll(saveButtonType, ButtonType.CANCEL, testConnectionButtonType);
 
     Button testConnectionButton = (Button) getDialogPane().lookupButton(testConnectionButtonType);
     testConnectionButton.addEventFilter(
@@ -71,9 +73,9 @@ public class EditConnectionDialog extends Dialog<YamcsServerConnection> {
           event.consume();
         });
 
-    Platform.runLater(() -> serverUrl.requestFocus());
+    Platform.runLater(() -> serverName.requestFocus());
 
-    Button connectButton = (Button) getDialogPane().lookupButton(connectButtonType);
+    Button connectButton = (Button) getDialogPane().lookupButton(saveButtonType);
 
     connectButton.addEventFilter(
         ActionEvent.ACTION,
@@ -86,7 +88,7 @@ public class EditConnectionDialog extends Dialog<YamcsServerConnection> {
     setResultConverter(
         button -> {
           YamcsServerConnection newConnection = null;
-          if (button.getText() == "Connect") {
+          if (button.getText().equals("Save Changes")) {
             try {
               newConnection =
                   new YamcsServerConnection(serverUrl.getText(), Integer.parseInt(port.getText()));
@@ -124,6 +126,7 @@ public class EditConnectionDialog extends Dialog<YamcsServerConnection> {
 
   private void addServerNameField() {
     serverName.setPromptText("Alice");
+    serverName.setText(connectionToEdit.getName());
     layout.add(new Label("Name:"), 0, 0);
     serverName.setTooltip(new Tooltip("Server name is used for pvs."));
     GridPane.setHgrow(serverName, Priority.ALWAYS);
@@ -132,6 +135,7 @@ public class EditConnectionDialog extends Dialog<YamcsServerConnection> {
 
   private void addServerUrlField() {
     serverUrl.setPromptText("168.2.5.100");
+    serverUrl.setText(connectionToEdit.getUrl());
     layout.add(new Label("Address:"), 0, 1);
     serverUrl.setTooltip(new Tooltip("Name of the server url to connect to."));
     GridPane.setHgrow(serverUrl, Priority.ALWAYS);
@@ -140,6 +144,7 @@ public class EditConnectionDialog extends Dialog<YamcsServerConnection> {
 
   private void addPortField() {
     port.setPromptText("1234");
+    port.setText(Integer.toString(connectionToEdit.getPort()));
     layout.add(new Label("Port:"), 0, 2);
     port.setTooltip(new Tooltip("Port number to connect to."));
     GridPane.setHgrow(port, Priority.ALWAYS);

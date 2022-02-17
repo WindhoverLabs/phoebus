@@ -36,6 +36,8 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   public void setConnection(YamcsServerConnection connection) {
     if (serverState == ConnectionState.DISCONNECTED) {
       this.connection = connection;
+      this.setName(connection.getName());
+      serverStateStrProperty.set(this.toString());
     }
   }
 

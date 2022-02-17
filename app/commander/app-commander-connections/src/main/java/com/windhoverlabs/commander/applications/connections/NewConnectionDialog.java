@@ -69,7 +69,7 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
           event.consume();
         });
 
-    Platform.runLater(() -> serverUrl.requestFocus());
+    Platform.runLater(() -> serverName.requestFocus());
 
     Button connectButton = (Button) getDialogPane().lookupButton(connectButtonType);
 
@@ -84,7 +84,7 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
     setResultConverter(
         button -> {
           YamcsServerConnection newConnection = null;
-          if (button.getText() == "Connect") {
+          if (button.getText().equals("Connect")) {
             try {
               newConnection =
                   new YamcsServerConnection(serverUrl.getText(), Integer.parseInt(port.getText()));
