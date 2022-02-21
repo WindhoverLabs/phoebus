@@ -20,8 +20,6 @@ public final class YamcsObjectManager {
   private static YamcsObject<YamcsServer> root;
   private static ObservableList<YamcsServer> servers = FXCollections.observableArrayList();
 
-  private static ArrayList<String> instances = new ArrayList<String>();
-
   public static void setConnectionObjForServer(
       YamcsServerConnection newConnection, String oldServerName, String newServerName) {
     getServerFromName(oldServerName).setConnection(newConnection);
@@ -40,14 +38,6 @@ public final class YamcsObjectManager {
 
   public static String getDefaultServerName() {
     return defaultServerName;
-  }
-
-  public static void setDefaultServerName(String defaultServerName) {
-    YamcsObjectManager.defaultServerName = defaultServerName;
-  }
-
-  public static void setDefaultInstanceName(String defaultInstanceName) {
-    YamcsObjectManager.defaultInstanceName = defaultInstanceName;
   }
 
   public static String getDefaultInstanceName() {

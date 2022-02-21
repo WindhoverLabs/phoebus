@@ -147,19 +147,6 @@ public class ConnectionsManagerInstance implements AppInstance {
       final XMLMementoTree yamcsConnectionsMemento =
           XMLMementoTree.read(
               new FileInputStream(new File(Locations.user(), YAMCS_CONNECTIONS_MEMENTO_FILENAME)));
-
-      if (yamcsConnectionsMemento
-              .getChild(YAMCS_CONNECTIONS)
-              .getString(YAMCS_DEFAULT_INSTANCE)
-              .orElse(null)
-          != null) {
-
-        YamcsObjectManager.setDefaultInstanceName(
-            yamcsConnectionsMemento
-                .getChild(YAMCS_CONNECTIONS)
-                .getString(YAMCS_DEFAULT_INSTANCE)
-                .orElse(null));
-      }
       for (MementoTree child : yamcsConnectionsMemento.getChild(YAMCS_CONNECTIONS).getChildren()) {
         // TODO: child.getString(YAMCS_CONNECTION_NAME) should never be null.
         YamcsServer server = new YamcsServer(child.getString(YAMCS_CONNECTION_NAME).orElse(null));
