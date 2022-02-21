@@ -366,7 +366,7 @@ public class Tree {
         errorDialog.showAndWait();
       }
     } else {
-      logger.warning("");
+      // Should never happen
     }
   }
 

@@ -121,8 +121,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
             @Override
             public void connected() {
-              // TODO Call of the subscribers
-
+              init();
             }
 
             @Override
@@ -191,8 +190,6 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
             });
 
     try {
-      yamcsClient.connectWebSocket();
-
       yamcsClient.addConnectionListener(
           new ConnectionListener() {
 
@@ -203,7 +200,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
             @Override
             public void connected() {
-              serverState = ConnectionState.CONNECTED;
+              init();
             }
 
             @Override
@@ -216,14 +213,13 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
               disconnect();
             }
           });
+      yamcsClient.connectWebSocket();
 
     } catch (ClientException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
       return false;
     }
-
-    serverStateStrProperty.set(this.toString());
 
     return true;
   }
@@ -234,6 +230,15 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
     }
     this.getItems().clear();
     serverState = ConnectionState.DISCONNECTED;
+    serverStateStrProperty.set(this.toString());
+  }
+
+  private void init() {
+    // TODO: Have to think about this one for a minute
+    //    for (CMDR_YamcsInstance instance : this.getItems()) {
+    //      instance.activate(yamcsClient, this.getName());
+    //    }
+    serverState = ConnectionState.CONNECTED;
     serverStateStrProperty.set(this.toString());
   }
 
@@ -305,7 +310,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
     return true;
   }
 
-  public String toString() {
+  public final String toString() {
     return getName() + " | " + getServerState();
   }
 }
