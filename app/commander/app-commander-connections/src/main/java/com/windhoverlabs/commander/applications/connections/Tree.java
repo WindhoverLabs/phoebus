@@ -334,9 +334,7 @@ public class Tree {
               disconnectServer.setDisable(true);
 
               if (YamcsObjectManager.getDefaultInstance() != null
-                  && YamcsObjectManager.getDefaultInstance()
-                      .getName()
-                      .equals(selectedObject.getName())) {
+                  && YamcsObjectManager.getDefaultInstance().equals(selectedObject)) {
                 setAsDefault.setDisable(true);
               } else {
                 setAsDefault.setDisable(false);
