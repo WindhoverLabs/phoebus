@@ -1,5 +1,6 @@
 package com.windhoverlabs.commander.applications.connections;
 
+import com.windhoverlabs.commander.core.YamcsObjectManager;
 import com.windhoverlabs.commander.core.YamcsServerConnection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -106,16 +107,19 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
     if (serverUrl.getText() == null
         || serverUrl.getText().trim().isEmpty()
         || serverName.getText().trim().isEmpty()
-        || port.getText().trim().isEmpty()) {
+        || port.getText().trim().isEmpty()
+        || YamcsObjectManager.getServerFromName(getContentText()) != null) {
       isValid = false;
     }
-
-    if (serverName.getText().trim().isEmpty()) {
-      String Style = serverName.getStyle();
-
-      if (!Style.contains("error")) {
-        serverName.setStyle("error");
-      }
+    if (YamcsObjectManager.getServerFromName(serverName.getText()) != null) {
+      this.getDialogPane()
+          .getScene()
+          .getStylesheets()
+          .add(
+              ConnectionsManagerInstance.class
+                  .getResource("/text-field-red-border.css")
+                  .toExternalForm());
+      serverName.getStyleClass().add("error");
     }
     return isValid;
   }

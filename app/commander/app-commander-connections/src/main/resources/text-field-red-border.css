@@ -1,0 +1,4 @@
+.error {
+  -fx-text-box-border: blue ;
+  -fx-focus-color: blue ;
+}
