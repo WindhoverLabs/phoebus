@@ -110,7 +110,7 @@ public class Tree {
                   return YamcsServer.testConnection(connection);
                 }
               };
-          NewConnectionDialog dialog = new NewConnectionDialog(callback);
+          NewConnectionDialog dialog = new NewConnectionDialog(callback, "");
           YamcsServerConnection newServer = dialog.showAndWait().orElse(null);
           if (newServer == null) return;
 
@@ -255,7 +255,7 @@ public class Tree {
                   ((YamcsServer) selectedItem.getValue()).getConnection().getName();
               EditConnectionDialog editDialog =
                   new EditConnectionDialog(
-                      callback, ((YamcsServer) selectedItem.getValue()).getConnection());
+                      callback, ((YamcsServer) selectedItem.getValue()).getConnection(), "");
               YamcsServerConnection newServer = editDialog.showAndWait().orElse(null);
               if (newServer == null) return;
 

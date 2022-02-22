@@ -68,10 +68,6 @@ public class ConnectionsManagerInstance implements AppInstance {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    DockPane.getActiveDockPane()
-        .getScene()
-        .getStylesheets()
-        .add(getClass().getResource("text-field-red-border.css").toExternalForm());
     tab = new DockItem(this, content);
     DockPane.getActiveDockPane().addTab(tab);
     tab.addCloseCheck(

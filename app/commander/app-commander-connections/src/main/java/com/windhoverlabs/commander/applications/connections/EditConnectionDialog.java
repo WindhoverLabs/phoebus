@@ -10,47 +10,27 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.util.Callback;
 
-public class EditConnectionDialog extends Dialog<YamcsServerConnection> {
-  private final TextField serverUrl = new TextField();
-  private final TextField port = new TextField();
-  private final TextField user = new TextField();
-  private final TextField serverName = new TextField();
-  // TODO:Make a decision on policy.
-  private final PasswordField password = new PasswordField();
-
-  private final GridPane layout = new GridPane();
+public class EditConnectionDialog extends NewConnectionDialog {
   private YamcsServerConnection connectionToEdit = null;
 
   public EditConnectionDialog(
       Callback<YamcsServerConnection, Boolean> testConnectionCallback,
-      YamcsServerConnection newConnectionToEdit) {
+      YamcsServerConnection newConnectionToEdit,
+      String newCSSPath) {
+    super(testConnectionCallback, newCSSPath);
     this.setTitle("Edit Connection");
     connectionToEdit = newConnectionToEdit;
+    serverName.setText(connectionToEdit.getName());
+    serverUrl.setText(connectionToEdit.getUrl());
+    port.setText(Integer.toString(connectionToEdit.getPort()));
+  }
+
+  protected void addButtons(Callback<YamcsServerConnection, Boolean> testConnectionCallback) {
+
     ButtonType testConnectionButtonType = new ButtonType("Test Connection", ButtonData.OTHER);
     ButtonType saveButtonType = new ButtonType("Save Changes", ButtonData.OK_DONE);
-
-    layout.setColumnIndex(layout, null);
-    layout.setHgap(5);
-    layout.setVgap(5);
-    setResizable(true);
-    layout.setPrefWidth(600);
-
-    addServerNameField();
-    addServerUrlField();
-    addPortField();
-    addUserField();
-    addPasswordField();
-
-    getDialogPane().setContent(layout);
     getDialogPane()
         .getButtonTypes()
         .addAll(saveButtonType, ButtonType.CANCEL, testConnectionButtonType);
@@ -122,47 +102,5 @@ public class EditConnectionDialog extends Dialog<YamcsServerConnection> {
       }
     }
     return isValid;
-  }
-
-  private void addServerNameField() {
-    serverName.setPromptText("Alice");
-    serverName.setText(connectionToEdit.getName());
-    layout.add(new Label("Name:"), 0, 0);
-    serverName.setTooltip(new Tooltip("Server name is used for pvs."));
-    GridPane.setHgrow(serverName, Priority.ALWAYS);
-    layout.add(serverName, 1, 0);
-  }
-
-  private void addServerUrlField() {
-    serverUrl.setPromptText("168.2.5.100");
-    serverUrl.setText(connectionToEdit.getUrl());
-    layout.add(new Label("Address:"), 0, 1);
-    serverUrl.setTooltip(new Tooltip("Name of the server url to connect to."));
-    GridPane.setHgrow(serverUrl, Priority.ALWAYS);
-    layout.add(serverUrl, 1, 1);
-  }
-
-  private void addPortField() {
-    port.setPromptText("1234");
-    port.setText(Integer.toString(connectionToEdit.getPort()));
-    layout.add(new Label("Port:"), 0, 2);
-    port.setTooltip(new Tooltip("Port number to connect to."));
-    GridPane.setHgrow(port, Priority.ALWAYS);
-    layout.add(port, 1, 2);
-  }
-
-  private void addUserField() {
-    layout.add(new Label("Username:"), 0, 4);
-    user.setTooltip(new Tooltip("Username, if necessary."));
-    GridPane.setHgrow(user, Priority.ALWAYS);
-    layout.add(user, 1, 4);
-  }
-
-  // TODO PLEASE. Make a decision on policy before releasing this to users.
-  private void addPasswordField() {
-    layout.add(new Label("Password:"), 0, 5);
-    password.setTooltip(new Tooltip("Password, if necessary."));
-    GridPane.setHgrow(password, Priority.ALWAYS);
-    layout.add(password, 1, 5);
   }
 }

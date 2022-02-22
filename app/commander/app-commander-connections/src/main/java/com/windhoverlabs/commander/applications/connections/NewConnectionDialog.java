@@ -21,19 +21,27 @@ import javafx.scene.layout.Priority;
 import javafx.util.Callback;
 
 public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
-  private final TextField serverUrl = new TextField();
-  private final TextField port = new TextField();
-  private final TextField user = new TextField();
-  private final TextField serverName = new TextField();
+  protected TextField serverUrl = new TextField();
+  protected TextField port = new TextField();
+  protected TextField user = new TextField();
+  protected TextField serverName = new TextField();
   // TODO:Make a decision on policy.
-  private final PasswordField password = new PasswordField();
+  protected PasswordField password = new PasswordField();
+  protected String pathToCSS = "";
 
-  final GridPane layout = new GridPane();
+  private ButtonType testConnectionButtonType;
+  private ButtonType connectButtonType;
 
-  public NewConnectionDialog(Callback<YamcsServerConnection, Boolean> testConnectionCallback) {
+  protected GridPane layout = new GridPane();
+
+  protected NewConnectionDialog() {}
+
+  public NewConnectionDialog(
+      Callback<YamcsServerConnection, Boolean> testConnectionCallback, String newCSSPath) {
+    testConnectionButtonType = new ButtonType("Test Connection", ButtonData.OTHER);
+    connectButtonType = new ButtonType("Connect", ButtonData.OK_DONE);
     this.setTitle("New Connection");
-    ButtonType testConnectionButtonType = new ButtonType("Test Connection", ButtonData.OTHER);
-    ButtonType connectButtonType = new ButtonType("Connect", ButtonData.OK_DONE);
+    pathToCSS = newCSSPath;
 
     layout.setColumnIndex(layout, null);
     layout.setHgap(5);
@@ -48,6 +56,10 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
     addPasswordField();
 
     getDialogPane().setContent(layout);
+    addButtons(testConnectionCallback);
+  }
+
+  protected void addButtons(Callback<YamcsServerConnection, Boolean> testConnectionCallback) {
     getDialogPane()
         .getButtonTypes()
         .addAll(connectButtonType, ButtonType.CANCEL, testConnectionButtonType);
@@ -124,7 +136,7 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
     return isValid;
   }
 
-  private void addServerNameField() {
+  protected void addServerNameField() {
     serverName.setPromptText("Alice");
     layout.add(new Label("Name:"), 0, 0);
     serverName.setTooltip(new Tooltip("Server name is used for pvs."));
@@ -132,7 +144,7 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
     layout.add(serverName, 1, 0);
   }
 
-  private void addServerUrlField() {
+  protected void addServerUrlField() {
     serverUrl.setPromptText("168.2.5.100");
     layout.add(new Label("Address:"), 0, 1);
     serverUrl.setTooltip(new Tooltip("Name of the server url to connect to."));
@@ -140,7 +152,7 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
     layout.add(serverUrl, 1, 1);
   }
 
-  private void addPortField() {
+  protected void addPortField() {
     port.setPromptText("1234");
     layout.add(new Label("Port:"), 0, 2);
     port.setTooltip(new Tooltip("Port number to connect to."));
@@ -148,7 +160,7 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
     layout.add(port, 1, 2);
   }
 
-  private void addUserField() {
+  protected void addUserField() {
     layout.add(new Label("Username:"), 0, 4);
     user.setTooltip(new Tooltip("Username, if necessary."));
     GridPane.setHgrow(user, Priority.ALWAYS);
@@ -156,7 +168,7 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
   }
 
   // TODO PLEASE. Make a decision on policy before releasing this to users.
-  private void addPasswordField() {
+  protected void addPasswordField() {
     layout.add(new Label("Password:"), 0, 5);
     password.setTooltip(new Tooltip("Password, if necessary."));
     GridPane.setHgrow(password, Priority.ALWAYS);
