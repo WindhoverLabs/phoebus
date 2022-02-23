@@ -57,9 +57,7 @@ public class EventViewerController {
   @FXML
   public void initialize() {
     tableView.setId("eventsTable");
-    tableView
-        .getStylesheets()
-        .add(EventViewerInstance.class.getResource("/events_style.css").toExternalForm());
+    tableView.getStylesheets().add(EventViewerApp.getCSSPath());
     messageCol.setCellValueFactory(
         (event) -> {
           return new SimpleStringProperty(event.getValue().getMessage());
