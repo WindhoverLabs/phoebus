@@ -80,22 +80,25 @@ public class EventViewerController {
                 CMDR_Event event = getTableView().getItems().get(getIndex());
                 switch (event.getSeverity()) {
                   case CRITICAL:
-                    setTextFill(Color.RED);
+                    this.getStyleClass().add("critical");
                     break;
                   case DISTRESS:
-                    setTextFill(Color.DARKRED);
+                    this.getStyleClass().add("distress");
                     break;
                   case ERROR:
                     this.getStyleClass().add("error");
                     break;
                   case INFO:
+                    this.getStyleClass().add("info");
                     break;
                   case SEVERE:
+                    this.getStyleClass().add("severe");
                     break;
                   case WARNING:
-                    setTextFill(Color.ORANGERED);
+                    this.getStyleClass().add("warning");
                     break;
                   case WATCH:
+                    this.getStyleClass().add("watch");
                     break;
                   default:
                     setTextFill(Color.BLACK);
