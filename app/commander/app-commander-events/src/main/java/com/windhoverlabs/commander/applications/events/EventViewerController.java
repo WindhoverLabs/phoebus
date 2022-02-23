@@ -57,6 +57,9 @@ public class EventViewerController {
   @FXML
   public void initialize() {
     tableView.setId("eventsTable");
+    tableView
+        .getStylesheets()
+        .add(EventViewerInstance.class.getResource("/events_style.css").toExternalForm());
     messageCol.setCellValueFactory(
         (event) -> {
           return new SimpleStringProperty(event.getValue().getMessage());
@@ -83,7 +86,7 @@ public class EventViewerController {
                     setTextFill(Color.DARKRED);
                     break;
                   case ERROR:
-                    setTextFill(Color.DARKRED);
+                    this.getStyleClass().add("error");
                     break;
                   case INFO:
                     break;
