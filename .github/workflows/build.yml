@@ -65,11 +65,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: mvn -Dgpg.skip=true --batch-mode -DskipTests deploy
       if: ${{ github.repository == 'ControlSystemStudio/phoebus' && (github.ref == 'refs/heads/master' || github.ref == 'refs/tags/*') }}
-    - name: UI Tests
-      run: |
-        cd app/commander/app-commander-connections
-        mvn test -Dtest=ConnectionsManagerTestUI -Dtestfx.headless=true -Dtestfx.robot=glass -Djava.awt.headless=true  -Dprism.text=native
-        cd ../../..
 
     - name: Download Coverity Build Tool
       env:
