@@ -57,6 +57,16 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
 
     getDialogPane().setContent(layout);
     addButtons(testConnectionCallback);
+    this.setOnShown(
+        e -> {
+          this.getDialogPane()
+              .getScene()
+              .getStylesheets()
+              .add(
+                  ConnectionsManagerInstance.class
+                      .getResource("/text-field-red-border.css")
+                      .toExternalForm());
+        });
   }
 
   protected void addButtons(Callback<YamcsServerConnection, Boolean> testConnectionCallback) {
@@ -124,13 +134,6 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
       isValid = false;
     }
     if (YamcsObjectManager.getServerFromName(serverName.getText()) != null) {
-      this.getDialogPane()
-          .getScene()
-          .getStylesheets()
-          .add(
-              ConnectionsManagerInstance.class
-                  .getResource("/text-field-red-border.css")
-                  .toExternalForm());
       serverName.getStyleClass().add("error");
     }
     return isValid;

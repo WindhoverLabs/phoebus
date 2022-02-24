@@ -1,6 +1,6 @@
 package com.windhoverlabs.commander.applications.events;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.phoebus.framework.preferences.AnnotatedPreferences;
@@ -15,19 +15,26 @@ public class EventViewerApp implements AppDescriptor {
 
   public static final String DisplayName = Messages.DisplayName;
 
-  /** Initial root directory for newly opened file browser */
-  @Preference public static File default_root;
+  public static final Logger log = Logger.getLogger(EventViewerApp.class.getPackageName());
 
-  /** Show hidden files (File.isHidden)? */
-  @Preference public static boolean show_hidden;
+  @Preference public static String css_path;
 
   static {
-    AnnotatedPreferences.initialize(EventViewerApp.class, "/eventlog_preferences.properties");
+    AnnotatedPreferences.initialize(EventViewerApp.class, "/eventviewer_preferences.properties");
   }
 
   @Override
   public String getName() {
     return Name;
+  }
+
+  public static String getCSSPath() {
+    String path = css_path.trim();
+    if (path.isEmpty()) {
+      return EventViewerInstance.class.getResource("/events_style.css").toExternalForm();
+    } else {
+      return Path.of(path).toUri().toString();
+    }
   }
 
   @Override

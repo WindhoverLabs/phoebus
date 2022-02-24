@@ -57,6 +57,7 @@ public class EventViewerController {
   @FXML
   public void initialize() {
     tableView.setId("eventsTable");
+    tableView.getStylesheets().add(EventViewerApp.getCSSPath());
     messageCol.setCellValueFactory(
         (event) -> {
           return new SimpleStringProperty(event.getValue().getMessage());
@@ -77,22 +78,25 @@ public class EventViewerController {
                 CMDR_Event event = getTableView().getItems().get(getIndex());
                 switch (event.getSeverity()) {
                   case CRITICAL:
-                    setTextFill(Color.RED);
+                    this.getStyleClass().add("critical");
                     break;
                   case DISTRESS:
-                    setTextFill(Color.DARKRED);
+                    this.getStyleClass().add("distress");
                     break;
                   case ERROR:
-                    setTextFill(Color.DARKRED);
+                    this.getStyleClass().add("error");
                     break;
                   case INFO:
+                    this.getStyleClass().add("info");
                     break;
                   case SEVERE:
+                    this.getStyleClass().add("severe");
                     break;
                   case WARNING:
-                    setTextFill(Color.ORANGERED);
+                    this.getStyleClass().add("warning");
                     break;
                   case WATCH:
+                    this.getStyleClass().add("watch");
                     break;
                   default:
                     setTextFill(Color.BLACK);
