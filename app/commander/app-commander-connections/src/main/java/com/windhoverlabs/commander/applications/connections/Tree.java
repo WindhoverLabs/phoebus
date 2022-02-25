@@ -294,6 +294,10 @@ public class Tree {
             connectServer.setDisable(true);
             disconnectServer.setDisable(true);
             setAsDefault.setDisable(true);
+            editServer.setDisable(true);
+            connectAllServers.setDisable(true);
+            disconnectAllServers.setDisable(true);
+
           } else {
             YamcsObject<?> selectedObject = selectedItem.getValue();
 
@@ -306,6 +310,7 @@ public class Tree {
               connectServer.setDisable(true);
               disconnectServer.setDisable(true);
               setAsDefault.setDisable(true);
+              editServer.setDisable(true);
             } else if (selectedObject.getObjectType() == YamcsServer.OBJECT_TYPE) {
               /* This is a server node. */
               addServer.setDisable(false);

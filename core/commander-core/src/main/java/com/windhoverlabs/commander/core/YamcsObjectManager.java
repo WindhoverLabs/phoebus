@@ -24,7 +24,7 @@ public final class YamcsObjectManager {
       YamcsServerConnection newConnection, String oldServerName, String newServerName) {
     getServerFromName(oldServerName).setConnection(newConnection);
     if (defaultServerName != null && defaultServerName.equals(oldServerName)) {
-      defaultServerName = oldServerName;
+      defaultServerName = newServerName;
     }
   }
 

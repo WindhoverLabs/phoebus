@@ -40,7 +40,7 @@ public class EditConnectionDialog extends NewConnectionDialog {
         ActionEvent.ACTION,
         event -> {
           YamcsServerConnection newConnection =
-              new YamcsServerConnection(serverUrl.getText(), Integer.parseInt(port.getText()));
+              new YamcsServerConnection("", serverUrl.getText(), Integer.parseInt(port.getText()));
           Alert dialog = new Alert(AlertType.INFORMATION);
           if (testConnectionCallback.call(newConnection)) {
             dialog.setContentText("Connection is OK.");
@@ -71,9 +71,9 @@ public class EditConnectionDialog extends NewConnectionDialog {
           if (button.getText().equals("Save Changes")) {
             try {
               newConnection =
-                  new YamcsServerConnection(serverUrl.getText(), Integer.parseInt(port.getText()));
+                  new YamcsServerConnection(
+                      serverName.getText(), serverUrl.getText(), Integer.parseInt(port.getText()));
 
-              newConnection.setName(serverName.getText());
             } catch (Exception e) {
               Logger // Initial focus on name
                   .getLogger(getClass().getName())
