@@ -3,7 +3,7 @@ name: Phoebus build
 on: [push, pull_request]
 
 jobs:
-  all_tests(UI, Integration, Unit Tests, etc):
+  all_tests:
     runs-on: ubuntu-latest
     container:
       image: lgomezwhl/phoebus-ci:latest
