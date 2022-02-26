@@ -20,6 +20,13 @@ public final class YamcsObjectManager {
   private static YamcsObject<YamcsServer> root;
   private static ObservableList<YamcsServer> servers = FXCollections.observableArrayList();
 
+  // At the moment we do not support setting a default server directly by the outside
+  private static YamcsServer defaultServer = null;
+
+  private static ArrayList<YamcsAware> listeners = new ArrayList<YamcsAware>();
+  private static ArrayList<YamcsObjectManagerAware> managerListeners =
+      new ArrayList<YamcsObjectManagerAware>();
+
   public static void setConnectionObjForServer(
       YamcsServerConnection newConnection, String oldServerName, String newServerName) {
     getServerFromName(oldServerName).setConnection(newConnection);
@@ -43,13 +50,6 @@ public final class YamcsObjectManager {
   public static String getDefaultInstanceName() {
     return defaultInstanceName;
   }
-
-  // At the moment we do not support setting a default server directly by the outside
-  private static YamcsServer defaultServer = null;
-
-  private static ArrayList<YamcsAware> listeners = new ArrayList<YamcsAware>();
-  private static ArrayList<YamcsObjectManagerAware> managerListeners =
-      new ArrayList<YamcsObjectManagerAware>();
 
   public static YamcsServer getDefaulServer() {
     return defaultServer;
