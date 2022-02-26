@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
+import com.windhoverlabs.pv.yamcs.YamcsAware;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -104,9 +105,16 @@ public class YamcsServerTest extends AbstractIntegrationTest {
   @Test
   @Order(3)
   public void testYamcsServerConnect() throws InterruptedException, ExecutionException {
+    assertThat(
+        "", newServer.getServerStateStrProperty().get(), equalTo("sitl" + " | " + "DISCONNECTED"));
     newServer.connect(newConnection);
     assertThat(
         "YamcsServer is connected", newServer.getServerState(), equalTo(ConnectionState.CONNECTED));
+
+    assertThat("", newServer.getYamcsClient(), notNullValue());
+
+    assertThat(
+        "", newServer.getServerStateStrProperty().get(), equalTo("sitl" + " | " + "CONNECTED"));
 
     newServer.disconnect();
 
@@ -128,6 +136,53 @@ public class YamcsServerTest extends AbstractIntegrationTest {
 
     assertThat(
         "YamcsServer is disconnected",
+        newServer.getServerState(),
+        equalTo(ConnectionState.DISCONNECTED));
+  }
+
+  @Test
+  public void testYamcsServerNoArgsConnectIncorrect()
+      throws InterruptedException, ExecutionException {
+    assertThat("", newConnection.getName(), equalTo("sitl"));
+    assertThat("", newConnection.getUrl(), equalTo("localhost"));
+    assertThat("", newConnection.getPort(), equalTo(9190));
+    assertThat("", newConnection.getUser(), equalTo("admin"));
+    assertThat("", newConnection.getPassword(), equalTo("rootpassword"));
+    assertThat("", newConnection.toString(), equalTo("localhost:9190"));
+    assertThat(
+        "YamcsServer is not connected",
+        newServer.getServerState(),
+        equalTo(ConnectionState.DISCONNECTED));
+    newConnection.setUser("not_an_admin");
+    newServer.setConnection(newConnection);
+
+    assertThat(
+        "YamcsServer connection is equal to what was passed to newConnection",
+        newServer.getConnection(),
+        equalTo(newConnection));
+    assertThat("Attempt to connect fails", newServer.connect(), equalTo(false));
+    assertThat(
+        "YamcsServer is not connected",
+        newServer.getServerState(),
+        equalTo(ConnectionState.DISCONNECTED));
+  }
+
+  @Test
+  public void testYamcsServerConnectIncorrect() throws InterruptedException, ExecutionException {
+    assertThat("", newConnection.getName(), equalTo("sitl"));
+    assertThat("", newConnection.getUrl(), equalTo("localhost"));
+    assertThat("", newConnection.getPort(), equalTo(9190));
+    assertThat("", newConnection.getUser(), equalTo("admin"));
+    assertThat("", newConnection.getPassword(), equalTo("rootpassword"));
+    assertThat("", newConnection.toString(), equalTo("localhost:9190"));
+    assertThat(
+        "YamcsServer is not connected",
+        newServer.getServerState(),
+        equalTo(ConnectionState.DISCONNECTED));
+    newConnection.setUser("not_an_admin");
+    assertThat("Attempt to connect fails", newServer.connect(newConnection), equalTo(false));
+    assertThat(
+        "YamcsServer is not connected",
         newServer.getServerState(),
         equalTo(ConnectionState.DISCONNECTED));
   }
@@ -186,6 +241,18 @@ public class YamcsServerTest extends AbstractIntegrationTest {
         newServer.getInstance(yamcsInstance).getName(),
         equalTo(newServer.getItems().get(0).getName()));
     assertThat("Default instance is null", newServer.getDefaultInstance(), nullValue());
+
+    newServer.setDefaultInstance(yamcsInstance);
+
+    assertThat("Default instance is not null", newServer.getDefaultInstance(), notNullValue());
+
+    YamcsAware listener = new YamcsAware() {};
+    newServer.addListener(listener);
+    // TODO:Still deciding whether YamcsServer should have listeners or not...
+  }
+
+  public void testYamcsServerNullInstance() {
+    assertThat("Yamcs instance is null", newServer.getInstance(yamcsInstance), nullValue());
   }
 
   @AfterEach
