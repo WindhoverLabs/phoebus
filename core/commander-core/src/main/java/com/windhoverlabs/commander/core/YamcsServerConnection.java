@@ -10,12 +10,15 @@ public class YamcsServerConnection {
   private String name;
 
   public YamcsServerConnection(YamcsServerConnection newConnection) {
+    name = newConnection.getName();
+    password = newConnection.getPassword();
     url = newConnection.getUrl();
     port = newConnection.getPort();
     user = newConnection.getUser();
   }
 
   public YamcsServerConnection(String newName, String newUrl, int newPort, String newUser) {
+    name = newName;
     url = newUrl;
     port = newPort;
     user = newUser;

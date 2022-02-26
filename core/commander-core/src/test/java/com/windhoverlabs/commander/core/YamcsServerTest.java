@@ -11,6 +11,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.yamcs.client.ClientException;
 
@@ -23,19 +24,103 @@ public class YamcsServerTest extends AbstractIntegrationTest {
   public void before() throws ClientException {
     super.before();
     newServer = new YamcsServer("sitl");
-    assertThat(newServer.getName(), equalTo("sitl"));
+    assertThat("The connection name is equal to \"sitl\"", newServer.getName(), equalTo("sitl"));
+    assertThat(
+        "newServer is of type \"server\".",
+        newServer.getObjectType(),
+        equalTo(YamcsServer.OBJECT_TYPE));
+    newConnection = new YamcsServerConnection("sitl", "localhost", 9190, "admin", "rootpassword");
 
-    newConnection = new YamcsServerConnection("localhost", 9190, "admin", "rootpassword");
+    assertThat("", newConnection.getName(), equalTo("sitl"));
   }
 
   @BeforeAll
   public static void initYamcs() throws Exception {
+    //    assertThat("", );
     setupYamcs();
   }
 
   @Test
+  @BeforeAll
+  @Order(1)
+  public static void testYamcsServerConnection() {
+    YamcsServerConnection newConnection =
+        new YamcsServerConnection("sitl", "localhost", 9190, "admin", "rootpassword");
+
+    assertThat("", newConnection.getName(), equalTo("sitl"));
+    assertThat("", newConnection.getUrl(), equalTo("localhost"));
+    assertThat("", newConnection.getPort(), equalTo(9190));
+    assertThat("", newConnection.getUser(), equalTo("admin"));
+    assertThat("", newConnection.getPassword(), equalTo("rootpassword"));
+    assertThat("", newConnection.toString(), equalTo("localhost:9190"));
+
+    newConnection.setName("sitl-new");
+    assertThat("", newConnection.getName(), equalTo("sitl-new"));
+    newConnection.setUrl("localhost-new");
+    assertThat("", newConnection.getUrl(), equalTo("localhost-new"));
+    newConnection.setPort(1234);
+    assertThat("", newConnection.getPort(), equalTo(1234));
+    newConnection.setUser("admin-new");
+    assertThat("", newConnection.getUser(), equalTo("admin-new"));
+
+    newConnection = new YamcsServerConnection("sitl", "localhost", 9190);
+
+    assertThat("", newConnection.getName(), equalTo("sitl"));
+    assertThat("", newConnection.getUrl(), equalTo("localhost"));
+    assertThat("", newConnection.getPort(), equalTo(9190));
+    assertThat("", newConnection.getUser(), equalTo(null));
+    assertThat("", newConnection.getPassword(), equalTo(null));
+
+    newConnection = new YamcsServerConnection("sitl", "localhost", 9190, "Captain_Tom");
+
+    assertThat("", newConnection.getName(), equalTo("sitl"));
+    assertThat("", newConnection.getUrl(), equalTo("localhost"));
+    assertThat("", newConnection.getPort(), equalTo(9190));
+    assertThat("", newConnection.getUser(), equalTo("Captain_Tom"));
+    assertThat("", newConnection.getPassword(), equalTo(null));
+
+    newConnection =
+        new YamcsServerConnection(
+            new YamcsServerConnection("sitl", "localhost", 9190, "Captain_Tom"));
+
+    assertThat("", newConnection.getName(), equalTo("sitl"));
+    assertThat("", newConnection.getUrl(), equalTo("localhost"));
+    assertThat("", newConnection.getPort(), equalTo(9190));
+    assertThat("", newConnection.getUser(), equalTo("Captain_Tom"));
+    assertThat("", newConnection.getPassword(), equalTo(null));
+  }
+
+  @Test
+  @Order(2)
+  public void testYamcsServersetConnectionName() {
+    newServer.setConnection(newConnection);
+
+    assertThat(
+        "The new connection object is equal to what was passed in setConnection",
+        newServer.getConnection(),
+        equalTo(newConnection));
+  }
+
+  @Test
+  @Order(3)
   public void testYamcsServerConnect() throws InterruptedException, ExecutionException {
     newServer.connect(newConnection);
+    assertThat(
+        "YamcsServer is connected", newServer.getServerState(), equalTo(ConnectionState.CONNECTED));
+
+    newServer.disconnect();
+
+    assertThat(
+        "YamcsServer is disconnected",
+        newServer.getServerState(),
+        equalTo(ConnectionState.DISCONNECTED));
+  }
+
+  @Test
+  @Order(4)
+  public void testYamcsServerConnectNoArgs() throws InterruptedException, ExecutionException {
+    newServer.setConnection(newConnection);
+    newServer.connect();
     assertThat(
         "YamcsServer is connected", newServer.getServerState(), equalTo(ConnectionState.CONNECTED));
 
@@ -51,12 +136,13 @@ public class YamcsServerTest extends AbstractIntegrationTest {
   public static void testYamcsServerTestConnection()
       throws InterruptedException, ExecutionException {
     YamcsServerConnection newConnection =
-        new YamcsServerConnection("localhost", 9190, "admin", "rootpassword");
+        new YamcsServerConnection("sitl", "localhost", 9190, "admin", "rootpassword");
 
     assertThat(
         "connection test is successful", YamcsServer.testConnection(newConnection), equalTo(true));
 
-    newConnection = new YamcsServerConnection("not_localhost", 9190, "admin", "rootpassword");
+    newConnection =
+        new YamcsServerConnection("sitl", "not_localhost", 9190, "admin", "rootpassword");
 
     assertThat(
         "connection test is not successful",
@@ -65,6 +151,7 @@ public class YamcsServerTest extends AbstractIntegrationTest {
   }
 
   @Test
+  @Order(5)
   public void testYamcsServerInstances() throws InterruptedException, ExecutionException {
     newServer.connect(newConnection);
     assertThat(
