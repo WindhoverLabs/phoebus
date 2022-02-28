@@ -15,20 +15,20 @@ services:
 
 dataLinks:
   - name: tm_realtime
-    class: com.windhoverlabs.commander.core.AbstractIntegrationTest$PacketProvider
+    class: com.windhoverlabs.yamcs.core.AbstractIntegrationTest$PacketProvider
     num: 0
     stream: tm_realtime
   - name: tm2_realtime
-    class: com.windhoverlabs.commander.core.AbstractIntegrationTest$PacketProvider
+    class: com.windhoverlabs.yamcs.core.AbstractIntegrationTest$PacketProvider
     num: 1
     stream: tm2_realtime
             
   - name: pp_realtime
-    class: com.windhoverlabs.commander.core.AbstractIntegrationTest$ParameterProvider
+    class: com.windhoverlabs.yamcs.core.AbstractIntegrationTest$ParameterProvider
     stream: pp_realtime
     num: 0
   - name: tc_realtime
-    class: com.windhoverlabs.commander.core.AbstractIntegrationTest$TcDataLink
+    class: com.windhoverlabs.yamcs.core.AbstractIntegrationTest$TcDataLink
     num: 0
     stream: tc_realtime
 

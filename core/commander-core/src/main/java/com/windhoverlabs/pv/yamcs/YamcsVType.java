@@ -1,6 +1,5 @@
 package com.windhoverlabs.pv.yamcs;
 
-import com.windhoverlabs.commander.core.MissionDatabase;
 import com.windhoverlabs.data.yamcs.AggregateArrayVType;
 import com.windhoverlabs.data.yamcs.AggregateVType;
 import com.windhoverlabs.data.yamcs.ArrayArrayVType;
@@ -24,6 +23,7 @@ import com.windhoverlabs.data.yamcs.Uint32ArrayVType;
 import com.windhoverlabs.data.yamcs.Uint32VType;
 import com.windhoverlabs.data.yamcs.Uint64ArrayVType;
 import com.windhoverlabs.data.yamcs.Uint64VType;
+import com.windhoverlabs.yamcs.core.MissionDatabase;
 import com.windhoverlabs.yamcs.studio.data.vtype.Alarm;
 import com.windhoverlabs.yamcs.studio.data.vtype.AlarmSeverity;
 import com.windhoverlabs.yamcs.studio.data.vtype.Display;

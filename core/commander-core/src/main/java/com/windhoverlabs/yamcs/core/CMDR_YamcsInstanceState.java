@@ -1,4 +1,4 @@
-package com.windhoverlabs.commander.core;
+package com.windhoverlabs.yamcs.core;
 
 public enum CMDR_YamcsInstanceState {
   ACTIVATED,

@@ -1,4 +1,4 @@
-package com.windhoverlabs.commander.core;
+package com.windhoverlabs.yamcs.core;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

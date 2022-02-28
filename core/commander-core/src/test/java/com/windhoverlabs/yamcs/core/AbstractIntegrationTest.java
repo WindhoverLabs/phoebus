@@ -1,4 +1,4 @@
-package com.windhoverlabs.commander.core;
+package com.windhoverlabs.yamcs.core;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -77,7 +77,7 @@ public abstract class AbstractIntegrationTest {
     yamcsClient.connectWebSocket();
 
     packetGenerator =
-        com.windhoverlabs.commander.core.AbstractIntegrationTest.PacketProvider.instance[0]
+        com.windhoverlabs.yamcs.core.AbstractIntegrationTest.PacketProvider.instance[0]
             .mdbPacketGenerator;
     packetGenerator.setGenerationTime(TimeEncoding.INVALID_INSTANT);
     packetGenerator2 = PacketProvider.instance[1].mdbPacketGenerator;

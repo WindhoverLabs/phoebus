@@ -1,4 +1,4 @@
-package com.windhoverlabs.commander.core;
+package com.windhoverlabs.yamcs.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;

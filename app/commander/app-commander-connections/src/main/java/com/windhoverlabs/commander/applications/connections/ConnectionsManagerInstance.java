@@ -1,9 +1,9 @@
 package com.windhoverlabs.commander.applications.connections;
 
-import com.windhoverlabs.commander.core.YamcsObject;
-import com.windhoverlabs.commander.core.YamcsObjectManager;
-import com.windhoverlabs.commander.core.YamcsServer;
-import com.windhoverlabs.commander.core.YamcsServerConnection;
+import com.windhoverlabs.yamcs.core.YamcsObject;
+import com.windhoverlabs.yamcs.core.YamcsObjectManager;
+import com.windhoverlabs.yamcs.core.YamcsServer;
+import com.windhoverlabs.yamcs.core.YamcsServerConnection;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

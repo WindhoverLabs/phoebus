@@ -1,6 +1,6 @@
 package com.windhoverlabs.pv.yamcs;
 
-import com.windhoverlabs.commander.core.MissionDatabase;
+import com.windhoverlabs.yamcs.core.MissionDatabase;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;

@@ -1,8 +1,8 @@
 package com.windhoverlabs.commander.applications.events;
 
-import com.windhoverlabs.commander.core.CMDR_Event;
-import com.windhoverlabs.commander.core.YamcsObjectManager;
 import com.windhoverlabs.pv.yamcs.YamcsAware;
+import com.windhoverlabs.yamcs.core.CMDR_Event;
+import com.windhoverlabs.yamcs.core.YamcsObjectManager;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.ArrayList;

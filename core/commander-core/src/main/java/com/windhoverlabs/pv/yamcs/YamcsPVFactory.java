@@ -7,9 +7,9 @@
  ******************************************************************************/
 package com.windhoverlabs.pv.yamcs;
 
-import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
-import com.windhoverlabs.commander.core.YamcsObjectManager;
-import com.windhoverlabs.commander.core.YamcsServer;
+import com.windhoverlabs.yamcs.core.CMDR_YamcsInstance;
+import com.windhoverlabs.yamcs.core.YamcsObjectManager;
+import com.windhoverlabs.yamcs.core.YamcsServer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

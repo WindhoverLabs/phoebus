@@ -2,13 +2,13 @@ package com.windhoverlabs.commander.applications.connections;
 
 import static java.util.stream.Collectors.toList;
 
-import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
-import com.windhoverlabs.commander.core.ConnectionState;
-import com.windhoverlabs.commander.core.YamcsObject;
-import com.windhoverlabs.commander.core.YamcsObjectManager;
-import com.windhoverlabs.commander.core.YamcsServer;
-import com.windhoverlabs.commander.core.YamcsServerConnection;
 import com.windhoverlabs.pv.yamcs.YamcsAware;
+import com.windhoverlabs.yamcs.core.CMDR_YamcsInstance;
+import com.windhoverlabs.yamcs.core.ConnectionState;
+import com.windhoverlabs.yamcs.core.YamcsObject;
+import com.windhoverlabs.yamcs.core.YamcsObjectManager;
+import com.windhoverlabs.yamcs.core.YamcsServer;
+import com.windhoverlabs.yamcs.core.YamcsServerConnection;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;

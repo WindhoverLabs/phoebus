@@ -1,12 +1,12 @@
 package com.windhoverlabs.yamcs.script;
 
-import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
-import com.windhoverlabs.commander.core.YamcsObjectManager;
-import com.windhoverlabs.commander.core.YamcsServer;
 import com.windhoverlabs.pv.yamcs.YamcsPVFactory;
 import com.windhoverlabs.pv.yamcs.YamcsPlugin;
 import com.windhoverlabs.yamcs.commanding.CommandParser;
 import com.windhoverlabs.yamcs.commanding.CommandParser.ParseResult;
+import com.windhoverlabs.yamcs.core.CMDR_YamcsInstance;
+import com.windhoverlabs.yamcs.core.YamcsObjectManager;
+import com.windhoverlabs.yamcs.core.YamcsServer;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;

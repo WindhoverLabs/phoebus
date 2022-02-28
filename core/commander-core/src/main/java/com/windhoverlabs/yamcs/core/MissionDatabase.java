@@ -1,4 +1,4 @@
-package com.windhoverlabs.commander.core;
+package com.windhoverlabs.yamcs.core;
 
 import java.util.ArrayList;
 import java.util.Collections;

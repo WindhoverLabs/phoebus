@@ -1,7 +1,7 @@
 package com.windhoverlabs.commander.applications.connections;
 
-import com.windhoverlabs.commander.core.YamcsObjectManager;
-import com.windhoverlabs.commander.core.YamcsServerConnection;
+import com.windhoverlabs.yamcs.core.YamcsObjectManager;
+import com.windhoverlabs.yamcs.core.YamcsServerConnection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;

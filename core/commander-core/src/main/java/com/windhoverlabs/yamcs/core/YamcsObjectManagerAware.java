@@ -1,4 +1,4 @@
-package com.windhoverlabs.commander.core;
+package com.windhoverlabs.yamcs.core;
 
 public interface YamcsObjectManagerAware {
   public default void onInit() {}

@@ -1,0 +1,967 @@
+Translation unit:
+119 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVFloatArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+109 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/Time.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+110 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVEnumArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+111 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVDoubleArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+112 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/NumberFormats.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+113 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/CollectionNumber.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+114 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IteratorNumber.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+115 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/Statistics.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+116 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IArrayDimensionDisplay.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+117 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/IntVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+118 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/Sint32VType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+108 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ArrayDimensionDisplay.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+120 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVNumberArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+121 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IteratorDouble.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+122 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVByteArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+123 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/Sint64ArrayVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+124 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/YamcsAware.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+125 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ArrayFloat.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+126 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VByteArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+127 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/Display.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+128 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/EnumeratedVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+129 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/MultiScalar.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+98 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/ValueHelper.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+88 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VShortArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+89 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/Array.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+90 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/AlarmSeverity.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+91 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/Uint32ArrayVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+92 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/SimpleValueFormat.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+93 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VColumn.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+94 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VTable.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+95 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVString.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+96 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/StringConverter.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+97 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/commander/core/YamcsServer.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+130 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/EnumeratedArrayVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+99 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ListNumberProvider.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+100 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/CollectionDouble.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+101 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/AlarmSeverity.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+102 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/RemoteEntityHolder.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+103 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ListNumbers.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+104 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/commander/core/ConnectionState.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+105 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VFloat.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+106 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/NumberFormats.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+107 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VDouble.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+162 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IteratorShort.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+152 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VTableFactory.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+153 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ArrayInt.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+154 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVStringArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+155 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/StringVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+156 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VStringArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+157 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVMetadata.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+158 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/IPVListener.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+159 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/BinaryVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+160 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/Uint64ArrayVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+161 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVBoolean.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+151 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ValueFilter.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+163 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/commander/core/YamcsObject.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+164 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VBooleanArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+165 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVFloat.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+166 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ListMath.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+167 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ArrayShort.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+168 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/YamcsVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+169 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/CollectionLong.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+170 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ListLong.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+171 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/YamcsPVFactory.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+172 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VFloatArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+141 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/Alarm.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+131 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVEnum.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+132 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/Display.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+133 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ListDouble.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+134 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ListNumber.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+135 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/CollectionInt.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+136 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/TimestampVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+137 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/Uint64VType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+138 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/commanding/CommandParser.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+139 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ArrayLong.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+140 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVByte.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+2 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/SortedListView.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+142 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVLongArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+143 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/Sint32ArrayVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+144 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/FloatVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+145 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/CollectionByte.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+146 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVStatistics.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+147 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/BufferInt.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+148 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ListView.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+149 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ValueFactory.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+150 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ListByte.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+33 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IteratorByte.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+23 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVLong.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+24 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/EqualValueFilter.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+25 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VImageType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+26 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VDoubleArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+27 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/VType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+28 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVShort.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+29 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVShortArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+30 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/Uint32VType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+31 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ListShort.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+32 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVDouble.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+22 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IteratorLong.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+34 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/DoubleVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+35 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/YamcsSubscriptionService.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+36 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVTable.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+37 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/Sint64VType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+38 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/StringArrayVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+39 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VLong.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+40 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VStatistics.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+41 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ArrayByte.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+42 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/Enum.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+43 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VImageDataType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+12 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VInt.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+1 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VEnum.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+3 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/StringMatchFilter.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+4 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/commander/core/YamcsServerConnection.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+5 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ValueUtil.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+6 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/RangeFilter.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+7 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVImage.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+8 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/YamcsVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+9 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ArrayBoolean.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+10 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/PluginService.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+11 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VTimestamp.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+86 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/DisplayBuilder.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+13 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/Datasource.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+14 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VNumberArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+15 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVInt.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+16 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/BooleanVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+17 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ListFloat.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+18 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/DoubleArrayVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+19 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVIntArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+20 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VLongArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+21 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/ExceptionHandler.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+76 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ListInt.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+66 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VBoolean.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+67 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/commander/core/YamcsObjectManager.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+68 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VIntArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+69 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+70 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/CollectionNumbers.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+71 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VTypeToString.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+72 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/AggregateArrayVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+73 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VEnumArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+74 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/Column.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+75 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/YamcsPlugin.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+45 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VByte.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+77 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/ArrayArrayVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+78 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VMultiString.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+79 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ArrayDouble.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+80 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/YamcsPV.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+81 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VString.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+82 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/CollectionFloat.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+83 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ListBoolean.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+84 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/script/Yamcs.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+85 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VShort.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+87 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/ValueFormat.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+64 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VImage.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+65 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/Scalar.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+44 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/WriteCallback.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+46 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVBooleanArray.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+47 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IteratorFloat.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+48 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VMultiEnum.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+49 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/Time.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+50 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/Alarm.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+51 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VNumber.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+52 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/commander/core/MissionDatabase.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+53 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVNumeric.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+55 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VMultiInt.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+54 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/commander/core/CMDR_YamcsInstance.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+63 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IteratorInt.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+62 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/pv/yamcs/ParameterDatasource.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+61 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/IVMultiDouble.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+60 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/CollectionShort.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+59 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/AggregateVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+58 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/FloatArrayVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+57 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/yamcs/studio/data/vtype/VMultiDouble.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+56 -> /home/lgomez/phoebus/core/commander-core/src/main/java/com/windhoverlabs/data/yamcs/BooleanArrayVType.java
+cov-emit-java invocation time (seconds): 31
+cov-translate invocation time (seconds): 31
+cov-build invocation time (seconds): 52
+Translation unit:
+191 -> /home/lgomez/.m2/repository/org/epics/epics-pvaccess/5.1.6/epics-pvaccess-5.1.6.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+192 -> /home/lgomez/.m2/repository/org/epics/jca/2.4.6/jca-2.4.6.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+193 -> /home/lgomez/.m2/repository/org/phoebus/core-pva/4.6.6-SNAPSHOT/core-pva-4.6.6-SNAPSHOT.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+194 -> /home/lgomez/.m2/repository/org/phoebus/core-framework/4.6.6-SNAPSHOT/core-framework-4.6.6-SNAPSHOT.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+195 -> /home/lgomez/.m2/repository/org/phoebus/core-formula/4.6.6-SNAPSHOT/core-formula-4.6.6-SNAPSHOT.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+196 -> /home/lgomez/.m2/repository/org/phoebus/core-util/4.6.6-SNAPSHOT/core-util-4.6.6-SNAPSHOT.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+197 -> /home/lgomez/.m2/repository/org/eclipse/paho/org.eclipse.paho.client.mqttv3/1.2.2/org.eclipse.paho.client.mqttv3-1.2.2.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+198 -> /home/lgomez/.m2/repository/com/google/protobuf/protobuf-java/3.4.0/protobuf-java-3.4.0.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+199 -> /usr/lib/jvm/java-11-openjdk-amd64/lib/modules
+cov-build invocation time (seconds): 52
+Translation unit:
+200 -> /home/lgomez/phoebus/core/commander-core/src/test/java/com/windhoverlabs/commander/core/YamcsObjectManagerTest.java
+cov-emit-java invocation time (seconds): 2
+cov-translate invocation time (seconds): 2
+cov-build invocation time (seconds): 52
+Translation unit:
+201 -> /home/lgomez/.m2/repository/junit/junit/4.13.1/junit-4.13.1.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+202 -> /home/lgomez/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+203 -> /home/lgomez/.m2/repository/org/hamcrest/hamcrest-all/1.3/hamcrest-all-1.3.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+204 -> /home/lgomez/phoebus/core/commander-core/target/classes/com/windhoverlabs/commander/core/YamcsObjectManager.class
+cov-build invocation time (seconds): 52
+Translation unit:
+205 -> /home/lgomez/phoebus/core/commander-core/target/classes/com/windhoverlabs/commander/core/YamcsObject.class
+cov-build invocation time (seconds): 52
+Translation unit:
+206 -> /home/lgomez/phoebus/core/commander-core/target/classes/com/windhoverlabs/commander/core/YamcsServer.class
+cov-build invocation time (seconds): 52
+Translation unit:
+207 -> /home/lgomez/phoebus/core/commander-core/target/classes/com/windhoverlabs/commander/core/CMDR_YamcsInstance.class
+cov-build invocation time (seconds): 52
+Translation unit:
+181 -> /home/lgomez/.m2/repository/org/yamcs/yamcs-api/5.5.1/yamcs-api-5.5.1.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+173 -> /home/lgomez/.m2/repository/org/yamcs/yamcs-client/5.5.1/yamcs-client-5.5.1.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+174 -> /home/lgomez/.m2/repository/io/netty/netty-codec-http/4.1.59.Final/netty-codec-http-4.1.59.Final.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+175 -> /home/lgomez/.m2/repository/io/netty/netty-common/4.1.59.Final/netty-common-4.1.59.Final.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+176 -> /home/lgomez/.m2/repository/io/netty/netty-buffer/4.1.59.Final/netty-buffer-4.1.59.Final.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+177 -> /home/lgomez/.m2/repository/io/netty/netty-transport/4.1.59.Final/netty-transport-4.1.59.Final.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+178 -> /home/lgomez/.m2/repository/io/netty/netty-resolver/4.1.59.Final/netty-resolver-4.1.59.Final.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+179 -> /home/lgomez/.m2/repository/io/netty/netty-codec/4.1.59.Final/netty-codec-4.1.59.Final.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+180 -> /home/lgomez/.m2/repository/io/netty/netty-handler/4.1.59.Final/netty-handler-4.1.59.Final.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+190 -> /home/lgomez/.m2/repository/org/epics/epics-ntypes/0.3.6/epics-ntypes-0.3.6.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+182 -> /home/lgomez/.m2/repository/org/openjfx/javafx-base/16/javafx-base-16-linux.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+183 -> /home/lgomez/.m2/repository/org/epics/vtype/1.0.4/vtype-1.0.4.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+184 -> /home/lgomez/.m2/repository/org/epics/epics-util/1.0.4/epics-util-1.0.4.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+185 -> /home/lgomez/.m2/repository/org/phoebus/core-vtype/4.6.6-SNAPSHOT/core-vtype-4.6.6-SNAPSHOT.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+186 -> /home/lgomez/.m2/repository/org/phoebus/core-pv/4.6.6-SNAPSHOT/core-pv-4.6.6-SNAPSHOT.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+187 -> /home/lgomez/.m2/repository/io/reactivex/rxjava3/rxjava/3.0.9/rxjava-3.0.9.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+188 -> /home/lgomez/.m2/repository/org/reactivestreams/reactive-streams/1.0.3/reactive-streams-1.0.3.jar
+cov-build invocation time (seconds): 52
+Translation unit:
+189 -> /home/lgomez/.m2/repository/org/epics/epics-pvdata/6.1.6/epics-pvdata-6.1.6.jar
+cov-build invocation time (seconds): 52

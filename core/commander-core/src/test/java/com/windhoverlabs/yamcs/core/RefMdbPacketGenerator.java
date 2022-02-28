@@ -1,4 +1,4 @@
-package com.windhoverlabs.commander.core;
+package com.windhoverlabs.yamcs.core;
 
 import com.google.common.util.concurrent.AbstractService;
 import java.nio.ByteBuffer;

@@ -1,4 +1,4 @@
-package com.windhoverlabs.commander.core;
+package com.windhoverlabs.yamcs.core;
 
 import java.time.Instant;
 import org.yamcs.protobuf.Yamcs.Event.EventSeverity;
