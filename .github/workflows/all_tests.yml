@@ -15,7 +15,7 @@ jobs:
         java-version: 11
     - name: Install Dependencies
       run: |
-        sudo apt install -y protobuf-compiler
+        apt install -y protobuf-compiler
 
     - name: Check coding style
       run: |
