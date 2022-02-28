@@ -180,7 +180,7 @@ public class YamcsPVFactory implements PVFactory {
         log.warning(
             "No default server found.\n" + "You may set a default server in the Connections app.");
       } else {
-        String serverName = YamcsObjectManager.getDefaulServer().getName();
+        String serverName = YamcsObjectManager.getDefaultServer().getName();
         String instanceName = defaultInstance.getName();
         actual_name = "/" + serverName + ":" + instanceName + actual_name;
       }

@@ -109,8 +109,6 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
             });
 
     try {
-      yamcsClient.connectWebSocket();
-      serverState = ConnectionState.CONNECTED;
       yamcsClient.addConnectionListener(
           new ConnectionListener() {
 
@@ -135,6 +133,8 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
             }
           });
 
+      yamcsClient.connectWebSocket();
+      serverState = ConnectionState.CONNECTED;
     } catch (ClientException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

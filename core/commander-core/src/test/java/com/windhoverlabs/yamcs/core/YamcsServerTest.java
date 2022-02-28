@@ -37,7 +37,6 @@ public class YamcsServerTest extends AbstractIntegrationTest {
 
   @BeforeAll
   public static void initYamcs() throws Exception {
-    //    assertThat("", );
     setupYamcs();
   }
 

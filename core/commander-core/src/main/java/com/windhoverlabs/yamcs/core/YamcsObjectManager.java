@@ -24,19 +24,15 @@ public final class YamcsObjectManager {
   private static YamcsServer defaultServer = null;
 
   private static ArrayList<YamcsAware> listeners = new ArrayList<YamcsAware>();
-  private static ArrayList<YamcsObjectManagerAware> managerListeners =
-      new ArrayList<YamcsObjectManagerAware>();
 
+  // TODO:When doing integration testing(specifically Connections App), refactor this
+  // such that third parameter is removed.
   public static void setConnectionObjForServer(
       YamcsServerConnection newConnection, String oldServerName, String newServerName) {
     getServerFromName(oldServerName).setConnection(newConnection);
     if (defaultServerName != null && defaultServerName.equals(oldServerName)) {
       defaultServerName = newServerName;
     }
-  }
-
-  public static ObservableList<YamcsServer> getServers() {
-    return servers;
   }
 
   private static CMDR_YamcsInstance defaultInstance = null;
@@ -51,7 +47,7 @@ public final class YamcsObjectManager {
     return defaultInstanceName;
   }
 
-  public static YamcsServer getDefaulServer() {
+  public static YamcsServer getDefaultServer() {
     return defaultServer;
   }
 
@@ -126,9 +122,6 @@ public final class YamcsObjectManager {
     listeners.add(newListener);
   }
 
-  public static void addManagerListener(YamcsObjectManagerAware newListener) {
-    managerListeners.add(newListener);
-  }
   /**
    * Traverse through allServers and find the server object that matches name
    *
