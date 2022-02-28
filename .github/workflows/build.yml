@@ -37,7 +37,11 @@ jobs:
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
     - run: |
@@ -46,9 +50,10 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Install Dependencies
-      run: |
-        sudo apt install -y protobuf-compiler
+    - name: Install Protoc
+      uses: arduino/setup-protoc@v1
+      with:
+        version: '3.0.0'
     - name: Check coding style
       run: |
         cd core/commander-core
@@ -101,6 +106,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Delete old release assets
+      if: matrix.os == 'ubuntu-latest'
       uses: mknejp/delete-release-assets@v1
       with:
         token: ${{ github.token }}
@@ -109,6 +115,7 @@ jobs:
         fail-if-no-release: false
 
     - name: Upload binaries to release
+      if: matrix.os == 'ubuntu-latest'
       uses: svenstaro/upload-release-action@2.2.1
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
