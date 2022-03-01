@@ -14,6 +14,9 @@ public interface YamcsAware {
     changeDefaultInstance();
   }
 
+  default void onInstancesReady() {}
+  ;
+
   default void onYamcsConnecting() {}
 
   // Called when we fail to connect to the server.

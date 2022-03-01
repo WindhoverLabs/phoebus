@@ -22,6 +22,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   private ConnectionState serverState = ConnectionState.DISCONNECTED;
   private ArrayList<YamcsAware> listeners = new ArrayList<YamcsAware>();
   private StringProperty serverStateStrProperty = new SimpleStringProperty();
+  private boolean instancesReady = false;
 
   public StringProperty getServerStateStrProperty() {
     return serverStateStrProperty;
@@ -97,13 +98,12 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
                   //                        getName(),
                   // YamcsObjectManager.getDefaultInstance().getName());
                   //                  }
-                  getItems().get(getItems().size() - 1).initProcessorClient(yamcsClient);
-                  getItems()
-                      .get(getItems().size() - 1)
-                      .initYamcsSubscriptionService(yamcsClient, this.getName());
-                  getItems()
-                      .get(getItems().size() - 1)
-                      .initEventSubscription(yamcsClient, this.getName());
+
+                  getItems().get(getItems().size() - 1).activate(yamcsClient, getName());
+
+                  for (YamcsAware l : listeners) {
+                    l.onInstancesReady();
+                  }
                 }
               }
             });
@@ -178,13 +178,12 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
                       && YamcsObjectManager.getDefaultServerName().equals(this.getName())) {
                     YamcsObjectManager.setDefaultInstance(getName(), instance.getName());
                   }
-                  getItems().get(getItems().size() - 1).initProcessorClient(yamcsClient);
-                  getItems()
-                      .get(getItems().size() - 1)
-                      .initYamcsSubscriptionService(yamcsClient, this.getName());
-                  getItems()
-                      .get(getItems().size() - 1)
-                      .initEventSubscription(yamcsClient, this.getName());
+
+                  getItems().get(getItems().size() - 1).activate(yamcsClient, getName());
+
+                  for (YamcsAware l : listeners) {
+                    l.onInstancesReady();
+                  }
                 }
               }
             });

@@ -4,6 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.windhoverlabs.pv.yamcs.YamcsAware;
 import java.util.concurrent.CompletableFuture;
@@ -18,6 +20,7 @@ import org.yamcs.client.ClientException;
 
 public class YamcsServerTest extends AbstractIntegrationTest {
   private YamcsServer newServer;
+  private boolean instancesReady = false;
   YamcsServerConnection newConnection;
 
   @Override
@@ -92,7 +95,7 @@ public class YamcsServerTest extends AbstractIntegrationTest {
 
   @Test
   @Order(2)
-  public void testYamcsServersetConnectionName() {
+  public void testYamcsServersetConnection() {
     newServer.setConnection(newConnection);
 
     assertThat(
@@ -114,7 +117,6 @@ public class YamcsServerTest extends AbstractIntegrationTest {
 
     assertThat(
         "", newServer.getServerStateStrProperty().get(), equalTo("sitl" + " | " + "CONNECTED"));
-
     newServer.disconnect();
 
     assertThat(
@@ -235,10 +237,36 @@ public class YamcsServerTest extends AbstractIntegrationTest {
         "yamcs instance is equal to YamcsServer item",
         newServer.getItems().get(0),
         equalTo(newServer.getInstance(yamcsInstance)));
+
+    assertThat(
+        "yamcs instance is of type \"instance\"",
+        newServer.getItems().get(0).getObjectType(),
+        equalTo("instance"));
+
+    assertThat(
+        "YamcsArchiveClient is not null",
+        newServer.getItems().get(0).getYamcsArchiveClient(),
+        notNullValue());
+
+    assertThat(
+        "eventSubscription is not null",
+        newServer.getItems().get(0).getEventSubscription(),
+        notNullValue());
+
+    assertThat(
+        "yamcsProcessor is not null",
+        newServer.getItems().get(0).getYamcsProcessor(),
+        notNullValue());
+    assertThat("events is not null", newServer.getItems().get(0).getEvents(), notNullValue());
     assertThat(
         "yamcs instance name is equal to YamcsServer item name",
         newServer.getInstance(yamcsInstance).getName(),
         equalTo(newServer.getItems().get(0).getName()));
+
+    assertThat(
+        "CMDR_YamcsInstance name matches \"IntegrationTest\"",
+        newServer.getInstance(yamcsInstance).getName(),
+        equalTo("IntegrationTest"));
     assertThat("Default instance is null", newServer.getDefaultInstance(), nullValue());
 
     newServer.setDefaultInstance(yamcsInstance);
@@ -247,7 +275,20 @@ public class YamcsServerTest extends AbstractIntegrationTest {
 
     YamcsAware listener = new YamcsAware() {};
     newServer.addListener(listener);
-    // TODO:Still deciding whether YamcsServer should have listeners or not...
+    assertThat(
+        "Instrance has 0 child items",
+        newServer.getInstance(yamcsInstance).getItems().size(),
+        equalTo(0));
+
+    IllegalStateException thrown =
+        assertThrows(
+            IllegalStateException.class,
+            () -> {
+              newServer.getInstance(yamcsInstance).createAndAddChild("New_Child");
+            },
+            "Expected createAndAddChild(String name) to throw, but it didn't");
+
+    assertTrue(thrown.getMessage().equals("CMDR_YamcsInstance does not allow child items"));
   }
 
   public void testYamcsServerNullInstance() {

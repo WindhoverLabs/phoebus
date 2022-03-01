@@ -46,7 +46,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
   @Override
   public void createAndAddChild(String name) {
-    throw new IllegalStateException("Information has no child items");
+    throw new IllegalStateException("CMDR_YamcsInstance does not allow child items");
   }
 
   @Override
