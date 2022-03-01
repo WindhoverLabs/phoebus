@@ -104,6 +104,9 @@
 				<version>2.22.2</version>
 				<configuration>
 					<skipITs>${skipITTests}</skipITs>
+					<excludes>
+						<exclude>${docker.exclude.tests}</exclude>
+					</excludes>
 				</configuration>
 				<executions>
 					<execution>
@@ -186,6 +189,7 @@
 			<id>all-headless-tests</id>
 			<properties>
 				<skipITTests>false</skipITTests>
+				<docker.exclude.tests>**/*NetworkTest.java</docker.exclude.tests>
 			</properties>
 			<build>
 				<plugins>
@@ -196,6 +200,9 @@
 								<include>**/*UI.java</include>
 								<include>**/*IT.java</include>
 							</includes>
+							<excludes>
+								<exclude>DockPaneTestUI.java</exclude>
+							</excludes>
 						</configuration>
 					</plugin>
 				</plugins>
