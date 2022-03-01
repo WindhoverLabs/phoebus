@@ -22,7 +22,6 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   private ConnectionState serverState = ConnectionState.DISCONNECTED;
   private ArrayList<YamcsAware> listeners = new ArrayList<YamcsAware>();
   private StringProperty serverStateStrProperty = new SimpleStringProperty();
-  private boolean instancesReady = false;
 
   public StringProperty getServerStateStrProperty() {
     return serverStateStrProperty;
