@@ -17,6 +17,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
@@ -144,7 +145,18 @@ class ConnectionsManagerTestUI extends ApplicationTest {
             .getContextMenu()
             .getItems();
 
-    //    Assertions.assertThat("MenuItem 1 has",menuItems.get(0).getText(), equalTo(""));
+    assertThat(
+        "MenuItem 0 has \"Add Connection\" as label",
+        menuItems.get(0).getText(),
+        equalTo("Add Connection"));
+    assertThat(
+        "MenuItem 1 has \"Remove Connection\" as label",
+        menuItems.get(1).getText(),
+        equalTo("Remove Connection"));
+    assertThat(
+        "MenuItem 2 is of type SeparatorMenuItem ",
+        menuItems.get(2) instanceof SeparatorMenuItem,
+        equalTo(true));
 
     // Invoke the context menu on the Connections App
     Bounds tabBounds = firstTab.getContent().getBoundsInLocal();
@@ -154,7 +166,5 @@ class ConnectionsManagerTestUI extends ApplicationTest {
             renderedTab.localToScene(tabBounds).getCenterX(),
             renderedTab.localToScene(tabBounds).getCenterY()));
     this.press(MouseButton.SECONDARY);
-
-    Assertions.assertThat((Stage.getWindows().size() == 0)).isTrue();
   }
 }
