@@ -107,7 +107,7 @@ class ConnectionsManagerTestUI extends ApplicationTest {
 
   @Test
   //  @Disabled("Disabled until bug #42 has been resolved")
-  public void testAddConnection() {
+  public void testContextMenu() {
     Set<Node> window = (Set<Node>) from(rootNode(Stage.getWindows().get(0))).queryAllAs(Node.class);
 
     Node rootPane = window.iterator().next();
@@ -145,6 +145,8 @@ class ConnectionsManagerTestUI extends ApplicationTest {
             .getContextMenu()
             .getItems();
 
+    assertThat("There is 9 menu items as part of Tree's ContextMenu", menuItems.size(), equalTo(9));
+
     assertThat(
         "MenuItem 0 has \"Add Connection\" as label",
         menuItems.get(0).getText(),
@@ -157,6 +159,30 @@ class ConnectionsManagerTestUI extends ApplicationTest {
         "MenuItem 2 is of type SeparatorMenuItem ",
         menuItems.get(2) instanceof SeparatorMenuItem,
         equalTo(true));
+    assertThat(
+        "MenuItem 3 has \"Connect All\" as label",
+        menuItems.get(3).getText(),
+        equalTo("Connect All"));
+
+    assertThat(
+        "MenuItem 4 has \"Disconnect All\" as label",
+        menuItems.get(4).getText(),
+        equalTo("Disconnect All"));
+
+    assertThat(
+        "MenuItem 5 has \"Connect\" as label", menuItems.get(5).getText(), equalTo("Connect"));
+
+    assertThat(
+        "MenuItem 6 has \"Disconnect\" as label",
+        menuItems.get(6).getText(),
+        equalTo("Disconnect"));
+
+    assertThat(
+        "MenuItem 7 has \"Set As Default\" as label",
+        menuItems.get(7).getText(),
+        equalTo("Set As Default"));
+
+    assertThat("MenuItem 8 has \"Edit\" as label", menuItems.get(8).getText(), equalTo("Edit"));
 
     // Invoke the context menu on the Connections App
     Bounds tabBounds = firstTab.getContent().getBoundsInLocal();
@@ -167,4 +193,7 @@ class ConnectionsManagerTestUI extends ApplicationTest {
             renderedTab.localToScene(tabBounds).getCenterY()));
     this.press(MouseButton.SECONDARY);
   }
+
+  @Test
+  public void testAddConnection() {}
 }
