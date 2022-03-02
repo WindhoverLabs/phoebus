@@ -20,7 +20,6 @@ import org.yamcs.client.ClientException;
 
 public class YamcsServerTest extends AbstractIntegrationTest {
   private YamcsServer newServer;
-  private boolean instancesReady = false;
   YamcsServerConnection newConnection;
 
   @Override
