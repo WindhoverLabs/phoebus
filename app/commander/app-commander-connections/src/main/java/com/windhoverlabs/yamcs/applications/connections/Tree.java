@@ -99,7 +99,7 @@ public class Tree {
     ContextMenu contextMenu = new ContextMenu();
 
     // create menuitems
-    MenuItem addServer = new MenuItem("Add Connection");
+    MenuItem addServer = new MenuItem(Messages.AddConnection);
     addServer.setOnAction(
         e -> {
           Callback<YamcsServerConnection, Boolean> callback =
@@ -122,7 +122,7 @@ public class Tree {
           attemptToConnect(lastAddedChild);
         });
 
-    MenuItem removeServer = new MenuItem("Remove Server");
+    MenuItem removeServer = new MenuItem(Messages.RemoveConnection);
     removeServer.setOnAction(
         e -> {
           TreeItem<YamcsObject<?>> selectedItem = treeView.getSelectionModel().getSelectedItem();
@@ -142,7 +142,7 @@ public class Tree {
         });
 
     SeparatorMenuItem sep = new SeparatorMenuItem();
-    MenuItem connectAllServers = new MenuItem("Connect All Servers");
+    MenuItem connectAllServers = new MenuItem(Messages.ConnectAll);
 
     connectAllServers.setOnAction(
         e -> {
@@ -163,7 +163,7 @@ public class Tree {
           }
         });
 
-    MenuItem disconnectAllServers = new MenuItem("Disconnect All Servers");
+    MenuItem disconnectAllServers = new MenuItem(Messages.DisconnectAll);
     disconnectAllServers.setOnAction(
         e -> {
           TreeItem<YamcsObject<?>> selectedItem = treeView.getSelectionModel().getSelectedItem();
@@ -180,7 +180,7 @@ public class Tree {
             }
           }
         });
-    MenuItem connectServer = new MenuItem("Connect");
+    MenuItem connectServer = new MenuItem(Messages.Connect);
     connectServer.setOnAction(
         e -> {
           TreeItem<YamcsObject<?>> selectedItem = treeView.getSelectionModel().getSelectedItem();
@@ -198,7 +198,7 @@ public class Tree {
             }
           }
         });
-    MenuItem disconnectServer = new MenuItem("Disconnect");
+    MenuItem disconnectServer = new MenuItem(Messages.Disconnect);
     disconnectServer.setOnAction(
         e -> {
           TreeItem<YamcsObject<?>> selectedItem = treeView.getSelectionModel().getSelectedItem();
@@ -214,7 +214,7 @@ public class Tree {
             }
           }
         });
-    MenuItem setAsDefault = new MenuItem("Set As Default");
+    MenuItem setAsDefault = new MenuItem(Messages.SetDefault);
     setAsDefault.setOnAction(
         e -> {
           TreeItem<YamcsObject<?>> selectedItem = treeView.getSelectionModel().getSelectedItem();
@@ -233,7 +233,7 @@ public class Tree {
           }
         });
 
-    MenuItem editServer = new MenuItem("Edit Server");
+    MenuItem editServer = new MenuItem(Messages.EditConnection);
     editServer.setOnAction(
         e -> {
           TreeItem<YamcsObject<?>> selectedItem = treeView.getSelectionModel().getSelectedItem();
