@@ -24,7 +24,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Run Tests
-      run: |
-        mvn -Dgpg.skip=true -DskipTests --batch-mode install
-        mvn verify -Pall-headless-tests -Dtestfx.headless=true -Dtestfx.robot=glass -Djava.awt.headless=true  -Dprism.text=native
+#    - name: Run Tests
+#      run: |
+#        mvn -Dgpg.skip=true -DskipTests --batch-mode install
+#        mvn verify -Pall-headless-tests -Dtestfx.headless=true -Dtestfx.robot=glass -Djava.awt.headless=true  -Dprism.text=native
