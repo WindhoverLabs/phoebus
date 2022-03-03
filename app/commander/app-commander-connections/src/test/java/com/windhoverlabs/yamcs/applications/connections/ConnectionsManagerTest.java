@@ -143,6 +143,11 @@ class ConnectionsManagerTestUI extends ApplicationTest {
   public void testContextMenu() {
     Set<Node> window = (Set<Node>) from(rootNode(Stage.getWindows().get(0))).queryAllAs(Node.class);
 
+    assertThat(
+        "Connections Tree exists in scene",
+        this.lookup("#ConnectionsTreeView").query(),
+        notNullValue());
+
     Node rootPane = window.iterator().next();
 
     Assertions.assertThat(rootPane instanceof BorderPane).isTrue();
@@ -254,7 +259,7 @@ class ConnectionsManagerTestUI extends ApplicationTest {
   }
 
   @Test
-  //  @Order(2)
+  @Order(2)
   public void testAddConnection() throws Exception {
     Set<Node> window = (Set<Node>) from(rootNode(Stage.getWindows().get(0))).queryAllAs(Node.class);
 
@@ -335,12 +340,19 @@ class ConnectionsManagerTestUI extends ApplicationTest {
     // Invoke the context menu on the Connections App
     Bounds tabBounds = firstTab.getContent().getBoundsInLocal();
 
-    this.moveTo(
-        new Point2D(
-            renderedTab.localToScene(tabBounds).getCenterX(),
-            renderedTab.localToScene(tabBounds).getCenterY()));
-    this.press(MouseButton.SECONDARY);
-    this.press(KeyCode.ENTER);
+    this.clickOn(firstTab.getContent()).clickOn(MouseButton.SECONDARY);
+
+    assertThat(
+        "Connections Tree exists in scene",
+        this.lookup("#ConnectionsTreeView").query(),
+        notNullValue());
+
+    assertThat(
+        "Connections Context Menu exists in scene",
+        this.lookup("#connectionsContextMenu").query(),
+        notNullValue());
+
+    this.type(KeyCode.ENTER);
 
     this.type(KeyCode.S, KeyCode.I, KeyCode.T, KeyCode.L);
 
@@ -363,6 +375,7 @@ class ConnectionsManagerTestUI extends ApplicationTest {
     this.type(
         KeyCode.R, KeyCode.O, KeyCode.O, KeyCode.T, KeyCode.P, KeyCode.A, KeyCode.S, KeyCode.S,
         KeyCode.W, KeyCode.O, KeyCode.R, KeyCode.D);
+
     assertThat(
         "A node with id \"testConnectionButton\" exists.",
         this.lookup("#testConnectionButton").query(),
