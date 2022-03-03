@@ -38,6 +38,10 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
 
   public NewConnectionDialog(
       Callback<YamcsServerConnection, Boolean> testConnectionCallback, String newCSSPath) {
+    serverUrl.setId("serverUrl");
+    port.setId("port");
+    serverName.setId("serverName");
+    password.setId("password");
     testConnectionButtonType = new ButtonType("Test Connection", ButtonData.OTHER);
     connectButtonType = new ButtonType("Connect", ButtonData.OK_DONE);
     this.setTitle("New Connection");
@@ -75,12 +79,15 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
         .addAll(connectButtonType, ButtonType.CANCEL, testConnectionButtonType);
 
     Button testConnectionButton = (Button) getDialogPane().lookupButton(testConnectionButtonType);
+    testConnectionButton.setId("testConnectionButton");
+
     testConnectionButton.addEventFilter(
         ActionEvent.ACTION,
         event -> {
           YamcsServerConnection newConnection =
               new YamcsServerConnection("", serverUrl.getText(), Integer.parseInt(port.getText()));
           Alert dialog = new Alert(AlertType.INFORMATION);
+          dialog.getDialogPane().setId("testConnectionAlert");
           if (testConnectionCallback.call(newConnection)) {
             dialog.setContentText("Connection is OK.");
           } else {
