@@ -10,31 +10,43 @@ import com.windhoverlabs.yamcs.core.YamcsObject;
 import com.windhoverlabs.yamcs.core.YamcsServer;
 import com.windhoverlabs.yamcs.core.YamcsServerConnection;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.phoebus.framework.workbench.ApplicationService;
 import org.phoebus.ui.docking.DockItem;
 import org.phoebus.ui.docking.DockPane;
 import org.phoebus.ui.docking.DockStage;
+import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.framework.junit5.Start;
+import org.testfx.util.WaitForAsyncUtils;
 import org.yamcs.client.ClientException;
 
+@TestMethodOrder(OrderAnnotation.class)
 class ConnectionsManagerTestUI extends ApplicationTest {
   private YamcsServer newServer;
   private boolean instancesReady = false;
@@ -45,12 +57,14 @@ class ConnectionsManagerTestUI extends ApplicationTest {
   @BeforeEach
   public void before() throws ClientException {
     connectionsTest.before();
-    newServer = new YamcsServer("sitl");
-    newConnection = new YamcsServerConnection("sitl", "localhost", 9190, "admin", "rootpassword");
-
-    newServer.setConnection(newConnection);
-
-    assertThat("Connection is established", newServer.connect(), equalTo(true));
+    // TODO:Add Test for connections with the same name.
+    //    newServer = new YamcsServer("sitl");
+    //    newConnection = new YamcsServerConnection("sitl", "localhost", 9190, "admin",
+    // "rootpassword");
+    //
+    //    newServer.setConnection(newConnection);
+    //
+    //    assertThat("Connection is established", newServer.connect(), equalTo(true));
   }
 
   @BeforeAll
@@ -62,6 +76,24 @@ class ConnectionsManagerTestUI extends ApplicationTest {
       e.printStackTrace();
     }
     AbstractIntegrationTest.setupYamcs();
+  }
+
+  private void closePane() {
+    interact(
+        () -> {
+          try {
+            DockStage.prepareToCloseItems((Stage) tabs.getScene().getWindow());
+            DockStage.closeItems((Stage) tabs.getScene().getWindow());
+          } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        });
+  }
+
+  @AfterEach
+  public void after() throws InterruptedException {
+    connectionsTest.after();
   }
   /** Will be called with {@code @Before} semantics, i. e. before each test method. */
   @Start
@@ -106,6 +138,7 @@ class ConnectionsManagerTestUI extends ApplicationTest {
   }
 
   @Test
+  @Order(1)
   //  @Disabled("Disabled until bug #42 has been resolved")
   public void testContextMenu() {
     Set<Node> window = (Set<Node>) from(rootNode(Stage.getWindows().get(0))).queryAllAs(Node.class);
@@ -192,8 +225,166 @@ class ConnectionsManagerTestUI extends ApplicationTest {
             renderedTab.localToScene(tabBounds).getCenterX(),
             renderedTab.localToScene(tabBounds).getCenterY()));
     this.press(MouseButton.SECONDARY);
+
+    closePane();
+  }
+
+  /**
+   * Code based on https://github.com/TestFX/TestFX/issues/540
+   *
+   * @param nodeQuery
+   * @param timeout
+   * @param timeUnit
+   * @param fxRobot
+   * @throws TimeoutException
+   */
+  public static void waitForVisibleNode(
+      String nodeQuery, long timeout, TimeUnit timeUnit, FxRobot fxRobot) throws TimeoutException {
+    // First we wait for the node lookup to be non-null. Then, in the remaining time, wait for the
+    // node to be visible.
+    WaitForAsyncUtils.waitFor(
+        timeout,
+        TimeUnit.MILLISECONDS,
+        new Callable<Boolean>() {
+          @Override
+          public Boolean call() throws Exception {
+            return fxRobot.lookup(nodeQuery).query().isVisible();
+          }
+        });
   }
 
   @Test
-  public void testAddConnection() {}
+  //  @Order(2)
+  public void testAddConnection() throws Exception {
+    Set<Node> window = (Set<Node>) from(rootNode(Stage.getWindows().get(0))).queryAllAs(Node.class);
+
+    Node rootPane = window.iterator().next();
+
+    Assertions.assertThat(rootPane instanceof BorderPane).isTrue();
+
+    BorderPane pane = (BorderPane) rootPane;
+
+    Assertions.assertThat(pane.centerProperty().get() instanceof DockPane).isTrue();
+
+    DockPane dockPane = (DockPane) pane.centerProperty().get();
+
+    Assertions.assertThat(dockPane.getDockItems().size() == 2).isTrue();
+
+    Assertions.assertThat(dockPane.getTabs().get(0) instanceof DockItem).isTrue();
+    //    Assertions.assertThat(dockPane.getTabs().get(1) instanceof DockItem).isTrue();
+
+    Object[] renderedTabs = pane.lookup(".tab-header-area").lookupAll(".tab").toArray();
+    Node renderedTab = (Node) renderedTabs[1];
+
+    DockItem firstTab = (DockItem) dockPane.getDockItems().get(1);
+
+    assertThat(
+        "Connections Tab has the title of \"Connections\"",
+        from((Node) firstTab.getGraphic()).queryAs(Labeled.class).getText(),
+        equalTo("Connections"));
+
+    assertThat(
+        "Content of Connections tab is TreeView",
+        firstTab.getContent() instanceof javafx.scene.control.TreeView,
+        equalTo(true));
+
+    ObservableList<MenuItem> menuItems =
+        ((javafx.scene.control.TreeView<YamcsObject<?>>) firstTab.getContent())
+            .getContextMenu()
+            .getItems();
+
+    assertThat("There is 9 menu items as part of Tree's ContextMenu", menuItems.size(), equalTo(9));
+
+    assertThat(
+        "MenuItem 0 has \"Add Connection\" as label",
+        menuItems.get(0).getText(),
+        equalTo("Add Connection"));
+    assertThat(
+        "MenuItem 1 has \"Remove Connection\" as label",
+        menuItems.get(1).getText(),
+        equalTo("Remove Connection"));
+    assertThat(
+        "MenuItem 2 is of type SeparatorMenuItem ",
+        menuItems.get(2) instanceof SeparatorMenuItem,
+        equalTo(true));
+    assertThat(
+        "MenuItem 3 has \"Connect All\" as label",
+        menuItems.get(3).getText(),
+        equalTo("Connect All"));
+
+    assertThat(
+        "MenuItem 4 has \"Disconnect All\" as label",
+        menuItems.get(4).getText(),
+        equalTo("Disconnect All"));
+
+    assertThat(
+        "MenuItem 5 has \"Connect\" as label", menuItems.get(5).getText(), equalTo("Connect"));
+
+    assertThat(
+        "MenuItem 6 has \"Disconnect\" as label",
+        menuItems.get(6).getText(),
+        equalTo("Disconnect"));
+
+    assertThat(
+        "MenuItem 7 has \"Set As Default\" as label",
+        menuItems.get(7).getText(),
+        equalTo("Set As Default"));
+
+    assertThat("MenuItem 8 has \"Edit\" as label", menuItems.get(8).getText(), equalTo("Edit"));
+
+    // Invoke the context menu on the Connections App
+    Bounds tabBounds = firstTab.getContent().getBoundsInLocal();
+
+    this.moveTo(
+        new Point2D(
+            renderedTab.localToScene(tabBounds).getCenterX(),
+            renderedTab.localToScene(tabBounds).getCenterY()));
+    this.press(MouseButton.SECONDARY);
+    this.press(KeyCode.ENTER);
+
+    this.type(KeyCode.S, KeyCode.I, KeyCode.T, KeyCode.L);
+
+    this.type(KeyCode.TAB);
+
+    this.type(
+        KeyCode.L, KeyCode.O, KeyCode.C, KeyCode.A, KeyCode.L, KeyCode.H, KeyCode.O, KeyCode.S,
+        KeyCode.T);
+
+    this.type(KeyCode.TAB);
+
+    this.type(KeyCode.DIGIT9, KeyCode.DIGIT1, KeyCode.DIGIT9, KeyCode.DIGIT0);
+
+    this.type(KeyCode.TAB);
+
+    this.type(KeyCode.A, KeyCode.D, KeyCode.M, KeyCode.I, KeyCode.N);
+
+    this.type(KeyCode.TAB);
+
+    this.type(
+        KeyCode.R, KeyCode.O, KeyCode.O, KeyCode.T, KeyCode.P, KeyCode.A, KeyCode.S, KeyCode.S,
+        KeyCode.W, KeyCode.O, KeyCode.R, KeyCode.D);
+    assertThat(
+        "A node with id \"testConnectionButton\" exists.",
+        this.lookup("#testConnectionButton").query(),
+        notNullValue());
+    assertThat(
+        "A node with id \"testConnectionButton\" is of type Button.",
+        this.lookup("#testConnectionButton").query() instanceof Button,
+        equalTo(true));
+
+    this.clickOn("#testConnectionButton").clickOn(MouseButton.PRIMARY);
+
+    //    WaitForAsyncUtils.waitFor(
+    //        10,
+    //        TimeUnit.SECONDS,
+    //        new Callable<Boolean>() {
+    //          @Override
+    //          public Boolean call() throws Exception {
+    //            return lookup(".dialog-pane").query().isVisible();
+    //          }
+    //        });
+
+    Thread.sleep(5000);
+    closePane();
+  }
 }
