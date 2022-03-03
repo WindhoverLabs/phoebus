@@ -40,6 +40,7 @@ public class Tree {
 
   @FXML
   public void initialize() {
+    treeView.setId("ConnectionsTreeView");
     root = YamcsObjectManager.getRoot();
 
     TreeItem<YamcsObject<?>> treeRoot = createItem(root);
@@ -97,6 +98,8 @@ public class Tree {
 
     // create a menu
     ContextMenu contextMenu = new ContextMenu();
+
+    contextMenu.setId("connectionsContextMenu");
 
     // create menuitems
     MenuItem addServer = new MenuItem(Messages.AddConnection);
