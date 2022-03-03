@@ -20,6 +20,7 @@ public class Messages
                          File,
                          FileSave,
                          FileSaveFailed,
+                         GroupingFailed,
                          GroupSelectedEntries,
                          Level,
                          Logbooks,
@@ -36,9 +37,12 @@ public class Messages
                          SearchAvailableItems,
                          SelectFile,
                          SelectFolder,
+                         ShowHideDetails,
                          Tags,
                          TagsTitle,
-                         TagsTooltip;
+                         TagsTooltip,
+                         HtmlPreview,
+                         HtmlPreviewToolTip;
     static
     {
         // initialize resource bundle

@@ -914,6 +914,9 @@ File ../../app/logbook/olog/ui/src/main/resources/log_olog_ui_preferences.proper
    
    # Limit used in "paginated" search, i.e. the number of search results per page
    search_result_page_size=30
+   
+   # Number of queries maintained by the OlogQueryManager. To make sense: must be >= 5 and <=30.
+   query_list_size=15
 
 
 logbook.ui
@@ -1198,7 +1201,7 @@ File ../../app/pvtree/src/main/resources/pv_tree_preferences.properties::
 saveandrestore
 --------------
 
-File ../../app/save-and-restore/ui/src/main/resources/save_and_restore_preferences.properties::
+File ../../app/save-and-restore/app/src/main/resources/save_and_restore_preferences.properties::
 
    # -----------------------------------------------
    # Package org.phoebus.applications.saveandrestore
@@ -1214,7 +1217,8 @@ File ../../app/save-and-restore/ui/src/main/resources/save_and_restore_preferenc
    httpClient.connectTimeout=1000
    
    # Extract snapshots from TreeView to ListView
-   splitSnapshot=false
+   splitSnapshot=true
+   
    
    # Sort snapshots in reverse order of created time. Last item comes first.
    sortSnapshotsTimeReversed=false
