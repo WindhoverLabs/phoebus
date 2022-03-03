@@ -117,20 +117,3 @@ jobs:
         tag: Commander-nightly-build
         overwrite: true
         body: "Latest and greatest nightly build. This is NOT a stable version."
-
-  UI_Testing:
-    runs-on: ubuntu-latest
-    container:
-      image: lgomezwhl/phoebus-ci:latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
-      - name: UI Tests
-        run: |
-          mvn -Dgpg.skip=true -DskipTests --batch-mode install
-          cd app/commander/app-commander-connections
-          mvn test -Dtest=ConnectionsManagerTestUI -Dtestfx.headless=true -Dtestfx.robot=glass -Djava.awt.headless=true  -Dprism.text=native
-          cd ../../..

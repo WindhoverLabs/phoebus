@@ -1,6 +1,9 @@
 name: Phoebus build
 
-on: [push, pull_request]
+on:
+  push:
+    braches:
+      - headless_tests
 
 jobs:
   all_tests:
