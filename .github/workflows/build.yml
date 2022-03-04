@@ -71,8 +71,8 @@ jobs:
         run: echo ${{ steps.docker_build.outputs.digest }}
   build-linux:
     runs-on: ubuntu-latest
-    container:
-      image: lgomezwhl/phoebus-ci:whl-latest
+#    container:
+#      image: lgomezwhl/phoebus-ci:whl-latest
     steps:
     - uses: actions/checkout@v2
     - run: |
