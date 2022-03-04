@@ -10,4 +10,4 @@ services:
 incomingDir: /tmp/yamcs-incoming
 dataDir: /tmp/yamcs-IntegrationTestNoUsers-data
 
-secretKey: testtest_nousers
+# secretKey: testtest_nousers

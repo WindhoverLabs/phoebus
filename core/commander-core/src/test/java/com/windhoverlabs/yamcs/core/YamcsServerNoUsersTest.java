@@ -19,13 +19,12 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.yamcs.client.ClientException;
 
-public class YamcsServerTestNoUsers extends IntegrationTestNoUsers {
+public class YamcsServerNoUsersTest extends IntegrationTestNoUsers {
   private YamcsServer newServer;
   YamcsServerConnection newConnection;
 
   @Override
   @BeforeEach
-  @Disabled("")
   public void before() throws ClientException {
     super.before();
     newServer = new YamcsServer("sitl");
@@ -40,16 +39,14 @@ public class YamcsServerTestNoUsers extends IntegrationTestNoUsers {
   }
 
   @BeforeAll
-  //  @Disabled("")
   public static void initYamcs() throws Exception {
     setupYamcs();
-    //    configure();
   }
 
   @Test
   @BeforeAll
   @Order(1)
-  @Disabled("")
+  //  @Disabled("")
   public static void testYamcsServerConnection() {
     YamcsServerConnection newConnection =
         new YamcsServerConnection("sitl", "localhost", 9190, "admin", "rootpassword");
@@ -110,7 +107,6 @@ public class YamcsServerTestNoUsers extends IntegrationTestNoUsers {
 
   @Test
   @Order(3)
-  @Disabled("")
   public void testYamcsServerConnect() throws InterruptedException, ExecutionException {
     assertThat(
         "", newServer.getServerStateStrProperty().get(), equalTo("sitl" + " | " + "DISCONNECTED"));
@@ -132,7 +128,6 @@ public class YamcsServerTestNoUsers extends IntegrationTestNoUsers {
 
   @Test
   @Order(4)
-  @Disabled("")
   public void testYamcsServerConnectNoArgs() throws InterruptedException, ExecutionException {
     newServer.setConnection(newConnection);
     newServer.connect();
@@ -197,28 +192,23 @@ public class YamcsServerTestNoUsers extends IntegrationTestNoUsers {
   }
 
   @BeforeAll
-  @Disabled("")
   public static void testYamcsServerTestConnection()
       throws InterruptedException, ExecutionException {
-    //    YamcsServerConnection newConnection =
-    //        new YamcsServerConnection("sitl", "localhost", 9190, "admin", "rootpassword");
-    //
-    //    assertThat(
-    //        "connection test is successful", YamcsServer.testConnection(newConnection),
-    // equalTo(true));
-    //
-    //    newConnection =
-    //        new YamcsServerConnection("sitl", "not_localhost", 9190, "admin", "rootpassword");
-    //
-    //    assertThat(
-    //        "connection test is not successful",
-    //        YamcsServer.testConnection(newConnection),
-    //        equalTo(false));
+    YamcsServerConnection newConnection = new YamcsServerConnection("sitl", "localhost", 9191);
+
+    assertThat(
+        "connection test is successful", YamcsServer.testConnection(newConnection), equalTo(true));
+
+    newConnection = new YamcsServerConnection("sitl", "not_localhost", 9191);
+
+    assertThat(
+        "connection test is not successful",
+        YamcsServer.testConnection(newConnection),
+        equalTo(false));
   }
 
   @Test
   @Order(5)
-  @Disabled("")
   public void testYamcsServerInstances() throws InterruptedException, ExecutionException {
     newServer.connect(newConnection);
     assertThat(
@@ -275,9 +265,9 @@ public class YamcsServerTestNoUsers extends IntegrationTestNoUsers {
         equalTo(newServer.getItems().get(0).getName()));
 
     assertThat(
-        "CMDR_YamcsInstance name matches \"IntegrationTest\"",
+        "CMDR_YamcsInstance name matches \"IntegrationTestNoUsers\"",
         newServer.getInstance(yamcsInstance).getName(),
-        equalTo("IntegrationTest"));
+        equalTo("IntegrationTestNoUsers"));
     assertThat("Default instance is null", newServer.getDefaultInstance(), nullValue());
 
     newServer.setDefaultInstance(yamcsInstance);
@@ -302,14 +292,9 @@ public class YamcsServerTestNoUsers extends IntegrationTestNoUsers {
     assertTrue(thrown.getMessage().equals("CMDR_YamcsInstance does not allow child items"));
   }
 
-  @Disabled("")
-  public void testYamcsServerNullInstance() {
-    assertThat("Yamcs instance is null", newServer.getInstance(yamcsInstance), nullValue());
-  }
-
   @AfterEach
   @Override
   public void after() throws InterruptedException {
-    //    super.after();
+    super.after();
   }
 }
