@@ -55,8 +55,11 @@ import java.util.stream.Collectors;
  */
 public class OlogClient implements LogClient {
     private static final Logger logger = Logger.getLogger(OlogClient.class.getName());
-
     private final WebResource service;
+
+    private static final String OLOG_CLIENT_INFO_HEADER = "X-Olog-Client-Info";
+    private static final String CLIENT_INFO =
+            "CS Studio " + org.phoebus.ui.application.Messages.AppVersion + " on " + System.getProperty("os.name");
 
     /**
      * Builder Class to help create a olog client.
@@ -206,6 +209,7 @@ public class OlogClient implements LogClient {
             clientResponse = service.path("logs")
                     .queryParams(queryParams)
                     .type(MediaType.APPLICATION_JSON)
+                    .header(OLOG_CLIENT_INFO_HEADER, CLIENT_INFO)
                     .accept(MediaType.APPLICATION_XML)
                     .accept(MediaType.APPLICATION_JSON)
                     .put(ClientResponse.class, OlogObjectMappers.logEntrySerializer.writeValueAsString(log));
@@ -303,13 +307,12 @@ public class OlogClient implements LogClient {
             // Convert List<XmlLog> into List<LogEntry>
             final OlogSearchResult ologSearchResult = OlogObjectMappers.logEntryDeserializer.readValue(
                     service.path("logs/search").queryParams(searchParams)
+                            .header(OLOG_CLIENT_INFO_HEADER, CLIENT_INFO)
                             .accept(MediaType.APPLICATION_JSON)
                             .get(String.class),
                     OlogSearchResult.class);
-            SearchResult searchResult = new SearchResult();
-            searchResult.setHitCount(ologSearchResult.getHitCount());
-            searchResult.setLogs(ologSearchResult.getLogs().stream().collect(Collectors.toList()));
-            return searchResult;
+            return SearchResult.of(ologSearchResult.getLogs().stream().collect(Collectors.toList()),
+                                   ologSearchResult.getHitCount());
         } catch (UniformInterfaceException | ClientHandlerException | IOException e) {
             logger.log(Level.WARNING, "failed to retrieve log entries", e);
             throw new RuntimeException(e);
@@ -470,6 +473,25 @@ public class OlogClient implements LogClient {
             mMap.putSingle(k, v);
         });
         return findLogs(mMap);
+    }
+
+    @Override
+    public void groupLogEntries(List<Long> logEntryIds) throws LogbookException{
+        try {
+            ClientResponse clientResponse = service.path("logs/group")
+                    .type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_XML)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .post(ClientResponse.class, OlogObjectMappers.logEntrySerializer.writeValueAsString(logEntryIds));
+            if (clientResponse.getStatus() == Status.UNAUTHORIZED.getStatusCode()) {
+                throw new LogbookException("Failed to group log entries: user unauthorized");
+            } else if (clientResponse.getStatus() != Status.OK.getStatusCode()) {
+                throw new LogbookException("Failed to group log entries: " + clientResponse.getStatus());
+            }
+        } catch (JsonProcessingException e) {
+            logger.log(Level.SEVERE, "Failed to group log entries", e);
+            throw new LogbookException(e);
+        }
     }
 
     /**

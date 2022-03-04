@@ -37,6 +37,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<skipITTests>true</skipITTests>
 		<docker.exclude.tests>**/*NetworkTest.java</docker.exclude.tests>
+		<guava.version>31.0.1-jre</guava.version>
 	</properties>
 	<build>
 		<plugins>
