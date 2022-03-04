@@ -61,7 +61,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./
-          file: ./misc/docker/Dockerfile
+          file: ./misc/docker/whl/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: lgomezwhl/phoebus-ci:whl-latest
