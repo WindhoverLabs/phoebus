@@ -90,6 +90,10 @@ jobs:
         mvn fmt:check
         cd ../..
 
+    - name: Install dependencies
+      run: |
+        sudo apt install -y protobuf-compiler
+
     - name: Build
       run: mvn -Dgpg.skip=true --batch-mode install
     - name: Publish

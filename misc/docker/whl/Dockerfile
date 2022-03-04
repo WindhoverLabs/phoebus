@@ -10,3 +10,4 @@ RUN apt-get install -y maven
 RUN apt-get install -y openjfx
 RUN echo "export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/" >> /root/.bashrc
 RUN apt-get install -y git
+RUN apt install -y protobuf-compiler
