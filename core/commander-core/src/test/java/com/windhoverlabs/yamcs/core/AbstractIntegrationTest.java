@@ -30,11 +30,16 @@ import org.yamcs.utils.ValueUtility;
 import org.yamcs.xtce.XtceDb;
 import org.yamcs.xtceproc.XtceDbFactory;
 
+/**
+ * Simulated YAMCS with a username and password
+ *
+ * @author lgomez
+ */
 public abstract class AbstractIntegrationTest {
 
   protected final String yamcsHost = "localhost";
-  protected final int yamcsPort = 9190;
-  protected final String yamcsInstance = "IntegrationTest";
+  protected static int yamcsPort = 9190;
+  protected static String yamcsInstance = "IntegrationTest";
 
   ParameterProvider parameterProvider;
   MyConnectionListener connectionListener;
@@ -44,7 +49,7 @@ public abstract class AbstractIntegrationTest {
   protected char[] adminPassword = "rootpassword".toCharArray();
   RefMdbPacketGenerator packetGenerator; // sends data to tm_realtime
   RefMdbPacketGenerator packetGenerator2; // sends data to tm2_realtime
-  static org.yamcs.YamcsServer yamcs;
+  protected static org.yamcs.YamcsServer yamcs;
 
   static {
     // LoggingUtils.enableLogging();
@@ -69,11 +74,15 @@ public abstract class AbstractIntegrationTest {
     assertNotNull(parameterProvider);
 
     connectionListener = new MyConnectionListener();
+
     yamcsClient = YamcsClient.newBuilder(yamcsHost, yamcsPort).withUserAgent("it-junit").build();
+
     yamcsClient.addConnectionListener(connectionListener);
+
     if (!yamcs.getSecurityStore().getGuestUser().isActive()) {
       yamcsClient.login(adminUsername, adminPassword);
     }
+
     yamcsClient.connectWebSocket();
 
     packetGenerator =
@@ -94,7 +103,6 @@ public abstract class AbstractIntegrationTest {
   public static void setupYamcs() throws Exception {
     Path dataDir = Paths.get("/tmp/yamcs-IntegrationTest-data");
     FileUtils.deleteRecursivelyIfExists(dataDir);
-
     YConfiguration.setupTest("IntegrationTest");
 
     yamcs = org.yamcs.YamcsServer.getServer();
