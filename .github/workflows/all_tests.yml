@@ -9,7 +9,7 @@ jobs:
   all_tests:
     runs-on: ubuntu-latest
     container:
-      image: lgomezwhl/phoebus-ci:latest
+      image: lgomezwhl/phoebus-ci:whl-latest
     steps:
     - uses: actions/checkout@v2
     - name: Check coding style
