@@ -139,7 +139,6 @@ class ConnectionsManagerTestUI extends ApplicationTest {
 
   @Test
   @Order(1)
-  //  @Disabled("Disabled until bug #42 has been resolved")
   public void testContextMenu() {
     Set<Node> window = (Set<Node>) from(rootNode(Stage.getWindows().get(0))).queryAllAs(Node.class);
 
@@ -387,17 +386,12 @@ class ConnectionsManagerTestUI extends ApplicationTest {
 
     this.clickOn("#testConnectionButton").clickOn(MouseButton.PRIMARY);
 
-    //    WaitForAsyncUtils.waitFor(
-    //        10,
-    //        TimeUnit.SECONDS,
-    //        new Callable<Boolean>() {
-    //          @Override
-    //          public Boolean call() throws Exception {
-    //            return lookup(".dialog-pane").query().isVisible();
-    //          }
-    //        });
-
-    Thread.sleep(5000);
+    // TODO:Not sure if this is the best way for the testConnectionButton to be "done".
+    WaitForAsyncUtils.waitForFxEvents();
+    assertThat(
+        "Dialog with id of \"testConnectionAlert\" exists on the scene",
+        this.lookup("#testConnectionAlert").query().isVisible(),
+        equalTo(true));
     closePane();
   }
 }
