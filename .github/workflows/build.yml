@@ -141,7 +141,7 @@ jobs:
       with:
         token: ${{ github.token }}
         tag: Commander-nightly-build # This may also be of the form 'refs/tags/staging'
-        assets: '*.zip'
+        assets: '*nightly-linux-x86_64.zip'
         fail-if-no-release: false
 
     - name: Upload binaries to release
@@ -176,6 +176,14 @@ jobs:
     - name: Build
       run: mvn -Djavafx.platform=win -DskipTests -T6 verify
 
+    - name: Delete old release assets
+      uses: mknejp/delete-release-assets@v1
+      with:
+        token: ${{ github.token }}
+        tag: Commander-nightly-build # This may also be of the form 'refs/tags/staging'
+        assets: '*nightly-windows-x86_64.zip.zip'
+        fail-if-no-release: false
+
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@2.2.1
       with:
@@ -185,7 +193,6 @@ jobs:
         tag: Commander-nightly-build
         overwrite: true
         body: "Latest and greatest nightly build. This is NOT a stable version."
-
   build-macOS:
     runs-on: ubuntu-latest
     container:
@@ -207,6 +214,14 @@ jobs:
 
       - name: Build
         run: mvn -Djavafx.platform=mac -DskipTests -T6 verify
+
+      - name: Delete old release assets
+        uses: mknejp/delete-release-assets@v1
+        with:
+          token: ${{ github.token }}
+          tag: Commander-nightly-build # This may also be of the form 'refs/tags/staging'
+          assets: '*nightly-mac-x86_64.zip'
+          fail-if-no-release: false
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@2.2.1
