@@ -19,7 +19,7 @@ jobs:
         java-version: 11
 
     - name: Build
-      run: mvn -Dgpg.skip=true --batch-mode install
+      run: mvn -Djavafx.platform=linux -DskipTests -T6 verify
 
     - name: Tag Repo
       uses: richardsimko/update-tag@v1
