@@ -35,6 +35,7 @@ jobs:
         tag: Commander-nightly-build # This may also be of the form 'refs/tags/staging'
         assets: '*nightly-linux-x86_64.zip'
         fail-if-no-release: false
+        fail-if-no-assets: false
 
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@2.2.1
@@ -67,6 +68,7 @@ jobs:
         tag: Commander-nightly-build # This may also be of the form 'refs/tags/staging'
         assets: '*nightly-windows-x86_64.zip'
         fail-if-no-release: false
+        fail-if-no-assets: false
 
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@2.2.1
@@ -98,6 +100,7 @@ jobs:
           tag: Commander-nightly-build # This may also be of the form 'refs/tags/staging'
           assets: '*nightly-mac-x86_64.zip'
           fail-if-no-release: false
+          fail-if-no-assets: false
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@2.2.1
