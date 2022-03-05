@@ -351,6 +351,8 @@ class ConnectionsManagerTestUI extends ApplicationTest {
         this.lookup("#connectionsContextMenu").query(),
         notNullValue());
 
+    // TODO:Test the item selected in context menu is what we expect it to be.
+
     this.type(KeyCode.ENTER);
 
     this.type(KeyCode.S, KeyCode.I, KeyCode.T, KeyCode.L);

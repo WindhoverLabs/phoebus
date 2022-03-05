@@ -86,9 +86,14 @@ public class NewConnectionDialog extends Dialog<YamcsServerConnection> {
         event -> {
           YamcsServerConnection newConnection =
               new YamcsServerConnection("", serverUrl.getText(), Integer.parseInt(port.getText()));
-          if (!user.getText().trim().isEmpty() && password.getText().trim().isEmpty()) {
-            newConnection.setName(user.getText());
-            newConnection.setName(password.getText());
+          if (!user.getText().trim().isEmpty() && !password.getText().trim().isEmpty()) {
+            newConnection =
+                new YamcsServerConnection(
+                    "",
+                    serverUrl.getText(),
+                    Integer.parseInt(port.getText()),
+                    user.getText(),
+                    password.getText());
           }
 
           Alert dialog = new Alert(AlertType.INFORMATION);
