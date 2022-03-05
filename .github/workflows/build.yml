@@ -181,7 +181,7 @@ jobs:
       with:
         token: ${{ github.token }}
         tag: Commander-nightly-build # This may also be of the form 'refs/tags/staging'
-        assets: '*nightly-windows-x86_64.zip.zip'
+        assets: '*nightly-windows-x86_64.zip'
         fail-if-no-release: false
 
     - name: Upload binaries to release
