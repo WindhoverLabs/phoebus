@@ -1,4 +1,4 @@
-name: Phoebus build
+name: Windows Nightly
 
 on: [push]
 

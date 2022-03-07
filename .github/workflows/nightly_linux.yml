@@ -1,4 +1,4 @@
-name: Phoebus build
+name: Linux Nightly
 
 on: [push]
 
