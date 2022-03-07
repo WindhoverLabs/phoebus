@@ -18,6 +18,7 @@
         <include>*.bat</include>
 	<include>*.desktop</include>
 	<include>site_splash.png</include>
+	<include>site_logo.png</include>
 	<include>settings.ini</include>
       </includes>
     </fileSet>

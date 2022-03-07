@@ -40,10 +40,10 @@ firstarg=$1;
 
 if test "${firstarg#*$filter1}" != "$firstarg"; then
   # Run MEDM converter etc. in foreground
-  java -Dfile.encoding=UTF-8 -jar $JAR $OPT "$@"
+  java -Dfile.encoding=UTF-8 -Dio.netty.tryReflectionSetAccessible=true  --add-exports java.base/jdk.internal.misc=ALL-UNNAMED -jar $JAR $OPT "$@"
 elif test "${firstarg#*$filter2}" != "$firstarg"; then
-    java -Dfile.encoding=UTF-8 -jar $JAR $OPT "$@"
+    java -Dfile.encoding=UTF-8 -Dio.netty.tryReflectionSetAccessible=true --add-exports java.base/jdk.internal.misc=ALL-UNNAMED -jar $JAR $OPT "$@"
 else
   # Run UI as separate thread
-  java -Dfile.encoding=UTF-8 -jar $JAR $OPT "$@" &
+  java -Dfile.encoding=UTF-8 -Dio.netty.tryReflectionSetAccessible=true --add-exports java.base/jdk.internal.misc=ALL-UNNAMED -jar $JAR $OPT "$@" &
 fi

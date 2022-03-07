@@ -1,7 +1,7 @@
 package com.windhoverlabs.data.yamcs;
 
-import com.windhoverlabs.commander.core.MissionDatabase;
 import com.windhoverlabs.pv.yamcs.YamcsPlugin;
+import com.windhoverlabs.yamcs.core.MissionDatabase;
 import com.windhoverlabs.yamcs.studio.data.vtype.Alarm;
 import com.windhoverlabs.yamcs.studio.data.vtype.AlarmSeverity;
 import com.windhoverlabs.yamcs.studio.data.vtype.Display;

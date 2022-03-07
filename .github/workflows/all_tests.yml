@@ -1,0 +1,30 @@
+name: Phoebus build
+
+on:
+  push:
+    braches:
+      - headless_tests
+
+jobs:
+  all_tests:
+    runs-on: ubuntu-latest
+    container:
+      image: lgomezwhl/phoebus-ci:whl-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Check coding style
+      run: |
+        cd core/commander-core
+        mvn fmt:check
+        cd ../..
+        cd app/commander
+        mvn fmt:check
+        cd ../..
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+#    - name: Run Tests
+#      run: |
+#        mvn -Dgpg.skip=true -DskipTests --batch-mode install
+#        mvn verify -Pall-headless-tests -Dtestfx.headless=true -Dtestfx.robot=glass -Djava.awt.headless=true  -Dprism.text=native

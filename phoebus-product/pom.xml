@@ -38,53 +38,9 @@
 			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.windhoverlabs</groupId>
-			<artifactId>app-commander-display-model</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.windhoverlabs</groupId>
-			<artifactId>app-commander-display-representation-javafx</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.windhoverlabs</groupId>
-			<artifactId>app-commander-mission-planner</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>org.phoebus</groupId>
 			<artifactId>app-probe</artifactId>
 			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-logbook-inmemory</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-logbook-olog-ui</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-logbook-elog</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-logbook-olog-client</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-logbook-olog-client-es</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.phoebus</groupId>
@@ -94,16 +50,6 @@
 		<dependency>
 			<groupId>org.phoebus</groupId>
 			<artifactId>app-pvtree</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-log-configuration</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-email-ui</artifactId>
 			<version>4.6.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -143,11 +89,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.phoebus</groupId>
-			<artifactId>app-display-navigation</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
 			<artifactId>app-display-adapters</artifactId>
 			<version>4.6.6-SNAPSHOT</version>
 		</dependency>
@@ -159,26 +100,6 @@
 		<dependency>
 			<groupId>org.phoebus</groupId>
 			<artifactId>app-display-convert-edm</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-scan-ui</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-alarm-ui</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-alarm-logging-ui</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.phoebus</groupId>
-			<artifactId>app-alarm-datasouce</artifactId>
 			<version>4.6.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -207,74 +128,59 @@
 			<version>4.6.6-SNAPSHOT</version>
 		</dependency>
 
-    <!-- A default implementation of contribututions db context menu -->
-    <dependency>
-      <groupId>org.phoebus</groupId>
-      <artifactId>app-trends-rich-adapters</artifactId>
-      <version>4.6.6-SNAPSHOT</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.phoebus</groupId>
-      <artifactId>app-channel-views</artifactId>
-      <version>4.6.6-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.phoebus</groupId>
-      <artifactId>app-channel-channelfinder</artifactId>
-      <version>4.6.6-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.phoebus</groupId>
-      <artifactId>save-and-restore</artifactId>
-      <version>4.6.6-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.phoebus</groupId>
-      <artifactId>app-credentials-management</artifactId>
-      <version>4.6.6-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>phoebus-target</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-dependencies</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/lib</outputDirectory>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>false</overWriteSnapshots>
-              <overWriteIfNewer>true</overWriteIfNewer>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-		<version>3.1.0</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <classpathPrefix>lib</classpathPrefix>
-              <mainClass>org.phoebus.product.Launcher</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
-      </plugin>
+		<!-- A default implementation of contribututions db context menu -->
+		<dependency>
+			<groupId>org.phoebus</groupId>
+			<artifactId>app-trends-rich-adapters</artifactId>
+			<version>4.6.6-SNAPSHOT</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.phoebus</groupId>
+			<artifactId>app-credentials-management</artifactId>
+			<version>4.6.6-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>phoebus-target</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib</classpathPrefix>
+							<mainClass>org.phoebus.product.Launcher</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
 
 			<!-- Above commands built the product.jar. Need to add the doc/ (if phoebus-doc
 				is available) and the dependency jar files and then list all lib/* jars in
@@ -355,6 +261,7 @@
 									<includes>
 										<include>settings.ini</include>
 										<include>site_splash.png</include>
+										<include>site_logo.png</include>
 									</includes>
 								</resource>
 							</resources>

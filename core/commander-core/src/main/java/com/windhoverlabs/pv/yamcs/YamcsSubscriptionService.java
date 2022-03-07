@@ -80,7 +80,8 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
         () -> {
           if (subscriptionDirty.getAndSet(false) && subscription != null) {
             Set<NamedObjectId> ids = getRequestedIdentifiers();
-            log.fine(String.format("Modifying subscription to %s", ids));
+            // TODO:Make log level configurable
+            //            log.info(String.format("Modifying subscription to %s", ids));
             subscription.sendMessage(
                 SubscribeParametersRequest.newBuilder()
                     .setAction(Action.REPLACE)
@@ -115,7 +116,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
    * @return
    */
   private String getYamcsPvName(String pvName, String serverName) {
-    String subStr = "//" + serverName + ":" + instanceName;
+    String subStr = "/" + serverName + ":" + instanceName;
     return pvName.substring(subStr.length());
   }
 
@@ -304,13 +305,13 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
         break;
       case UINT32:
         {
-          yamcsValues.add(Integer.toString(parameter.getEngValue().getUint32Value()));
+          yamcsValues.add(Integer.toUnsignedString(parameter.getEngValue().getUint32Value()));
           valueType = VUInt.class;
           break;
         }
       case UINT64:
         {
-          yamcsValues.add(Long.toString(parameter.getEngValue().getUint64Value()));
+          yamcsValues.add(Long.toUnsignedString(parameter.getEngValue().getUint64Value()));
           valueType = VULong.class;
           break;
         }
@@ -345,6 +346,8 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
   }
 
   /**
+   * TODO:Refactor so that not everything is "doubles"
+   *
    * @param items Items from <code>splitInitialItems</code>
    * @return Numeric values for all items
    * @throws Exception on error
@@ -356,6 +359,31 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
         final String text = Objects.toString(items.get(i));
         if (text.startsWith("0x")) values[i] = Integer.parseInt(text.substring(2), 16);
         else values[i] = Double.parseDouble(text);
+      } catch (NumberFormatException ex) {
+        throw new Exception("Cannot parse number from " + items.get(i));
+      }
+    }
+
+    return values;
+  }
+
+  /**
+   * TODO:We should make a distinction between unsigned and signed long.
+   *
+   * @param items Items from <code>splitInitialItems</code>
+   * @return Numeric values for all items
+   * @throws Exception on error
+   */
+  public static long[] getInitialLongs(List<?> items) throws Exception {
+    final long[] values = new long[items.size()];
+    for (int i = 0; i < values.length; ++i) {
+      try {
+        final String text = Objects.toString(items.get(i));
+        if (text.startsWith("0x")) {
+          values[i] = Integer.parseInt(text.substring(2), 16);
+        } else {
+          values[i] = Long.parseLong(text);
+        }
       } catch (NumberFormatException ex) {
         throw new Exception("Cannot parse number from " + items.get(i));
       }
@@ -402,8 +430,13 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
     if (type == VLong.class) {
       if (items.size() == 1)
-        return VLong.of(
-            (long) getInitialDoubles(items)[0], Alarm.none(), Time.now(), Display.none());
+        return VLong.of((long) getInitialLongs(items)[0], Alarm.none(), Time.now(), Display.none());
+      else throw new Exception("Expected one number, got " + items);
+    }
+
+    if (type == VULong.class) {
+      if (items.size() == 1)
+        return VLong.of((long) getInitialLongs(items)[0], Alarm.none(), Time.now(), Display.none());
       else throw new Exception("Expected one number, got " + items);
     }
 

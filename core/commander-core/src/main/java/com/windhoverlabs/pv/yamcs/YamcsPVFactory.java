@@ -7,9 +7,9 @@
  ******************************************************************************/
 package com.windhoverlabs.pv.yamcs;
 
-import com.windhoverlabs.commander.core.CMDR_YamcsInstance;
-import com.windhoverlabs.commander.core.YamcsObjectManager;
-import com.windhoverlabs.commander.core.YamcsServer;
+import com.windhoverlabs.yamcs.core.CMDR_YamcsInstance;
+import com.windhoverlabs.yamcs.core.YamcsObjectManager;
+import com.windhoverlabs.yamcs.core.YamcsServer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,7 +64,13 @@ public class YamcsPVFactory implements PVFactory {
     if (!instanceName.isEmpty()) {
       pvInstance = YamcsObjectManager.getInstanceFromName(serverPath, instanceName);
     } else {
-      pvInstance = YamcsObjectManager.getServerFromName(serverPath).getDefaultInstance();
+      YamcsServer pvServer = YamcsObjectManager.getServerFromName(serverPath);
+
+      if (pvServer != null) {
+        pvInstance = YamcsObjectManager.getServerFromName(serverPath).getDefaultInstance();
+      } else {
+        pvInstance = null;
+      }
     }
     if (pvInstance == null) {
       log.warning(String.format("Instance not found for \"%s\" server", serverPath));
@@ -76,7 +82,7 @@ public class YamcsPVFactory implements PVFactory {
     return true;
   }
 
-  private boolean isDefaultDataSource(String pv) {
+  private static boolean isDefaultDataSource(String pv) {
     boolean isDefault = false;
     if (!pv.contains(PVPool.SEPARATOR)) {
       isDefault = true;
@@ -86,7 +92,7 @@ public class YamcsPVFactory implements PVFactory {
 
   private String extractServerNameFromPVName(String pv) {
     String serverPath = pv;
-    serverPath = serverPath.substring(2);
+    serverPath = serverPath.substring(1);
 
     if (serverPath.contains(":")) {
       serverPath = serverPath.split(":")[0];
@@ -157,12 +163,12 @@ public class YamcsPVFactory implements PVFactory {
     return pv;
   }
 
-  private String sanitizePVName(final String name) {
+  public static String sanitizePVName(final String name) {
     String actual_name = name;
     if (isDefaultDataSource(actual_name)) {
       actual_name = name;
     } else {
-      actual_name = actual_name.substring("yamcs:".length());
+      actual_name = actual_name.substring("yamcs:/".length());
     }
 
     // Perhaps the GUI should enforce this...
@@ -174,9 +180,9 @@ public class YamcsPVFactory implements PVFactory {
         log.warning(
             "No default server found.\n" + "You may set a default server in the Connections app.");
       } else {
-        String serverName = YamcsObjectManager.getDefaulServer().getName();
+        String serverName = YamcsObjectManager.getDefaultServer().getName();
         String instanceName = defaultInstance.getName();
-        actual_name = "//" + serverName + ":" + instanceName + actual_name;
+        actual_name = "/" + serverName + ":" + instanceName + actual_name;
       }
     }
 
