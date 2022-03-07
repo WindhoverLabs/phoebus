@@ -11,8 +11,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build
       run: mvn -Pdocker-tests --batch-mode install
-    - name: Publish
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: mvn --batch-mode -DskipTests deploy
-      if: ${{ github.repository == 'ControlSystemStudio/phoebus' && (github.ref == 'refs/heads/master' || github.ref == 'refs/tags/*') }}
+#    - name: Publish
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      run: mvn --batch-mode -DskipTests deploy
+#      if: ${{ github.repository == 'ControlSystemStudio/phoebus' && (github.ref == 'refs/heads/master' || github.ref == 'refs/tags/*') }}
