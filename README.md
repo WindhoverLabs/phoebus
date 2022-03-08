@@ -4,7 +4,7 @@
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/24259/badge.svg"/>
 </a>
-[![Coverage Status](https://coveralls.io/repos/github/WindhoverLabs/phoebus/badge.svg?branch=develop)](https://coveralls.io/github/WindhoverLabs/phoebus?branch=develop)
+<a href='https://coveralls.io/github/WindhoverLabs/phoebus?branch=develop'><img src='https://coveralls.io/repos/github/WindhoverLabs/phoebus/badge.svg?branch=develop' alt='Coverage Status' /></a>
 
 
 Phoebus is a framework and a collections of tools to monitor and operate large scale control systems, such as the ones in the accelerator community. Phoebus is an update of the Control System Studio toolset that removes dependencies on Eclipse RCP and SWT.
