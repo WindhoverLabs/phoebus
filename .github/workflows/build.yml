@@ -102,6 +102,12 @@ jobs:
       run: mvn -Dgpg.skip=true --batch-mode -DskipTests deploy
       if: ${{ github.repository == 'ControlSystemStudio/phoebus' && (github.ref == 'refs/heads/master' || github.ref == 'refs/tags/*') }}
 
+    - name: Coveralls report
+      env:
+        COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+      run: |
+        mvn install jacoco:report coveralls:report -DrepoToken=$COVERALLS_TOKEN
+
     - name: Download Coverity Build Tool
       env:
         TOKEN: ${{ secrets.COVERITY_TOKEN }}
