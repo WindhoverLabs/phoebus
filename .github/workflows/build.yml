@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: mvn --batch-mode install
+      run: mvn -Dignore_local_ipv6=true --batch-mode install
     - name: Publish
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
