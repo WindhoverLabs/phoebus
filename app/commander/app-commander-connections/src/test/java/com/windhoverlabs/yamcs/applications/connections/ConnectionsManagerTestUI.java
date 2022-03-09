@@ -29,6 +29,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,34 +49,33 @@ import org.yamcs.client.ClientException;
 
 @TestMethodOrder(OrderAnnotation.class)
 class ConnectionsManagerTestUI extends ApplicationTest {
+
+  @BeforeAll
+  public static void initYamcs() throws Exception {
+    AbstractIntegrationTest.setupYamcs();
+  }
+
+  @AfterAll
+  public static void shutDownYamcs() throws Exception {
+    org.yamcs.YamcsServer.getServer().shutDown();
+  }
+
   private YamcsServer newServer;
-  private boolean instancesReady = false;
   YamcsServerConnection newConnection;
-  static ConnectionsManagerIntegrationTest connectionsTest = null;
+  ConnectionsManagerIntegrationTest connectionsTest = null;
   private DockPane tabs = null;
 
   @BeforeEach
   public void before() throws ClientException {
+    connectionsTest = new ConnectionsManagerIntegrationTest();
     connectionsTest.before();
     // TODO:Add Test for connections with the same name.
-    //    newServer = new YamcsServer("sitl");
-    //    newConnection = new YamcsServerConnection("sitl", "localhost", 9190, "admin",
-    // "rootpassword");
-    //
-    //    newServer.setConnection(newConnection);
-    //
-    //    assertThat("Connection is established", newServer.connect(), equalTo(true));
-  }
+    newServer = new YamcsServer("sitl");
+    newConnection = new YamcsServerConnection("sitl", "localhost", 9190, "admin", "rootpassword");
 
-  @BeforeAll
-  public static void initYamcs() throws Exception {
-    try {
-      connectionsTest = new ConnectionsManagerIntegrationTest();
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    AbstractIntegrationTest.setupYamcs();
+    newServer.setConnection(newConnection);
+
+    assertThat("Connection is established", newServer.connect(), equalTo(true));
   }
 
   private void closePane() {
@@ -138,7 +138,7 @@ class ConnectionsManagerTestUI extends ApplicationTest {
   }
 
   @Test
-  @Order(1)
+  //    @Order(1)
   public void testContextMenu() {
     Set<Node> window = (Set<Node>) from(rootNode(Stage.getWindows().get(0))).queryAllAs(Node.class);
 
@@ -242,8 +242,8 @@ class ConnectionsManagerTestUI extends ApplicationTest {
    * @param fxRobot
    * @throws TimeoutException
    */
-  public static void waitForVisibleNode(
-      String nodeQuery, long timeout, TimeUnit timeUnit, FxRobot fxRobot) throws TimeoutException {
+  public void waitForVisibleNode(String nodeQuery, long timeout, TimeUnit timeUnit, FxRobot fxRobot)
+      throws TimeoutException {
     // First we wait for the node lookup to be non-null. Then, in the remaining time, wait for the
     // node to be visible.
     WaitForAsyncUtils.waitFor(

@@ -123,6 +123,9 @@
 					<excludes>
 						<exclude>${docker.exclude.tests}</exclude>
 					</excludes>
+			        <!-- See ticket:https://github.com/WindhoverLabs/phoebus/issues/38  -->
+			            <forkCount>1</forkCount>
+			            <reuseForks>false</reuseForks>
 				</configuration>
 				<executions>
 					<execution>
@@ -243,6 +246,7 @@
 									<!-- add this to disable checking -->
 									<doclint>none</doclint>
 									<source>11</source>
+									
 								</configuration>
 							</execution>
 						</executions>
