@@ -75,11 +75,6 @@ public class YamcsPlugin {
         }
 
         @Override
-        public void connectionFailed(ClientException exception) {
-          // Already handled by YamcsConnector
-        }
-
-        @Override
         public void disconnected() {
           if (plugin == null) {
             // Plugin is shutting down
@@ -87,6 +82,12 @@ public class YamcsPlugin {
             return;
           }
           disconnect(true /* lost */);
+        }
+
+        @Override
+        public void connectionFailed(Throwable cause) {
+          // TODO Auto-generated method stub
+
         }
       };
 

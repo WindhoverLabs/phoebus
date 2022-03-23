@@ -11,6 +11,7 @@ import org.yamcs.client.YamcsClient;
 import org.yamcs.client.archive.ArchiveClient;
 import org.yamcs.client.processor.ProcessorClient;
 import org.yamcs.protobuf.SubscribeEventsRequest;
+// import org.yamcs.protobuf.Event;
 
 public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   public static final Logger logger = Logger.getLogger(CMDR_YamcsInstance.class.getPackageName());
@@ -66,6 +67,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
   protected void initEventSubscription(YamcsClient yamcsClient, String serverName) {
     eventSubscription = yamcsClient.createEventSubscription();
+    eventSubscription.addMessageListener(null);
     eventSubscription.addMessageListener(
         event -> {
           events.add(

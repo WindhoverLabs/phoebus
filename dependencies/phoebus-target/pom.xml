@@ -470,11 +470,11 @@
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
-    <dependency>
+    <!--dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
       <version>3.4.0</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.epics</groupId>
       <artifactId>pbrawclient</artifactId>
@@ -532,7 +532,7 @@
 <dependency>
   <groupId>org.yamcs</groupId>
   <artifactId>yamcs-client</artifactId>
-  <version>5.5.1</version>
+  <version>5.6.0</version>
 </dependency>
   </dependencies>
 

@@ -179,11 +179,14 @@ public abstract class AbstractIntegrationTest {
     }
 
     @Override
-    public void connectionFailed(ClientException exception) {}
-
-    @Override
     public void disconnected() {
       onDisconnect.release();
+    }
+
+    @Override
+    public void connectionFailed(Throwable cause) {
+      // TODO Auto-generated method stub
+
     }
   }
 
