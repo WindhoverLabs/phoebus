@@ -192,6 +192,13 @@ public class YamcsServerTest extends AbstractIntegrationTest {
       throws InterruptedException, ExecutionException {
     YamcsServerConnection newConnection =
         new YamcsServerConnection("sitl", "localhost", 9190, "admin", "rootpassword");
+    
+    assertThat("", newConnection.getName(), equalTo("sitl"));
+    assertThat("", newConnection.getUrl(), equalTo("localhost"));
+    assertThat("", newConnection.getPort(), equalTo(9190));
+    assertThat("", newConnection.getUser(), equalTo("admin"));
+    assertThat("", newConnection.getPassword(), equalTo("rootpassword"));
+    assertThat("", newConnection.toString(), equalTo("localhost:9190"));
 
     assertThat(
         "connection test is successful", YamcsServer.testConnection(newConnection), equalTo(true));
