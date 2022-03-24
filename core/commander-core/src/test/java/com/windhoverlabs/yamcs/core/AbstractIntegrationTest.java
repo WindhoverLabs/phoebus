@@ -388,7 +388,7 @@ public abstract class AbstractIntegrationTest {
         commandHistoryPublisher.publish(preparedCommand.getCommandId(), "packetSeqNum", seqNum);
       }
       commands.add(preparedCommand);
-      
+
       return true;
     }
 
