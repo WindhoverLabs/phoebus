@@ -7,10 +7,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.yamcs.client.ClientException;
 import org.yamcs.client.ConnectionListener;
-import org.yamcs.client.InstanceFilter;
 import org.yamcs.client.YamcsClient;
 import org.yamcs.protobuf.YamcsInstance;
-import org.yamcs.protobuf.YamcsInstance.InstanceState;
 
 public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
@@ -81,14 +79,12 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
       }
     }
 
-    InstanceFilter filter = new InstanceFilter();
-    filter.setState(InstanceState.RUNNING);
     yamcsClient
-        .listInstances(filter)
+        .listInstances()
         .whenComplete(
             (response, exc) -> {
               if (exc == null) {
-                for (YamcsInstance instance : response.getInstancesList()) {
+                for (YamcsInstance instance : response) {
                   createAndAddChild(instance.getName());
 
                   // TODO:Don't really like doing this here...We should either make
@@ -167,14 +163,12 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
       }
     }
 
-    InstanceFilter filter = new InstanceFilter();
-    filter.setState(InstanceState.RUNNING);
     yamcsClient
-        .listInstances(filter)
+        .listInstances()
         .whenComplete(
             (response, exc) -> {
               if (exc == null) {
-                for (YamcsInstance instance : response.getInstancesList()) {
+                for (YamcsInstance instance : response) {
                   createAndAddChild(instance.getName());
 
                   // TODO:Don't really like doing this here...We should either make
