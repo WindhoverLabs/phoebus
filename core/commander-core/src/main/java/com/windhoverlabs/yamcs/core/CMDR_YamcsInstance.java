@@ -67,7 +67,6 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
   protected void initEventSubscription(YamcsClient yamcsClient, String serverName) {
     eventSubscription = yamcsClient.createEventSubscription();
-    eventSubscription.addMessageListener(null);
     eventSubscription.addMessageListener(
         event -> {
           events.add(
