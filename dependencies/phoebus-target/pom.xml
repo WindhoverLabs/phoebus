@@ -470,11 +470,11 @@
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
-    <!--dependency>
+    <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>3.4.0</version>
-    </dependency-->
+      <version>3.11.0</version>
+    </dependency>
     <dependency>
       <groupId>org.epics</groupId>
       <artifactId>pbrawclient</artifactId>
