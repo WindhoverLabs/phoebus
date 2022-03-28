@@ -21,12 +21,12 @@ jobs:
     - name: Build
       run: mvn -Djavafx.platform=linux -DskipTests -T6 verify
 
-    - name: Tag Repo
-      uses: richardsimko/update-tag@v1
-      with:
-        tag_name: commander-0.1.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#    - name: Tag Repo
+#      uses: richardsimko/update-tag@v1
+#      with:
+#        tag_name: commander-0.1.0
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Delete old release assets
       uses: mknejp/delete-release-assets@v1
