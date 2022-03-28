@@ -42,8 +42,8 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: phoebus-product/target/product-4.6.6-SNAPSHOT.zip
-        asset_name: Commander_${{github.sha}}-SNAPSHOT-nightly-linux-x86_64.zip
-        tag: Commander-nightly-build
+        asset_name: commander-0.1.0-linux-x86_64.zip
+        tag: commander-0.1.0
         overwrite: true
         body: "Latest and greatest nightly build. This is NOT a stable version."
 
