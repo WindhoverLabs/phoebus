@@ -9,6 +9,8 @@
 
 Phoebus is a framework and a collections of tools to monitor and operate large scale control systems, such as the ones in the accelerator community. Phoebus is an update of the Control System Studio toolset that removes dependencies on Eclipse RCP and SWT.
 
+[Compatible Yamcs Versions](#yamcs_versions) 
+
 More information:
 https://control-system-studio.readthedocs.io
 
@@ -287,3 +289,13 @@ Additionally:
 
 In an effort to maintain a consistent coding style, this project follows the [Google Java Coding Style](https://google.github.io/styleguide/javaguide.html). This is also enforced in our CI pipeline. Any push that does not comply with this style, *will* fail. Developers can easily
 format their code by running ` mvn com.coveo:fmt-maven-plugin:format`.
+
+## Compatible Yamcs Versions <a name="yamcs_versions"></a>
+The following table has all the yamcs versions that have been _tested_, along with the version of commander.  
+
+| Commander | Yamcs Versions |
+|---|---|
+| `0.1.0` | `5.5.4` `5.5.7` `5.4.3`|      
+| `0.2.0-SNAPSHOT` | `5.6.0` |
+
+
