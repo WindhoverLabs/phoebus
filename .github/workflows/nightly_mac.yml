@@ -21,7 +21,7 @@ jobs:
         uses: mknejp/delete-release-assets@v1
         with:
           token: ${{ github.token }}
-          tag: Commander-nightly-build # This may also be of the form 'refs/tags/staging'
+          tag: commander-0.1.0 # This may also be of the form 'refs/tags/staging'
           assets: '*nightly-mac-x86_64.zip'
           fail-if-no-release: false
           fail-if-no-assets: false
