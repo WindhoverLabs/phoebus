@@ -7,7 +7,7 @@
 	</parent>
 	<groupId>com.windhoverlabs</groupId>
 	<artifactId>commander-core</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1.0</version>
 
 	<developers>
 		<developer>
@@ -154,10 +154,10 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!--plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>:q
+				<version>2.9.1</version>
 
 				<executions>
 					<execution>
@@ -167,7 +167,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin-->
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
@@ -182,7 +182,7 @@
 					</execution>
 				</executions>
 				<configuration>
-				<skip>true</skip>
+				<skip>false</skip>
 				</configuration>
 			</plugin>
 			<plugin>
