@@ -24,7 +24,7 @@ jobs:
     - name: Tag Repo
       uses: richardsimko/update-tag@v1
       with:
-        tag_name: Commander-nightly-build
+        tag_name: commander-0.1.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -32,7 +32,7 @@ jobs:
       uses: mknejp/delete-release-assets@v1
       with:
         token: ${{ github.token }}
-        tag: Commander-nightly-build # This may also be of the form 'refs/tags/staging'
+        tag:  Commander-nightly-build # This may also be of the form 'refs/tags/staging'
         assets: '*nightly-linux-x86_64.zip'
         fail-if-no-release: false
         fail-if-no-assets: false
