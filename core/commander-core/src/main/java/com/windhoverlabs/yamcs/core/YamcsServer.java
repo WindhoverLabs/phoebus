@@ -291,10 +291,17 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
     YamcsClient yamcsClient = null;
     try {
-      yamcsClient = YamcsClient.newBuilder(newConnection.getUrl(), newConnection.getPort()).build();
+      yamcsClient =
+          YamcsClient.newBuilder(newConnection.getUrl(), newConnection.getPort())
+              .withTls(false)
+              .build();
 
       if (newConnection.getPassword() != null && newConnection.getUser() != null) {
-
+        System.out.println(
+            "*************************************************:"
+                + newConnection.getPassword()
+                + "---"
+                + newConnection.getUser());
         yamcsClient.login(newConnection.getUser(), newConnection.getPassword().toCharArray());
       }
 

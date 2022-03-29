@@ -14,10 +14,12 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.yamcs.client.ClientException;
 
+@Disabled("")
 public class YamcsServerTest extends AbstractIntegrationTest {
   private YamcsServer newServer;
   YamcsServerConnection newConnection;
@@ -187,7 +189,8 @@ public class YamcsServerTest extends AbstractIntegrationTest {
         equalTo(ConnectionState.DISCONNECTED));
   }
 
-  @BeforeAll
+  //  @BeforeAll
+  @Disabled("")
   public static void testYamcsServerTestConnection()
       throws InterruptedException, ExecutionException {
     YamcsServerConnection newConnection =
