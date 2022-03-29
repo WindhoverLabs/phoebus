@@ -179,11 +179,14 @@ public abstract class AbstractIntegrationTest {
     }
 
     @Override
-    public void connectionFailed(ClientException exception) {}
-
-    @Override
     public void disconnected() {
       onDisconnect.release();
+    }
+
+    @Override
+    public void connectionFailed(Throwable cause) {
+      // TODO Auto-generated method stub
+
     }
   }
 
@@ -380,11 +383,13 @@ public abstract class AbstractIntegrationTest {
     }
 
     @Override
-    public void sendTc(PreparedCommand preparedCommand) {
+    public boolean sendCommand(PreparedCommand preparedCommand) {
       if (preparedCommand.getCmdName().contains("ALG_VERIF_TC")) {
         commandHistoryPublisher.publish(preparedCommand.getCommandId(), "packetSeqNum", seqNum);
       }
       commands.add(preparedCommand);
+
+      return true;
     }
 
     @Override

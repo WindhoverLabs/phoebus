@@ -78,6 +78,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
         return false;
       }
     }
+
     yamcsClient
         .listInstances()
         .whenComplete(
@@ -122,13 +123,13 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
             }
 
             @Override
-            public void connectionFailed(ClientException exception) {
-              log.warning("Failed to connect to " + getName());
+            public void disconnected() {
+              disconnect();
             }
 
             @Override
-            public void disconnected() {
-              disconnect();
+            public void connectionFailed(Throwable cause) {
+              log.warning("Failed to connect to " + getName());
             }
           });
 
@@ -161,6 +162,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
         return false;
       }
     }
+
     yamcsClient
         .listInstances()
         .whenComplete(
@@ -202,13 +204,13 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
             }
 
             @Override
-            public void connectionFailed(ClientException exception) {
-              log.warning("Failed to connect to " + getName());
+            public void disconnected() {
+              disconnect();
             }
 
             @Override
-            public void disconnected() {
-              disconnect();
+            public void connectionFailed(Throwable cause) {
+              log.warning("Failed to connect to " + getName());
             }
           });
       yamcsClient.connectWebSocket();
@@ -289,10 +291,17 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
     YamcsClient yamcsClient = null;
     try {
-      yamcsClient = YamcsClient.newBuilder(newConnection.getUrl(), newConnection.getPort()).build();
+      yamcsClient =
+          YamcsClient.newBuilder(newConnection.getUrl(), newConnection.getPort())
+              .withTls(false)
+              .build();
 
       if (newConnection.getPassword() != null && newConnection.getUser() != null) {
-
+        System.out.println(
+            "*************************************************:"
+                + newConnection.getPassword()
+                + "---"
+                + newConnection.getUser());
         yamcsClient.login(newConnection.getUser(), newConnection.getPassword().toCharArray());
       }
 

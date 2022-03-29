@@ -20,7 +20,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import org.yamcs.protobuf.Yamcs.Event.EventSeverity;
+import org.yamcs.protobuf.Event.EventSeverity;
 
 public class EventViewerController {
   public static final Logger log = Logger.getLogger(EventViewerController.class.getPackageName());

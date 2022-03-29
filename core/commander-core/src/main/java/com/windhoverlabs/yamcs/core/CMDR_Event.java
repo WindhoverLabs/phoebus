@@ -1,7 +1,7 @@
 package com.windhoverlabs.yamcs.core;
 
 import java.time.Instant;
-import org.yamcs.protobuf.Yamcs.Event.EventSeverity;
+import org.yamcs.protobuf.Event.EventSeverity;
 
 public class CMDR_Event {
   private String message;
