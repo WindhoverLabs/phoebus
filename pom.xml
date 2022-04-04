@@ -66,7 +66,7 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.eluder.coveralls</groupId>
 				<artifactId>coveralls-maven-plugin</artifactId>
@@ -75,7 +75,7 @@
 					<repoToken>${env.COVERALLS_TOKEN}</repoToken>
 					<sourceEncoding>UTF-8</sourceEncoding>
 				</configuration>
-				<dependencies>		
+				<dependencies>
 				<dependency>	<!--This is just for coveralls-maven-plugin. It is a known issue:https://github.com/trautonen/coveralls-maven-plugin/issues/141-->
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
@@ -246,7 +246,7 @@
 									<!-- add this to disable checking -->
 									<doclint>none</doclint>
 									<source>11</source>
-									
+
 								</configuration>
 							</execution>
 						</executions>
