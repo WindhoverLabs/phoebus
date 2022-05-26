@@ -1,6 +1,5 @@
 package org.phoebus.logbook.olog.ui;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -9,7 +8,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -17,19 +15,13 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.util.Callback;
-import org.phoebus.framework.preferences.Preference;
-import org.phoebus.framework.selection.SelectionService;
 import org.phoebus.framework.spi.AppResourceDescriptor;
 import org.phoebus.framework.util.ResourceParser;
 import org.phoebus.framework.workbench.ApplicationService;
 import org.phoebus.logbook.Property;
 import org.phoebus.logbook.PropertyImpl;
-import org.phoebus.ui.Preferences;
-import org.phoebus.ui.application.ContextMenuService;
 import org.phoebus.ui.javafx.ImageCache;
-import org.phoebus.ui.spi.ContextMenuEntry;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -45,7 +37,7 @@ public class LogPropertiesController {
     private static final Logger logger = Logger.getLogger(LogPropertiesController.class.getName());
     static final ImageView copy = ImageCache.getImageView(LogPropertiesController.class, "/icons/copy_edit.png");
 
-    private Map<String, String> attributeTypes = new HashMap<>();
+    private final Map<String, String> attributeTypes = new HashMap<>();
 
     @FXML
     TreeTableView<PropertyTreeNode> treeTableView;
@@ -68,18 +60,27 @@ public class LogPropertiesController {
             final URL resource = getClass().getResource("log_property_attributes.properties");
             url = resource.toExternalForm();
         }
+        else if(url.startsWith("classpath:")){
+            final URL resource = getClass().getResource(url.substring("classpath:".length()));
+            // Null pointer check here as the path may be incorrect
+            if(resource == null){
+                logger.log(Level.WARNING, "Log properties attribute URL " + url + " is invalid");
+            }
+            else{
+                url = resource.toExternalForm();
+            }
+        }
         try (InputStream input = new URL(url).openStream() ) {
             Properties prop = new Properties();
             prop.load(input);
             prop.stringPropertyNames().stream().forEach((p) -> {
-                attributeTypes.put(p.toLowerCase(), prop.getProperty(p).toLowerCase());
-                }
+                        attributeTypes.put(p.toLowerCase(), prop.getProperty(p).toLowerCase());
+                    }
             );
 
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.log(Level.WARNING, "Unable to load log properties attribute mapping");
         }
-
 
         // create the property trees
         name.setMaxWidth(1f * Integer.MAX_VALUE * 40);
@@ -165,11 +166,19 @@ public class LogPropertiesController {
                                         final URI resource = URI.create(resourceURL);
                                         final Hyperlink resourceLink = new Hyperlink(resourceURL);
                                         setGraphic(resourceLink);
-                                        // Open resource using the default application
                                         resourceLink.setOnAction((e) -> {
                                             final List<AppResourceDescriptor> applications = ApplicationService.getApplications(resource);
+                                            // If resource URI contains valid app name, use it
                                             if (!applications.isEmpty()) {
                                                 applications.get(0).create(resource);
+                                            }
+                                            // Otherwise use default app
+                                            else{
+                                                AppResourceDescriptor appResourceDescriptor =
+                                                        ApplicationService.findApplication(ResourceParser.getAppName(resource));
+                                                if(appResourceDescriptor != null){
+                                                    appResourceDescriptor.create(resource);
+                                                }
                                             }
                                         });
                                         resourceLink.setOnContextMenuRequested((e) -> {
