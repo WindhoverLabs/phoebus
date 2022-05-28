@@ -65,15 +65,19 @@ public class Splash
     public Splash(final Stage stage)
     {
         this.stage = stage;
+        System.out.println("Splash1");
         stage.initStyle(StageStyle.UNDECORATED);
+        System.out.println("Splash2");
         // Should keep the stage on top,
         // but doesn't always work,
         // so calling toFront() below whenever updating
         stage.setAlwaysOnTop(true);
+        System.out.println("Splash3");
         stage.setTitle(Messages.ProgressTitle);
 
         Image image = null;
         final File custom_splash = new File(Locations.install(), "site_splash.png");
+        System.out.println("Splash4");
         if (custom_splash.exists())
         {
             try
@@ -86,29 +90,45 @@ public class Splash
                 image = null;
             }
         }
+        System.out.println("Splash5");
         if (image == null)
             image = new Image(getClass().getResourceAsStream("/icons/splash.png"));
         final double width = image.getWidth();
         final double height = image.getHeight();
+        
+        System.out.println("Splash6");
 
         progress = new ProgressBar();
         progress.relocate(5, height-55);
         progress.setPrefSize(width-10, 20);
+        
+        System.out.println("Splash7");
+
 
         status = new TextField();
         status.setEditable(false);
         status.relocate(5, height-30);
         status.setPrefSize(width-10, 25);
+        
+        System.out.println("Splash8");
+
 
         final Pane layout = new Pane(new ImageView(image), progress, status);
+        
+        System.out.println("Splash9");
 
         stage.setScene(new Scene(layout, width, height));
+        
+        System.out.println("Splash10");
 
         // stage.centerOnScreen() uses 1/3 for Y position...
         final Rectangle2D bounds = Screen.getPrimary().getBounds();
         stage.setX((bounds.getMaxX() - width)/2);
         stage.setY((bounds.getMaxY() - height)/2);
+        System.out.println("Splash11");
         stage.show();
+        
+        System.out.println("Splash12");
     }
 
     /** @param percentage Progress 0..100, or negative for indeterminate */

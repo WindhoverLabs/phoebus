@@ -262,18 +262,22 @@ public class PhoebusApplication extends Application {
     @Override
     public void start(final Stage initial_stage) throws Exception {
         INSTANCE = this;
-
+        System.out.println("start1");
         // Save original application parameters
         application_parameters.addAll(getParameters().getRaw());
+        
+        System.out.println("start2");
 
         // Show splash screen as soon as possible..
         final Splash splash = Preferences.splash ? new Splash(initial_stage) : null;
-
+        
+        System.out.println("start3");
         // .. then read saved state etc. in background job
         JobManager.schedule("Startup", monitor ->
         {
             final JobMonitor splash_monitor = new SplashJobMonitor(monitor, splash);
             backgroundStartup(splash_monitor, splash);
+            System.out.println("start3");
         });
     }
 

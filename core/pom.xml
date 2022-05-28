@@ -15,7 +15,6 @@
     <module>email</module>
     <module>launcher</module>
     <module>vtype</module>
-    <module>commander-pv</module>
     <module>commander-core</module>
   </modules>
   <parent>

@@ -29,11 +29,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.windhoverlabs</groupId>
-			<artifactId>app-commander-events</artifactId>
-			<version>0.2.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.windhoverlabs</groupId>
 			<artifactId>commander-core</artifactId>
 			<version>0.2.0-SNAPSHOT</version>
 		</dependency>

@@ -1,8 +1,6 @@
 package com.windhoverlabs.yamcs.applications.connections;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.phoebus.framework.preferences.AnnotatedPreferences;
 import org.phoebus.framework.preferences.Preference;
@@ -27,7 +25,6 @@ public class ConnectionsManagerApp implements AppDescriptor {
   static {
     AnnotatedPreferences.initialize(
         ConnectionsManagerApp.class, "/connections_preferences.properties");
-    logger = Logger.getLogger(ConnectionsManagerInstance.class.getPackageName());
   }
 
   @Override
@@ -37,31 +34,12 @@ public class ConnectionsManagerApp implements AppDescriptor {
 
   @Override
   public AppInstance create() {
-
-    if (ConnectionsManagerInstance.INSTANCE == null) {
-      try {
-        ConnectionsManagerInstance.INSTANCE = new ConnectionsManagerInstance(this);
-      } catch (Exception ex) {
-        Logger.getLogger(ConnectionsManagerApp.class.getPackageName())
-            .log(Level.WARNING, "Cannot create Error Log", ex);
-        return null;
-      }
-    } else ConnectionsManagerInstance.INSTANCE.raise();
-
-    return ConnectionsManagerInstance.INSTANCE;
+    System.out.println("*********************************************2");
+    return null;
   }
 
   @Override
   public void stop() {
-    try {
-      ConnectionsManagerInstance.createYamcsConnectionMemento();
-      ConnectionsManagerInstance.INSTANCE = null;
-    } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    System.out.println("*********************************************3");
   }
 }
