@@ -10,7 +10,6 @@ package com.windhoverlabs.display.representation;
 import com.windhoverlabs.display.model.widgets.WaypointModel;
 import java.util.concurrent.TimeUnit;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Line;
 import org.csstudio.display.builder.model.DirtyFlag;
 import org.csstudio.display.builder.model.UntypedWidgetPropertyListener;
 import org.csstudio.display.builder.model.WidgetProperty;
@@ -33,13 +32,19 @@ public class WaypointRepresentation extends RegionBaseRepresentation<Pane, Waypo
 
   private volatile RTTank tank;
 
+  private volatile Waypointpath waypoint;
+  private Pane waypointPane;
+
   @Override
   public Pane createJFXNode() throws Exception {
     System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$-----1");
     tank = new RTTank();
+    waypoint = new Waypointpath();
     tank.setUpdateThrottle(Preferences.image_update_delay, TimeUnit.MILLISECONDS);
-    new Waypointpath();
-    return new Pane(Waypointpath.getCShape(new Line(0, 0, 50, 50)));
+    waypoint.setUpdateThrottle(Preferences.image_update_delay, TimeUnit.MILLISECONDS);
+    //    return new Pane(Waypointpath.getCShape(new Line(0, 0, 50, 50)));
+    waypointPane = new Pane(waypoint);
+    return waypointPane;
   }
 
   @Override
@@ -49,6 +54,9 @@ public class WaypointRepresentation extends RegionBaseRepresentation<Pane, Waypo
     model_widget.propHeight().addUntypedPropertyListener(lookListener);
     model_widget.propFillColor().addUntypedPropertyListener(lookListener);
     model_widget.propScaleVisible().addUntypedPropertyListener(lookListener);
+    model_widget.propFont().addUntypedPropertyListener(lookListener);
+    model_widget.propForeground().addUntypedPropertyListener(lookListener);
+    model_widget.propBackground().addUntypedPropertyListener(lookListener);
 
     model_widget.propWaypointA().addUntypedPropertyListener(valueListener);
     model_widget.propWaypointB().addUntypedPropertyListener(valueListener);
@@ -95,6 +103,8 @@ public class WaypointRepresentation extends RegionBaseRepresentation<Pane, Waypo
     }
 
     tank.setValue(value);
+
+    waypoint.requestUpdate();
   }
 
   @Override
@@ -104,10 +114,13 @@ public class WaypointRepresentation extends RegionBaseRepresentation<Pane, Waypo
       double width = model_widget.propWidth().getValue();
       double height = model_widget.propHeight().getValue();
       jfx_node.setPrefSize(width, height);
-      tank.setWidth(width);
-      tank.setHeight(height);
-      tank.setFillColor(JFXUtil.convert(model_widget.propFillColor().getValue()));
-      tank.setScaleVisible(model_widget.propScaleVisible().getValue());
+      waypoint.setWidth(width);
+      waypoint.setHeight(height);
+      waypoint.setFillColor(JFXUtil.convert(model_widget.propFillColor().getValue()));
+      waypoint.setFont(JFXUtil.convert(model_widget.propFont().getValue()));
+      waypoint.setBackground(JFXUtil.convert(model_widget.propBackground().getValue()));
+      waypoint.setForeground(JFXUtil.convert(model_widget.propForeground().getValue()));
+      waypointPane.setStyle("-fx-background-color: white");
     }
   }
 }

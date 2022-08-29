@@ -1,8 +1,11 @@
 package com.windhoverlabs.display.model.widgets;
 
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.newBooleanPropertyDescriptor;
+import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propBackgroundColor;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propBorderAlarmSensitive;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propFillColor;
+import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propFont;
+import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propForegroundColor;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -14,8 +17,13 @@ import org.csstudio.display.builder.model.WidgetDescriptor;
 import org.csstudio.display.builder.model.WidgetProperty;
 import org.csstudio.display.builder.model.WidgetPropertyCategory;
 import org.csstudio.display.builder.model.WidgetPropertyDescriptor;
+import org.csstudio.display.builder.model.persist.NamedWidgetColors;
+import org.csstudio.display.builder.model.persist.NamedWidgetFonts;
+import org.csstudio.display.builder.model.persist.WidgetColorService;
+import org.csstudio.display.builder.model.persist.WidgetFontService;
 import org.csstudio.display.builder.model.properties.CommonWidgetProperties;
 import org.csstudio.display.builder.model.properties.WidgetColor;
+import org.csstudio.display.builder.model.properties.WidgetFont;
 import org.csstudio.display.builder.model.widgets.VisibleWidget;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.AlarmSeverity;
@@ -53,6 +61,10 @@ public class WaypointModel extends VisibleWidget {
   private volatile WidgetProperty<VType> waypoint_current_pv_value;
   private volatile WidgetProperty<VType> waypoint_b_pv_value;
   private volatile WidgetProperty<Boolean> alarm_border;
+
+  private volatile WidgetProperty<WidgetFont> font;
+  private volatile WidgetProperty<WidgetColor> foreground;
+  private volatile WidgetProperty<WidgetColor> background;
 
   private static final WidgetPropertyDescriptor<VType> WaypointA =
       CommonWidgetProperties.newRuntimeValue("waypointA", Messages.WidgetProperties_Value);
@@ -102,12 +114,21 @@ public class WaypointModel extends VisibleWidget {
   @Override
   protected void defineProperties(final List<WidgetProperty<?>> properties) {
     super.defineProperties(properties);
+    properties.add(
+        font = propFont.createProperty(this, WidgetFontService.get(NamedWidgetFonts.DEFAULT)));
+    properties.add(
+        foreground =
+            propForegroundColor.createProperty(
+                this, WidgetColorService.getColor(NamedWidgetColors.TEXT)));
+    properties.add(
+        background =
+            propBackgroundColor.createProperty(
+                this, WidgetColorService.getColor(NamedWidgetColors.READ_BACKGROUND)));
     properties.add(fill_color = propFillColor.createProperty(this, new WidgetColor(0, 0, 255)));
     properties.add(scale_visible = propScaleVisible.createProperty(this, true));
     properties.add(waypoint_a_pv_value = WaypointA.createProperty(this, null));
     properties.add(waypoint_b_pv_value = WaypointB.createProperty(this, null));
     properties.add(waypoint_current_pv_value = WaypointCurrent.createProperty(this, null));
-
     properties.add(waypoint_a_pv_name = WaypointAName.createProperty(this, "WaypointAName"));
     properties.add(
         waypoint_current_pv_name = WaypointCurrentName.createProperty(this, "WaypointCurrentName"));
@@ -119,11 +140,6 @@ public class WaypointModel extends VisibleWidget {
   public WidgetProperty<?> getProperty(String name)
       throws IllegalArgumentException, IndexOutOfBoundsException {
     return super.getProperty(name);
-  }
-
-  /** @return 'fill_color' property */
-  public WidgetProperty<WidgetColor> propFillColor() {
-    return fill_color;
   }
 
   /** @return 'scale_visible' property */
@@ -170,5 +186,25 @@ public class WaypointModel extends VisibleWidget {
   /** @return 'border_alarm_sensitive' property */
   public WidgetProperty<Boolean> propBorderAlarmSensitive() {
     return alarm_border;
+  }
+
+  /** @return 'font' property */
+  public WidgetProperty<WidgetFont> propFont() {
+    return font;
+  }
+
+  /** @return 'foreground_color' property */
+  public WidgetProperty<WidgetColor> propForeground() {
+    return foreground;
+  }
+
+  /** @return 'background_color' property */
+  public WidgetProperty<WidgetColor> propBackground() {
+    return background;
+  }
+
+  /** @return 'fill_color' property */
+  public WidgetProperty<WidgetColor> propFillColor() {
+    return fill_color;
   }
 }
