@@ -3,6 +3,7 @@ package com.windhoverlabs.display.builder.runtime;
 import static java.util.Map.entry;
 
 import com.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget;
+import com.windhoverlabs.display.model.widgets.WaypointModel;
 import java.util.Map;
 import java.util.function.Supplier;
 import org.csstudio.display.builder.model.Widget;
@@ -16,6 +17,7 @@ public class CommanderWidgetRuntimes implements WidgetRuntimesService {
     return Map.ofEntries(
         entry(
             CommanderCommandActionButtonWidget.WIDGET_DESCRIPTOR.getType(),
-            () -> new CommanderCommandActionButtonWidgetRuntime()));
+            () -> new CommanderCommandActionButtonWidgetRuntime()),
+        entry(WaypointModel.WIDGET_DESCRIPTOR.getType(), () -> new WaypointWidgetRuntime()));
   }
 }

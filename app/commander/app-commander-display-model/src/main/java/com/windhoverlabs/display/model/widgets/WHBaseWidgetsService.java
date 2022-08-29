@@ -21,6 +21,8 @@ public class WHBaseWidgetsService implements WidgetsService {
   @Override
   public Collection<WidgetDescriptor> getWidgetDescriptors() {
     return List.of(
-        WHTextUpdateWidget.WIDGET_DESCRIPTOR, CommanderCommandActionButtonWidget.WIDGET_DESCRIPTOR);
+        WHTextUpdateWidget.WIDGET_DESCRIPTOR,
+        CommanderCommandActionButtonWidget.WIDGET_DESCRIPTOR,
+        WaypointModel.WIDGET_DESCRIPTOR);
   }
 }
