@@ -225,7 +225,7 @@ public class PhoebusApplication extends Application {
 
     private static final WeakReference<DockItemWithInput> NO_ACTIVE_ITEM_WITH_INPUT = new WeakReference<>(null);
 
-    public static KeyCombination closeAllTabsKeyCombination;
+    public static Optional<KeyCombination> closeAllTabsKeyCombination = Optional.empty();
 
 
     /**
@@ -396,13 +396,13 @@ public class PhoebusApplication extends Application {
                     Preferences.ui_monitor_period, TimeUnit.MILLISECONDS);
 
         if(PlatformInfo.is_mac_os_x){
-            closeAllTabsKeyCombination = new KeyCodeCombination(KeyCode.W, KeyCombination.SHIFT_DOWN, KeyCodeCombination.SHORTCUT_DOWN);
+            closeAllTabsKeyCombination = Optional.ofNullable(new KeyCodeCombination(KeyCode.W, KeyCombination.SHIFT_DOWN, KeyCodeCombination.SHORTCUT_DOWN));
         }
         else{
-            closeAllTabsKeyCombination = new KeyCodeCombination(KeyCode.F4, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN);
+            closeAllTabsKeyCombination = Optional.ofNullable(new KeyCodeCombination(KeyCode.F4, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN));
         }
 
-        closeAllTabsMenuItem.acceleratorProperty().setValue(closeAllTabsKeyCombination);
+        closeAllTabsMenuItem.acceleratorProperty().setValue(closeAllTabsKeyCombination.get());
 
     }
 

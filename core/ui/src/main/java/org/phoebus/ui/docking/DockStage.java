@@ -203,9 +203,12 @@ public class DockStage
 
         // This is to handle a keyboard shortcut that closes all tabs in all windows.
         stage.getScene().setOnKeyReleased(ke -> {
-            if(PhoebusApplication.closeAllTabsKeyCombination.match(ke)){
-                PhoebusApplication.closeAllTabs();
-            }
+            PhoebusApplication.closeAllTabsKeyCombination.ifPresent(kc ->
+            {
+                if(kc.match(ke)){
+                    PhoebusApplication.closeAllTabs();
+                }
+            });
         });
 
         return pane;
