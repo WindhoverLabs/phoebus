@@ -105,6 +105,7 @@ public class WaypointRepresentation extends RegionBaseRepresentation<Pane, Waypo
     tank.setValue(value);
 
     waypoint.requestUpdate();
+    waypoint.setRange(min_val, max_val);
   }
 
   @Override
