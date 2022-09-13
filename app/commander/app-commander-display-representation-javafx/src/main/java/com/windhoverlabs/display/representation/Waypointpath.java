@@ -10,10 +10,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 import org.csstudio.javafx.rtplot.internal.PlotPart;
 import org.csstudio.javafx.rtplot.internal.PlotPartListener;
@@ -108,14 +104,8 @@ public class Waypointpath extends Canvas {
             50,
             TimeUnit.MILLISECONDS,
             () -> {
-              //              plot_image = updateImageBuffer();
               redrawSafely();
             });
-
-    final GraphicsContext gc = this.getGraphicsContext2D();
-    gc.fillRect(0, 0, 50, 50);
-    gc.setFill(javafx.scene.paint.Color.BLUE);
-    //    gc.lineTo(10, 10);
   }
 
   /**
@@ -229,11 +219,6 @@ public class Waypointpath extends Canvas {
     gc.lineTo(0, 0);
     gc.lineTo(lineScale, lineScale);
     gc.stroke();
-    
-    System.out.println("current raw -->" + this.currentLon + "," + this.currentLat);
-    System.out.println("prev raw-->" + this.prevLon + "," + this.prevLon);
-    System.out.println("next raw-->" + this.nextLon + "," + this.nextLon);
-
 
     double currentX = this.currentLon;
     double currentY = this.currentLat;
@@ -248,9 +233,6 @@ public class Waypointpath extends Canvas {
 
     prevRectX = lineScale * currentXNormalized;
     prevRectY = lineScale * currentYNormalized;
-
-    System.out.println("current-->" + prevRectX + "," + prevRectY);
-    System.out.println("current Normalized-->" + currentXNormalized + "," + currentYNormalized);
 
     gc.fillRect(lineScale * currentXNormalized, lineScale * currentYNormalized, 10, 10);
   }
@@ -273,30 +255,5 @@ public class Waypointpath extends Canvas {
   public void dispose() { // Stop updates which could otherwise still use
     // what's about to be disposed
     update_throttle.dispose();
-  }
-
-  public static Path getCShape(Line pConnectionPoints) {
-    final int ENDSIZE = 0;
-    final double x1 =
-        Math.max(pConnectionPoints.getStartX(), pConnectionPoints.getEndX()) + ENDSIZE;
-
-    MoveTo moveTo = new MoveTo(pConnectionPoints.getStartX(), pConnectionPoints.getStartY());
-    LineTo lineTo1 = new LineTo(pConnectionPoints.getStartX(), pConnectionPoints.getStartY());
-    LineTo lineTo2 = new LineTo(pConnectionPoints.getEndX(), pConnectionPoints.getEndY());
-
-    Path path = new Path();
-    path.getElements().addAll(moveTo, lineTo1, lineTo2);
-    return path;
-  }
-
-  public static Canvas getCanvas() {
-    Canvas canvas = new Canvas(250, 250);
-
-    GraphicsContext gc = canvas.getGraphicsContext2D();
-
-    gc.setFill(javafx.scene.paint.Color.BLUE);
-    gc.fillRect(0, 0, 100, 100);
-
-    return canvas;
   }
 }

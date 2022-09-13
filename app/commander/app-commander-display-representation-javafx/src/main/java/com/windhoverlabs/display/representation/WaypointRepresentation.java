@@ -17,7 +17,6 @@ import org.csstudio.display.builder.model.util.VTypeUtil;
 import org.csstudio.display.builder.representation.Preferences;
 import org.csstudio.display.builder.representation.javafx.JFXUtil;
 import org.csstudio.display.builder.representation.javafx.widgets.RegionBaseRepresentation;
-import org.csstudio.javafx.rtplot.RTTank;
 import org.epics.vtype.VType;
 
 /**
@@ -30,18 +29,13 @@ public class WaypointRepresentation extends RegionBaseRepresentation<Pane, Waypo
   private final UntypedWidgetPropertyListener lookListener = this::lookChanged;
   private final UntypedWidgetPropertyListener valueListener = this::valueChanged;
 
-  private volatile RTTank tank;
-
   private volatile Waypointpath waypoint;
   private Pane waypointPane;
 
   @Override
   public Pane createJFXNode() throws Exception {
-    tank = new RTTank();
     waypoint = new Waypointpath();
-    tank.setUpdateThrottle(Preferences.image_update_delay, TimeUnit.MILLISECONDS);
     waypoint.setUpdateThrottle(Preferences.image_update_delay, TimeUnit.MILLISECONDS);
-    //    return new Pane(Waypointpath.getCShape(new Line(0, 0, 50, 50)));
     waypointPane = new Pane(waypoint);
     return waypointPane;
   }
@@ -63,7 +57,6 @@ public class WaypointRepresentation extends RegionBaseRepresentation<Pane, Waypo
     model_widget.propWaypointBLat().addUntypedPropertyListener(valueListener);
     model_widget.propWaypointCurrentLon().addUntypedPropertyListener(valueListener);
     model_widget.propWaypointCurrentLat().addUntypedPropertyListener(valueListener);
-    //    valueChanged(null, null, null);
   }
 
   @Override
@@ -98,13 +91,23 @@ public class WaypointRepresentation extends RegionBaseRepresentation<Pane, Waypo
     final VType vtypeNextLon = model_widget.propWaypointBLon().getValue();
     final VType vtypeNextLat = model_widget.propWaypointBLat().getValue();
 
-    waypoint.updateWaypoints(
-        VTypeUtil.getValueNumber(vtypeCurrentLon).doubleValue(),
-        VTypeUtil.getValueNumber(vtypeCurrentLat).doubleValue(),
-        VTypeUtil.getValueNumber(vtypePrevLon).doubleValue(),
-        VTypeUtil.getValueNumber(vtypePrevtLat).doubleValue(),
-        VTypeUtil.getValueNumber(vtypeNextLon).doubleValue(),
-        VTypeUtil.getValueNumber(vtypeNextLat).doubleValue());
+    double currentLon = VTypeUtil.getValueNumber(vtypeCurrentLon).doubleValue();
+    double currentLat = VTypeUtil.getValueNumber(vtypeCurrentLat).doubleValue();
+    double prevLon = VTypeUtil.getValueNumber(vtypePrevLon).doubleValue();
+    double prevLat = VTypeUtil.getValueNumber(vtypePrevtLat).doubleValue();
+    double nextLon = VTypeUtil.getValueNumber(vtypeNextLon).doubleValue();
+    double nextLat = VTypeUtil.getValueNumber(vtypeNextLat).doubleValue();
+
+    if (Double.isNaN(currentLon)
+        || Double.isNaN(currentLat)
+        || Double.isNaN(prevLon)
+        || Double.isNaN(prevLat)
+        || Double.isNaN(nextLon)
+        || Double.isNaN(nextLat)) {
+      return;
+    }
+
+    waypoint.updateWaypoints(currentLon, currentLat, prevLon, prevLat, nextLon, nextLat);
 
     waypoint.requestUpdate();
   }
