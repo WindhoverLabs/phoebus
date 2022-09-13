@@ -55,6 +55,18 @@ public class Waypointpath extends Canvas {
   /** Is the scale displayed or not. */
   private volatile boolean scale_visible = true;
 
+  private int testValue = 0;
+
+  private double prevLat = 0;
+  private double prevLon = 0;
+  private double nextLat = 0;
+  private double nextLon = 0;
+  private double currentLat = 0;
+  private double currentLon = 0;
+
+  private double prevRectX = 0;
+  private double prevRectY = 0;
+
   /** Listener to {@link PlotPart}s, triggering refresh of canvas */
   protected final PlotPartListener plot_part_listener =
       new PlotPartListener() {
@@ -174,11 +186,31 @@ public class Waypointpath extends Canvas {
     scale.setValueRange(low, high);
   }
 
+  public void updateWaypoints(
+      double currentLon,
+      double currentLat,
+      double prevLon,
+      double prevLat,
+      double nextLon,
+      double nextLat) {
+    this.prevLat = prevLat;
+    this.prevLon = prevLon;
+    this.nextLat = nextLat;
+    this.nextLon = nextLon;
+    this.currentLat = currentLat;
+    this.currentLon = currentLon;
+  }
+
   /** @param value Set value */
   public void setValue(final double value) {
-    //    if (Double.isFinite(value)) this.value = value;
-    //    else this.value = scale.getValueRange().getLow();
     requestUpdate();
+  }
+
+  public static double normalise(double inValue, double min, double max) {
+    if ((max - min) == 0) {
+      return 0;
+    }
+    return (inValue - min) / (max - min);
   }
 
   /** Draw all components into image buffer */
@@ -190,10 +222,37 @@ public class Waypointpath extends Canvas {
     gc.setStroke(javafx.scene.paint.Color.BLACK);
 
     gc.setFill(javafx.scene.paint.Color.BLUE);
+    gc.clearRect(prevRectX, prevRectY, 10, 10);
+
+    // lineScale should be part of the class. Maybe even make it a property for users to adjust.
+    double lineScale = 100;
     gc.lineTo(0, 0);
-    gc.lineTo(100, 100);
+    gc.lineTo(lineScale, lineScale);
     gc.stroke();
-    gc.fillRect(100, 100, 10, 10);
+    
+    System.out.println("current raw -->" + this.currentLon + "," + this.currentLat);
+    System.out.println("prev raw-->" + this.prevLon + "," + this.prevLon);
+    System.out.println("next raw-->" + this.nextLon + "," + this.nextLon);
+
+
+    double currentX = this.currentLon;
+    double currentY = this.currentLat;
+    double prevX = this.prevLon;
+    double prevY = this.prevLat;
+    double nextX = this.nextLon;
+    double nextY = this.nextLat;
+
+    // Handle case when the values are not "normal" -> prev > next
+    double currentXNormalized = normalise(currentX, prevX, nextX);
+    double currentYNormalized = normalise(currentY, prevY, nextY);
+
+    prevRectX = lineScale * currentXNormalized;
+    prevRectY = lineScale * currentYNormalized;
+
+    System.out.println("current-->" + prevRectX + "," + prevRectY);
+    System.out.println("current Normalized-->" + currentXNormalized + "," + currentYNormalized);
+
+    gc.fillRect(lineScale * currentXNormalized, lineScale * currentYNormalized, 10, 10);
   }
 
   /** Request a complete redraw of the plot */

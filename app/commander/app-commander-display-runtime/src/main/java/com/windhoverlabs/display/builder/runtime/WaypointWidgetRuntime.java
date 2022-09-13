@@ -73,12 +73,19 @@ public class WaypointWidgetRuntime extends WidgetRuntime<WaypointModel> {
     //    System.out.
 
     bindings.add(
-        new PVNameToValueBinding(this, widget.propWaypointAPVName(), widget.propWaypointA()));
+        new PVNameToValueBinding(this, widget.propWaypointALonPVName(), widget.propWaypointALon()));
+    bindings.add(
+        new PVNameToValueBinding(this, widget.propWaypointALatPVName(), widget.propWaypointALat()));
     bindings.add(
         new PVNameToValueBinding(
-            this, widget.propWaypointCurrentPVName(), widget.propWaypointCurrent()));
+            this, widget.propWaypointCurrentLonPVName(), widget.propWaypointCurrentLon()));
     bindings.add(
-        new PVNameToValueBinding(this, widget.propWaypointBPVName(), widget.propWaypointB()));
+        new PVNameToValueBinding(
+            this, widget.propWaypointCurrentLatPVName(), widget.propWaypointCurrentLon()));
+    bindings.add(
+        new PVNameToValueBinding(this, widget.propWaypointBLonPVName(), widget.propWaypointBLon()));
+    bindings.add(
+        new PVNameToValueBinding(this, widget.propWaypointBLatPVName(), widget.propWaypointBLat()));
     //        bindMarker( widget.propWaypointBPVName(), marker.value());
     //        bindMarker();
     //        for (MarkerProperty marker : widget.propMarkers().getValue())

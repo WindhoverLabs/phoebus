@@ -37,7 +37,6 @@ public class WaypointRepresentation extends RegionBaseRepresentation<Pane, Waypo
 
   @Override
   public Pane createJFXNode() throws Exception {
-    System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$-----1");
     tank = new RTTank();
     waypoint = new Waypointpath();
     tank.setUpdateThrottle(Preferences.image_update_delay, TimeUnit.MILLISECONDS);
@@ -58,10 +57,13 @@ public class WaypointRepresentation extends RegionBaseRepresentation<Pane, Waypo
     model_widget.propForeground().addUntypedPropertyListener(lookListener);
     model_widget.propBackground().addUntypedPropertyListener(lookListener);
 
-    model_widget.propWaypointA().addUntypedPropertyListener(valueListener);
-    model_widget.propWaypointB().addUntypedPropertyListener(valueListener);
-    model_widget.propWaypointCurrent().addUntypedPropertyListener(valueListener);
-    valueChanged(null, null, null);
+    model_widget.propWaypointALon().addUntypedPropertyListener(valueListener);
+    model_widget.propWaypointALat().addUntypedPropertyListener(valueListener);
+    model_widget.propWaypointBLon().addUntypedPropertyListener(valueListener);
+    model_widget.propWaypointBLat().addUntypedPropertyListener(valueListener);
+    model_widget.propWaypointCurrentLon().addUntypedPropertyListener(valueListener);
+    model_widget.propWaypointCurrentLat().addUntypedPropertyListener(valueListener);
+    //    valueChanged(null, null, null);
   }
 
   @Override
@@ -71,9 +73,12 @@ public class WaypointRepresentation extends RegionBaseRepresentation<Pane, Waypo
     model_widget.propFillColor().removePropertyListener(lookListener);
     model_widget.propScaleVisible().removePropertyListener(lookListener);
 
-    model_widget.propWaypointA().removePropertyListener(valueListener);
-    model_widget.propWaypointB().removePropertyListener(valueListener);
-    model_widget.propWaypointCurrent().removePropertyListener(valueListener);
+    model_widget.propWaypointALon().removePropertyListener(valueListener);
+    model_widget.propWaypointALat().removePropertyListener(valueListener);
+    model_widget.propWaypointBLon().removePropertyListener(valueListener);
+    model_widget.propWaypointBLat().removePropertyListener(valueListener);
+    model_widget.propWaypointCurrentLon().removePropertyListener(valueListener);
+    model_widget.propWaypointCurrentLat().removePropertyListener(valueListener);
     super.unregisterListeners();
   }
 
@@ -86,26 +91,22 @@ public class WaypointRepresentation extends RegionBaseRepresentation<Pane, Waypo
   private void valueChanged(
       final WidgetProperty<?> property, final Object old_value, final Object new_value) {
 
-    double value = 0;
+    final VType vtypeCurrentLon = model_widget.propWaypointCurrentLon().getValue();
+    final VType vtypeCurrentLat = model_widget.propWaypointCurrentLat().getValue();
+    final VType vtypePrevLon = model_widget.propWaypointALon().getValue();
+    final VType vtypePrevtLat = model_widget.propWaypointALat().getValue();
+    final VType vtypeNextLon = model_widget.propWaypointBLon().getValue();
+    final VType vtypeNextLat = model_widget.propWaypointBLat().getValue();
 
-    final VType vtype = model_widget.propWaypointCurrent().getValue();
-
-    double min_val =
-        VTypeUtil.getValueNumber(model_widget.propWaypointA().getValue()).doubleValue();
-    double max_val =
-        VTypeUtil.getValueNumber(model_widget.propWaypointB().getValue()).doubleValue();
-    tank.setRange(min_val, max_val);
-
-    if (toolkit.isEditMode()) {
-      value = (min_val + max_val) / 2;
-    } else {
-      value = VTypeUtil.getValueNumber(vtype).doubleValue();
-    }
-
-    tank.setValue(value);
+    waypoint.updateWaypoints(
+        VTypeUtil.getValueNumber(vtypeCurrentLon).doubleValue(),
+        VTypeUtil.getValueNumber(vtypeCurrentLat).doubleValue(),
+        VTypeUtil.getValueNumber(vtypePrevLon).doubleValue(),
+        VTypeUtil.getValueNumber(vtypePrevtLat).doubleValue(),
+        VTypeUtil.getValueNumber(vtypeNextLon).doubleValue(),
+        VTypeUtil.getValueNumber(vtypeNextLat).doubleValue());
 
     waypoint.requestUpdate();
-    waypoint.setRange(min_val, max_val);
   }
 
   @Override

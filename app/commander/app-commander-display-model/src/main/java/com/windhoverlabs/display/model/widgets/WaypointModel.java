@@ -33,9 +33,9 @@ import org.epics.vtype.VString;
 import org.epics.vtype.VType;
 
 /**
- * Widget that displays a tank with variable fill level
+ * Widget that displays a waypoint. Useful for visualizing aircraft such as drones, fixedwings, etc
  *
- * @author Kay Kasemir
+ * @author Lorenzo Gomez
  */
 @SuppressWarnings("nls")
 public class WaypointModel extends VisibleWidget {
@@ -54,35 +54,68 @@ public class WaypointModel extends VisibleWidget {
           Alarm.of(AlarmSeverity.NONE, AlarmStatus.CLIENT, Messages.ValueNoPV),
           Time.of(Instant.ofEpochSecond(0), 0, false));
 
-  private volatile WidgetProperty<String> waypoint_a_pv_name;
-  private volatile WidgetProperty<String> waypoint_current_pv_name;
-  private volatile WidgetProperty<String> waypoint_b_pv_name;
-  private volatile WidgetProperty<VType> waypoint_a_pv_value;
-  private volatile WidgetProperty<VType> waypoint_current_pv_value;
-  private volatile WidgetProperty<VType> waypoint_b_pv_value;
+  private volatile WidgetProperty<String> waypoint_a_lon_pv_name;
+  private volatile WidgetProperty<String> waypoint_a_lat_pv_name;
+  private volatile WidgetProperty<String> waypoint_current_lon_pv_name;
+  private volatile WidgetProperty<String> waypoint_current_lat_pv_name;
+  private volatile WidgetProperty<String> waypoint_b_lon_pv_name;
+  private volatile WidgetProperty<String> waypoint_b_lat_pv_name;
+  private volatile WidgetProperty<VType> waypoint_a_lon_pv_value;
+  private volatile WidgetProperty<VType> waypoint_a_lat_pv_value;
+  private volatile WidgetProperty<VType> waypoint_current_lon_pv_value;
+  private volatile WidgetProperty<VType> waypoint_current_lat_pv_value;
+  private volatile WidgetProperty<VType> waypoint_b_lon_pv_value;
+  private volatile WidgetProperty<VType> waypoint_b_lat_pv_value;
   private volatile WidgetProperty<Boolean> alarm_border;
 
   private volatile WidgetProperty<WidgetFont> font;
   private volatile WidgetProperty<WidgetColor> foreground;
   private volatile WidgetProperty<WidgetColor> background;
 
-  private static final WidgetPropertyDescriptor<VType> WaypointA =
-      CommonWidgetProperties.newRuntimeValue("waypointA", Messages.WidgetProperties_Value);
-  public static final WidgetPropertyDescriptor<VType> WaypointCurrent =
-      CommonWidgetProperties.newRuntimeValue("waypointCurrent", Messages.WidgetProperties_Value);
-  public static final WidgetPropertyDescriptor<VType> WaypointB =
-      CommonWidgetProperties.newRuntimeValue("waypointB", Messages.WidgetProperties_Value);
+  private static final WidgetPropertyDescriptor<VType> WaypointALon =
+      CommonWidgetProperties.newRuntimeValue("waypointALon", Messages.WidgetProperties_Value);
+  private static final WidgetPropertyDescriptor<VType> WaypointALat =
+      CommonWidgetProperties.newRuntimeValue("waypointALat", Messages.WidgetProperties_Value);
+  public static final WidgetPropertyDescriptor<VType> WaypointCurrentLon =
+      CommonWidgetProperties.newRuntimeValue("waypointCurrentLon", Messages.WidgetProperties_Value);
+  public static final WidgetPropertyDescriptor<VType> WaypointCurrentLat =
+      CommonWidgetProperties.newRuntimeValue("waypointCurrentLat", Messages.WidgetProperties_Value);
+  public static final WidgetPropertyDescriptor<VType> WaypointBLon =
+      CommonWidgetProperties.newRuntimeValue("waypointBLon", Messages.WidgetProperties_Value);
+  public static final WidgetPropertyDescriptor<VType> WaypointBLat =
+      CommonWidgetProperties.newRuntimeValue("waypointBLat", Messages.WidgetProperties_Value);
 
-  public static final WidgetPropertyDescriptor<String> WaypointAName =
-      CommonWidgetProperties.newPVNamePropertyDescriptor(
-          WidgetPropertyCategory.WIDGET, "waypoint_a_pv_name", Messages.WidgetProperties_PVName);
-  public static final WidgetPropertyDescriptor<String> WaypointBName =
-      CommonWidgetProperties.newPVNamePropertyDescriptor(
-          WidgetPropertyCategory.WIDGET, "waypoint_b_pv_name", Messages.WidgetProperties_PVName);
-  public static final WidgetPropertyDescriptor<String> WaypointCurrentName =
+  public static final WidgetPropertyDescriptor<String> WaypointALonName =
       CommonWidgetProperties.newPVNamePropertyDescriptor(
           WidgetPropertyCategory.WIDGET,
-          "waypoint_current_pv_name",
+          "waypoint_a_lon_pv_name",
+          Messages.WidgetProperties_PVName);
+  public static final WidgetPropertyDescriptor<String> WaypointALatName =
+      CommonWidgetProperties.newPVNamePropertyDescriptor(
+          WidgetPropertyCategory.WIDGET,
+          "waypoint_a_lat_pv_name",
+          Messages.WidgetProperties_PVName);
+
+  public static final WidgetPropertyDescriptor<String> WaypointLonBName =
+      CommonWidgetProperties.newPVNamePropertyDescriptor(
+          WidgetPropertyCategory.WIDGET,
+          "waypoint_b_lon_pv_name",
+          Messages.WidgetProperties_PVName);
+  public static final WidgetPropertyDescriptor<String> WaypointLatBName =
+      CommonWidgetProperties.newPVNamePropertyDescriptor(
+          WidgetPropertyCategory.WIDGET,
+          "waypoint_b_lat_pv_name",
+          Messages.WidgetProperties_PVName);
+  public static final WidgetPropertyDescriptor<String> WaypointCurrentLonName =
+      CommonWidgetProperties.newPVNamePropertyDescriptor(
+          WidgetPropertyCategory.WIDGET,
+          "waypoint_current_lon_pv_name",
+          Messages.WidgetProperties_PVName);
+
+  public static final WidgetPropertyDescriptor<String> WaypointCurrentLatName =
+      CommonWidgetProperties.newPVNamePropertyDescriptor(
+          WidgetPropertyCategory.WIDGET,
+          "waypoint_current_lat_pv_name",
           Messages.WidgetProperties_PVName);
 
   /** Widget descriptor */
@@ -126,13 +159,26 @@ public class WaypointModel extends VisibleWidget {
                 this, WidgetColorService.getColor(NamedWidgetColors.READ_BACKGROUND)));
     properties.add(fill_color = propFillColor.createProperty(this, new WidgetColor(0, 0, 255)));
     properties.add(scale_visible = propScaleVisible.createProperty(this, true));
-    properties.add(waypoint_a_pv_value = WaypointA.createProperty(this, null));
-    properties.add(waypoint_b_pv_value = WaypointB.createProperty(this, null));
-    properties.add(waypoint_current_pv_value = WaypointCurrent.createProperty(this, null));
-    properties.add(waypoint_a_pv_name = WaypointAName.createProperty(this, "WaypointAName"));
+    properties.add(waypoint_a_lon_pv_value = WaypointALon.createProperty(this, null));
+    properties.add(waypoint_a_lat_pv_value = WaypointALat.createProperty(this, null));
+    properties.add(waypoint_b_lon_pv_value = WaypointBLon.createProperty(this, null));
+    properties.add(waypoint_b_lat_pv_value = WaypointBLat.createProperty(this, null));
+    properties.add(waypoint_current_lon_pv_value = WaypointCurrentLon.createProperty(this, null));
+    properties.add(waypoint_current_lat_pv_value = WaypointCurrentLat.createProperty(this, null));
     properties.add(
-        waypoint_current_pv_name = WaypointCurrentName.createProperty(this, "WaypointCurrentName"));
-    properties.add(waypoint_b_pv_name = WaypointBName.createProperty(this, "WaypointBName"));
+        waypoint_a_lon_pv_name = WaypointALonName.createProperty(this, "WaypointALonName"));
+    properties.add(
+        waypoint_a_lat_pv_name = WaypointALatName.createProperty(this, "WaypointALatName"));
+    properties.add(
+        waypoint_current_lon_pv_name =
+            WaypointCurrentLonName.createProperty(this, "WaypointCurrentLonName"));
+    properties.add(
+        waypoint_current_lat_pv_name =
+            WaypointCurrentLatName.createProperty(this, "WaypointCurrentLatName"));
+    properties.add(
+        waypoint_b_lon_pv_name = WaypointLonBName.createProperty(this, "WaypointBLonName"));
+    properties.add(
+        waypoint_b_lat_pv_name = WaypointLatBName.createProperty(this, "WaypointBLatName"));
     properties.add(alarm_border = propBorderAlarmSensitive.createProperty(this, true));
   }
 
@@ -148,33 +194,61 @@ public class WaypointModel extends VisibleWidget {
   }
 
   /** @return 'minimum' property */
-  public WidgetProperty<VType> propWaypointA() {
-    return waypoint_a_pv_value;
-  }
-
-  /** @return 'maximum' property */
-  public WidgetProperty<VType> propWaypointB() {
-    return waypoint_b_pv_value;
-  }
-
-  /** @return 'maximum' property */
-  public WidgetProperty<VType> propWaypointCurrent() {
-    return waypoint_current_pv_value;
+  public WidgetProperty<VType> propWaypointALon() {
+    return waypoint_a_lon_pv_value;
   }
 
   /** @return 'minimum' property */
-  public WidgetProperty<String> propWaypointAPVName() {
-    return waypoint_a_pv_name;
+  public WidgetProperty<VType> propWaypointALat() {
+    return waypoint_a_lat_pv_value;
   }
 
   /** @return 'maximum' property */
-  public WidgetProperty<String> propWaypointBPVName() {
-    return waypoint_b_pv_name;
+  public WidgetProperty<VType> propWaypointBLon() {
+    return waypoint_b_lon_pv_value;
+  }
+  /** @return 'maximum' property */
+  public WidgetProperty<VType> propWaypointBLat() {
+    return waypoint_b_lat_pv_value;
   }
 
   /** @return 'maximum' property */
-  public WidgetProperty<String> propWaypointCurrentPVName() {
-    return waypoint_current_pv_name;
+  public WidgetProperty<VType> propWaypointCurrentLon() {
+    return waypoint_current_lon_pv_value;
+  }
+
+  /** @return 'maximum' property */
+  public WidgetProperty<VType> propWaypointCurrentLat() {
+    return waypoint_current_lat_pv_value;
+  }
+
+  /** @return 'minimum' property */
+  public WidgetProperty<String> propWaypointALonPVName() {
+    return waypoint_a_lon_pv_name;
+  }
+
+  /** @return 'minimum' property */
+  public WidgetProperty<String> propWaypointALatPVName() {
+    return waypoint_a_lat_pv_name;
+  }
+
+  /** @return 'maximum' property */
+  public WidgetProperty<String> propWaypointBLonPVName() {
+    return waypoint_b_lon_pv_name;
+  }
+
+  /** @return 'maximum' property */
+  public WidgetProperty<String> propWaypointBLatPVName() {
+    return waypoint_b_lat_pv_name;
+  }
+
+  /** @return 'maximum' property */
+  public WidgetProperty<String> propWaypointCurrentLonPVName() {
+    return waypoint_current_lon_pv_name;
+  }
+  /** @return 'maximum' property */
+  public WidgetProperty<String> propWaypointCurrentLatPVName() {
+    return waypoint_current_lat_pv_name;
   }
 
   @Override
