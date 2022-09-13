@@ -281,7 +281,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
         break;
       case SINT32:
         {
-          yamcsValues.add(Integer.toString(parameter.getEngValue().getUint32Value()));
+          yamcsValues.add(Integer.toString(parameter.getEngValue().getSint32Value()));
           valueType = VInt.class;
           break;
         }
