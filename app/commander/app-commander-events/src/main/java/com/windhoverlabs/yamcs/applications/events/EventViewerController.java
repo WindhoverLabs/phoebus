@@ -47,6 +47,8 @@ public class EventViewerController {
   private String currentServer = "sitl";
   private String currentInstance = "yamcs-cfs";
 
+  YamcsAware yamcsListener = null;
+
   @FXML private GridPane gridPane;
 
   @FXML private ToggleButton scrollLockButton;
@@ -144,7 +146,7 @@ public class EventViewerController {
             sourceCol,
             instanceCol);
 
-    YamcsAware yamcsListener =
+    yamcsListener =
         new YamcsAware() {
           public void changeDefaultInstance() {
             YamcsObjectManager.getDefaultInstance()
@@ -187,6 +189,7 @@ public class EventViewerController {
           }
 
           public void onInstancesReady(YamcsServer s) {
+            System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$onInstancesReady$$$$$$$$$$$$$$$$$$");
             if (s.getDefaultInstance() != null) {
               s.getDefaultInstance()
                   .getEvents()
@@ -209,14 +212,18 @@ public class EventViewerController {
         };
 
     YamcsObjectManager.addYamcsListener(yamcsListener);
-    for (YamcsServer s : YamcsObjectManager.getRoot().getItems()) {
-      s.addListener(yamcsListener);
-    }
+
+    System.out.println("items part of root-->" + YamcsObjectManager.getRoot().getItems());
+    //    for (YamcsServer s : YamcsObjectManager.getRoot().getItems()) {
+    //      s.addListener(yamcsListener);
+    //    }
 
     gridPane.add(tableView, 0, 1);
   }
 
-  public EventViewerController() {}
+  public EventViewerController() {
+    System.out.println("EventViewerController constructor$$$$$$$$$$$$$$");
+  }
 
   private ObservableList<CMDR_Event> generateEvents(int numberOfEvents) {
     ObservableList<CMDR_Event> events = FXCollections.observableArrayList();
@@ -233,5 +240,9 @@ public class EventViewerController {
               "FAKE_INSTANCE"));
     }
     return events;
+  }
+
+  public void unInit() {
+    YamcsObjectManager.removeListener(yamcsListener);
   }
 }

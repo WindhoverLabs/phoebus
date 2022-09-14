@@ -89,7 +89,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
               if (exc == null) {
                 for (YamcsInstance instance : response) {
                   createAndAddChild(instance.getName());
-
+                  System.out.println("whenComplete1-$$$$$$$$$$");
                   // TODO:Don't really like doing this here...We should either make
                   // YamcsObjectManager
                   // package-private or move all of the code from YamcsObjectManager to this class.
@@ -172,6 +172,8 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
             (response, exc) -> {
               if (exc == null) {
                 for (YamcsInstance instance : response) {
+                  System.out.println("whenComplete2-$$$$$$$$$$");
+                  System.out.println("listeners-->" + listeners.toString());
                   createAndAddChild(instance.getName());
 
                   // TODO:Don't really like doing this here...We should either make
