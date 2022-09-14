@@ -11,6 +11,7 @@ import static java.util.Map.entry;
 
 import com.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget;
 import com.windhoverlabs.display.model.widgets.WHTextUpdateWidget;
+import com.windhoverlabs.display.model.widgets.WaypointModel;
 import java.util.Map;
 import org.csstudio.display.builder.model.WidgetDescriptor;
 import org.csstudio.display.builder.representation.WidgetRepresentation;
@@ -37,6 +38,9 @@ public class BaseWidgetRepresentations implements WidgetRepresentationsService {
             () -> (WidgetRepresentation) new WHTextUpdateRepresentation()),
         entry(
             CommanderCommandActionButtonWidget.WIDGET_DESCRIPTOR,
-            () -> (WidgetRepresentation) new CommanderActionButtonRepresentation()));
+            () -> (WidgetRepresentation) new CommanderActionButtonRepresentation()),
+        entry(
+            WaypointModel.WIDGET_DESCRIPTOR,
+            () -> (WidgetRepresentation) new WaypointRepresentation()));
   }
 }
