@@ -57,6 +57,9 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   }
 
   public void addListener(YamcsAware newListener) {
+    if (serverState == ConnectionState.CONNECTED) {
+      newListener.onInstancesReady(this);
+    }
     listeners.add(newListener);
   }
 
@@ -102,7 +105,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
                   getItems().get(getItems().size() - 1).activate(yamcsClient, getName());
 
                   for (YamcsAware l : listeners) {
-                    l.onInstancesReady();
+                    l.onInstancesReady(this);
                   }
                 }
               }
@@ -183,7 +186,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
                   getItems().get(getItems().size() - 1).activate(yamcsClient, getName());
 
                   for (YamcsAware l : listeners) {
-                    l.onInstancesReady();
+                    l.onInstancesReady(this);
                   }
                 }
               }

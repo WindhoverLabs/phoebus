@@ -1,5 +1,6 @@
 package com.windhoverlabs.pv.yamcs;
 
+import com.windhoverlabs.yamcs.core.YamcsServer;
 import java.time.Instant;
 import org.yamcs.protobuf.Mdb.SignificanceInfo.SignificanceLevelType;
 import org.yamcs.protobuf.ProcessorInfo;
@@ -14,8 +15,9 @@ public interface YamcsAware {
     changeDefaultInstance();
   }
 
-  default void onInstancesReady() {}
-  ;
+  // TODO:It might worth considering passing the YamcsServer/YamcsInstance object to the
+  // implementors of this function
+  default void onInstancesReady(YamcsServer s) {}
 
   default void onYamcsConnecting() {}
 
@@ -23,6 +25,8 @@ public interface YamcsAware {
   default void onYamcsConnectionFailed(Throwable t) {}
 
   /** Called when we the global connection to yamcs was succesfully established */
+  // TODO:It might worth considering passing the YamcsServer/YamcsInstance object to the
+  // implementors of this function
   default void onYamcsConnected() {}
 
   /** Called when the yamcs is connection went lost */
