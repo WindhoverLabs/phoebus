@@ -76,7 +76,7 @@ public class YamcsPVFactory implements PVFactory {
       log.warning(String.format("Instance not found for \"%s\" server", serverPath));
       return false;
     }
-
+    
     pvInstance.subscribePV((YamcsPV) pv);
 
     return true;
@@ -216,6 +216,12 @@ public class YamcsPVFactory implements PVFactory {
   public static Collection<YamcsPV> getLocalPVs() {
     synchronized (yamcs_pvs) {
       return yamcs_pvs.values();
+    }
+  }
+
+  static void clearPVs() {
+    synchronized (yamcs_pvs) {
+      yamcs_pvs.clear();
     }
   }
 
