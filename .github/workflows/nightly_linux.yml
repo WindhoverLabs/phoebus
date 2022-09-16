@@ -24,7 +24,7 @@ jobs:
     - name: Tag Repo
       uses: richardsimko/update-tag@v1
       with:
-        tag_name: commander-0.1.0
+        tag_name: Commander-nightly-build
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
