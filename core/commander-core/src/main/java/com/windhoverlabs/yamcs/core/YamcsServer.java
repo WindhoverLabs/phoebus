@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import org.yamcs.client.ClientException;
 import org.yamcs.client.ConnectionListener;
 import org.yamcs.client.YamcsClient;
@@ -128,7 +131,19 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
             }
 
             @Override
-            public void disconnected() {}
+            public void disconnected() {
+
+              switch (serverState) {
+                case DISCONNECTED:
+                  break;
+                case CONNECTED:
+                  // This means we disconnected prematurely
+                  log.warning("Error on disconnect");
+                  disconnect();
+                  errorDisconnectedDialog();
+                  break;
+              }
+            }
 
             @Override
             public void connectionFailed(Throwable cause) {
@@ -202,15 +217,28 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
               } catch (InterruptedException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                return;
               } catch (ExecutionException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+                return;
               }
               init();
             }
 
             @Override
-            public void disconnected() {}
+            public void disconnected() {
+              switch (serverState) {
+                case DISCONNECTED:
+                  break;
+                case CONNECTED:
+                  // This means we disconnected prematurely
+                  log.warning("Error on disconnect");
+                  disconnect();
+                  errorDisconnectedDialog();
+                  break;
+              }
+            }
 
             @Override
             public void connectionFailed(Throwable cause) {
@@ -222,6 +250,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
     } catch (ClientException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
+      errorDisconnectedDialog();
       return false;
     }
 
@@ -247,7 +276,10 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   public void disconnect() {
     unInit();
     serverState = ConnectionState.DISCONNECTED;
-    serverStateStrProperty.set(this.toString());
+    Platform.runLater(
+        () -> {
+          serverStateStrProperty.set(this.toString());
+        });
     // TODO: unInit resources such as event subscriptions, parameter subscriptions, etc
     if (yamcsClient != null) {
       yamcsClient.close();
@@ -322,5 +354,18 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
   private YamcsServer getObj() {
     return this;
+  }
+
+  private void errorDisconnectedDialog() {
+    Platform.runLater(
+        () -> {
+          Alert dialog = new Alert(AlertType.ERROR);
+          dialog.setContentText(
+              "Connection was ended prematurely.\n"
+                  + "This is most likely a bug or an incomtaible YAMCS version."
+                  + "To report a bug or get in touch with the dev team:"
+                  + "https://github.com/WindhoverLabs/phoebus");
+          dialog.showAndWait();
+        });
   }
 }
