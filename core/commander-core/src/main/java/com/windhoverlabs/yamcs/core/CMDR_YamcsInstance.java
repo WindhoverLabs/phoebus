@@ -88,6 +88,16 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
         SubscribeEventsRequest.newBuilder().setInstance(getName()).build());
   }
 
+  /**
+   * Initializes all of the subscriptions to the servers such as event and parameter subscriptions.
+   * Always call this AFTER the websocket connection to YAMCS has been established. Ideally inside
+   * the connected() method of a org.yamcs.client.ConnectionListener. Otherwise,
+   * one might cause a race between the time we "connect" via the websocket
+   * and the time we create these subscriptions.
+   *
+   * @param yamcsClient
+   * @param serverName
+   */
   public void activate(YamcsClient yamcsClient, String serverName) {
     initProcessorClient(yamcsClient);
     initYamcsSubscriptionService(yamcsClient, serverName);
@@ -98,6 +108,10 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   public void deActivate(YamcsClient yamcsClient, String serverName) {
     // TODO:unInit resources...
     instanceState = CMDR_YamcsInstanceState.DEACTIVATED;
+    if (eventSubscription != null) {
+      eventSubscription.cancel(true);
+      paramSubscriptionService.destroy();
+    }
   }
 
   public EventSubscription getEventSubscription() {
