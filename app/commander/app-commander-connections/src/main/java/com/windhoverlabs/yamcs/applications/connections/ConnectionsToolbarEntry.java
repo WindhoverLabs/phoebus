@@ -8,7 +8,7 @@ import org.phoebus.ui.spi.ToolbarEntry;
 public class ConnectionsToolbarEntry implements ToolbarEntry {
   @Override
   public String getName() {
-    return "FileBrowserApp.DisplayName";
+    return ConnectionsManagerApp.Name;
   }
 
   @Override
