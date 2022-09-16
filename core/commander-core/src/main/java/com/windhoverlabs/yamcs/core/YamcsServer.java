@@ -128,8 +128,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
             }
 
             @Override
-            public void disconnected() {
-            }
+            public void disconnected() {}
 
             @Override
             public void connectionFailed(Throwable cause) {
@@ -211,8 +210,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
             }
 
             @Override
-            public void disconnected() {
-            }
+            public void disconnected() {}
 
             @Override
             public void connectionFailed(Throwable cause) {

@@ -91,9 +91,9 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   /**
    * Initializes all of the subscriptions to the servers such as event and parameter subscriptions.
    * Always call this AFTER the websocket connection to YAMCS has been established. Ideally inside
-   * the connected() method of a org.yamcs.client.ConnectionListener. Otherwise,
-   * one might cause a race between the time we "connect" via the websocket
-   * and the time we create these subscriptions.
+   * the connected() method of a org.yamcs.client.ConnectionListener. Otherwise, one might cause a
+   * race between the time we "connect" via the websocket and the time we create these
+   * subscriptions.
    *
    * @param yamcsClient
    * @param serverName

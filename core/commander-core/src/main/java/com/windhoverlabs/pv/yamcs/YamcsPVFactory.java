@@ -76,7 +76,7 @@ public class YamcsPVFactory implements PVFactory {
       log.warning(String.format("Instance not found for \"%s\" server", serverPath));
       return false;
     }
-    
+
     pvInstance.subscribePV((YamcsPV) pv);
 
     return true;
