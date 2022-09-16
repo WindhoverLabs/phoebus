@@ -3,6 +3,7 @@ package com.windhoverlabs.yamcs.applications.events;
 import com.windhoverlabs.pv.yamcs.YamcsAware;
 import com.windhoverlabs.yamcs.core.CMDR_Event;
 import com.windhoverlabs.yamcs.core.YamcsObjectManager;
+import com.windhoverlabs.yamcs.core.YamcsServer;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -45,6 +46,8 @@ public class EventViewerController {
   // TODO:Eventually these will be in spinner nodes. These are the event filters.
   private String currentServer = "sitl";
   private String currentInstance = "yamcs-cfs";
+
+  YamcsAware yamcsListener = null;
 
   @FXML private GridPane gridPane;
 
@@ -143,7 +146,7 @@ public class EventViewerController {
             sourceCol,
             instanceCol);
 
-    YamcsAware yamcsListener =
+    yamcsListener =
         new YamcsAware() {
           public void changeDefaultInstance() {
             YamcsObjectManager.getDefaultInstance()
@@ -163,14 +166,64 @@ public class EventViewerController {
             tableView.setItems(YamcsObjectManager.getDefaultInstance().getEvents());
             tableView.refresh();
           }
+
+          public void onYamcsConnected() {
+            if (YamcsObjectManager.getDefaultInstance() != null) {
+              YamcsObjectManager.getDefaultInstance()
+                  .getEvents()
+                  .addListener(
+                      new ListChangeListener<Object>() {
+                        @Override
+                        public void onChanged(Change<?> c) {
+                          Platform.runLater(
+                              () -> {
+                                if (!scrollLockButton.isSelected()) {
+                                  tableView.scrollTo(tableView.getItems().size() - 1);
+                                }
+                              });
+                        }
+                      });
+              tableView.setItems(YamcsObjectManager.getDefaultInstance().getEvents());
+              tableView.refresh();
+            }
+          }
+
+          public void onInstancesReady(YamcsServer s) {
+            System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$onInstancesReady$$$$$$$$$$$$$$$$$$");
+            if (s.getDefaultInstance() != null) {
+              s.getDefaultInstance()
+                  .getEvents()
+                  .addListener(
+                      new ListChangeListener<Object>() {
+                        @Override
+                        public void onChanged(Change<?> c) {
+                          Platform.runLater(
+                              () -> {
+                                if (!scrollLockButton.isSelected()) {
+                                  tableView.scrollTo(tableView.getItems().size() - 1);
+                                }
+                              });
+                        }
+                      });
+              tableView.setItems(YamcsObjectManager.getDefaultInstance().getEvents());
+              tableView.refresh();
+            }
+          }
         };
 
     YamcsObjectManager.addYamcsListener(yamcsListener);
 
+    System.out.println("items part of root-->" + YamcsObjectManager.getRoot().getItems());
+    //    for (YamcsServer s : YamcsObjectManager.getRoot().getItems()) {
+    //      s.addListener(yamcsListener);
+    //    }
+
     gridPane.add(tableView, 0, 1);
   }
 
-  public EventViewerController() {}
+  public EventViewerController() {
+    System.out.println("EventViewerController constructor$$$$$$$$$$$$$$");
+  }
 
   private ObservableList<CMDR_Event> generateEvents(int numberOfEvents) {
     ObservableList<CMDR_Event> events = FXCollections.observableArrayList();
@@ -187,5 +240,9 @@ public class EventViewerController {
               "FAKE_INSTANCE"));
     }
     return events;
+  }
+
+  public void unInit() {
+    YamcsObjectManager.removeListener(yamcsListener);
   }
 }

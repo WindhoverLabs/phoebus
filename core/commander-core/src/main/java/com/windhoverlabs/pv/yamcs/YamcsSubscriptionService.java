@@ -56,6 +56,11 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
   private Map<NamedObjectId, Set<YamcsPV>> pvsById = new LinkedHashMap<>();
 
   private ParameterSubscription subscription;
+
+  public ParameterSubscription getSubscription() {
+    return subscription;
+  }
+
   private AtomicBoolean subscriptionDirty = new AtomicBoolean(false);
   private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
@@ -184,7 +189,9 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
   }
 
   public void destroy() {
-    YamcsPlugin.removeListener(this);
+    subscription.cancel(true);
+    pvsById.clear();
+    YamcsPVFactory.clearPVs();
     executor.shutdown();
   }
 

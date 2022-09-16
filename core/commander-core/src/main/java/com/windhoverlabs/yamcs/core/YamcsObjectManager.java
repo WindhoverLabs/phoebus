@@ -119,7 +119,15 @@ public final class YamcsObjectManager {
   }
 
   public static void addYamcsListener(YamcsAware newListener) {
+    System.out.println("addYamcsListener on YamcsServer");
     listeners.add(newListener);
+    if (defaultInstance != null) {
+      newListener.changeDefaultInstance();
+    }
+    System.out.println("addYamcsListener listeners-->" + listeners);
+    //  for (YamcsServer s : YamcsObjectManager.getRoot().getItems()) {
+    //  s.addListener(yamcsListener);
+    // }
   }
 
   /**
@@ -152,5 +160,9 @@ public final class YamcsObjectManager {
       }
     }
     return outServer;
+  }
+
+  public static void removeListener(YamcsAware l) {
+    listeners.remove(l);
   }
 }

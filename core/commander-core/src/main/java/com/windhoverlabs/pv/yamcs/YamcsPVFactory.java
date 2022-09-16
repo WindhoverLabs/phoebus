@@ -219,6 +219,12 @@ public class YamcsPVFactory implements PVFactory {
     }
   }
 
+  static void clearPVs() {
+    synchronized (yamcs_pvs) {
+      yamcs_pvs.clear();
+    }
+  }
+
   public static String extractServerName(String pvName) {
     return pvName.split(":")[0];
   }

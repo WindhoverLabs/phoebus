@@ -2,6 +2,8 @@ package com.windhoverlabs.yamcs.core;
 
 import com.windhoverlabs.pv.yamcs.YamcsAware;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -57,6 +59,9 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   }
 
   public void addListener(YamcsAware newListener) {
+    if (serverState == ConnectionState.CONNECTED) {
+      newListener.onInstancesReady(this);
+    }
     listeners.add(newListener);
   }
 
@@ -79,35 +84,6 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
       }
     }
 
-    yamcsClient
-        .listInstances()
-        .whenComplete(
-            (response, exc) -> {
-              if (exc == null) {
-                for (YamcsInstance instance : response) {
-                  createAndAddChild(instance.getName());
-
-                  // TODO:Don't really like doing this here...We should either make
-                  // YamcsObjectManager
-                  // package-private or move all of the code from YamcsObjectManager to this class.
-                  //                  if (YamcsObjectManager.getDefaultInstance() != null
-                  //                      && YamcsObjectManager.getDefaultInstance()
-                  //                          .getName()
-                  //                          .equals(instance.getName())) {
-                  //                    YamcsObjectManager.setDefaultInstance(
-                  //                        getName(),
-                  // YamcsObjectManager.getDefaultInstance().getName());
-                  //                  }
-
-                  getItems().get(getItems().size() - 1).activate(yamcsClient, getName());
-
-                  for (YamcsAware l : listeners) {
-                    l.onInstancesReady();
-                  }
-                }
-              }
-            });
-
     try {
       yamcsClient.addConnectionListener(
           new ConnectionListener() {
@@ -119,13 +95,40 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
             @Override
             public void connected() {
+
+              try {
+                List<YamcsInstance> instances = yamcsClient.listInstances().get();
+                for (YamcsInstance instance : instances) {
+                  createAndAddChild(instance.getName());
+
+                  // TODO:Don't really like doing this here...We should either make
+                  // YamcsObjectManager
+                  // package-private or move all of the code from YamcsObjectManager to this class.
+                  if (YamcsObjectManager.getDefaultInstanceName() != null
+                      && YamcsObjectManager.getDefaultInstanceName().equals(instance.getName())
+                      && YamcsObjectManager.getDefaultServerName().equals(getName())) {
+                    YamcsObjectManager.setDefaultInstance(getName(), instance.getName());
+                  }
+
+                  getItems().get(getItems().size() - 1).activate(yamcsClient, getName());
+
+                  for (YamcsAware l : listeners) {
+                    l.onInstancesReady(getObj());
+                  }
+                }
+              } catch (InterruptedException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+              } catch (ExecutionException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+              }
+
               init();
             }
 
             @Override
-            public void disconnected() {
-              disconnect();
-            }
+            public void disconnected() {}
 
             @Override
             public void connectionFailed(Throwable cause) {
@@ -151,6 +154,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
     if (yamcsClient != null) {
       yamcsClient.close();
     }
+
     yamcsClient = YamcsClient.newBuilder(connection.getUrl(), connection.getPort()).build();
 
     if (connection.getPassword() != null && connection.getUser() != null) {
@@ -163,32 +167,6 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
       }
     }
 
-    yamcsClient
-        .listInstances()
-        .whenComplete(
-            (response, exc) -> {
-              if (exc == null) {
-                for (YamcsInstance instance : response) {
-                  createAndAddChild(instance.getName());
-
-                  // TODO:Don't really like doing this here...We should either make
-                  // YamcsObjectManager
-                  // package-private or move all of the code from YamcsObjectManager to this class.
-                  if (YamcsObjectManager.getDefaultInstanceName() != null
-                      && YamcsObjectManager.getDefaultInstanceName().equals(instance.getName())
-                      && YamcsObjectManager.getDefaultServerName().equals(this.getName())) {
-                    YamcsObjectManager.setDefaultInstance(getName(), instance.getName());
-                  }
-
-                  getItems().get(getItems().size() - 1).activate(yamcsClient, getName());
-
-                  for (YamcsAware l : listeners) {
-                    l.onInstancesReady();
-                  }
-                }
-              }
-            });
-
     try {
       yamcsClient.addConnectionListener(
           new ConnectionListener() {
@@ -200,13 +178,39 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
             @Override
             public void connected() {
+
+              try {
+                List<YamcsInstance> instances = yamcsClient.listInstances().get();
+                for (YamcsInstance instance : instances) {
+                  createAndAddChild(instance.getName());
+
+                  // TODO:Don't really like doing this here...We should either make
+                  // YamcsObjectManager
+                  // package-private or move all of the code from YamcsObjectManager to this class.
+                  if (YamcsObjectManager.getDefaultInstanceName() != null
+                      && YamcsObjectManager.getDefaultInstanceName().equals(instance.getName())
+                      && YamcsObjectManager.getDefaultServerName().equals(getName())) {
+                    YamcsObjectManager.setDefaultInstance(getName(), instance.getName());
+                  }
+
+                  getItems().get(getItems().size() - 1).activate(yamcsClient, getName());
+
+                  for (YamcsAware l : listeners) {
+                    l.onInstancesReady(getObj());
+                  }
+                }
+              } catch (InterruptedException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+              } catch (ExecutionException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+              }
               init();
             }
 
             @Override
-            public void disconnected() {
-              disconnect();
-            }
+            public void disconnected() {}
 
             @Override
             public void connectionFailed(Throwable cause) {
@@ -229,8 +233,6 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
       instance.deActivate(yamcsClient, this.getName());
     }
     this.getItems().clear();
-    serverState = ConnectionState.DISCONNECTED;
-    serverStateStrProperty.set(this.toString());
   }
 
   private void init() {
@@ -243,11 +245,13 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   }
 
   public void disconnect() {
+    unInit();
+    serverState = ConnectionState.DISCONNECTED;
+    serverStateStrProperty.set(this.toString());
     // TODO: unInit resources such as event subscriptions, parameter subscriptions, etc
     if (yamcsClient != null) {
       yamcsClient.close();
     }
-    unInit();
   }
 
   public YamcsServerConnection getConnection() {
@@ -297,11 +301,6 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
               .build();
 
       if (newConnection.getPassword() != null && newConnection.getUser() != null) {
-        System.out.println(
-            "*************************************************:"
-                + newConnection.getPassword()
-                + "---"
-                + newConnection.getUser());
         yamcsClient.login(newConnection.getUser(), newConnection.getPassword().toCharArray());
       }
 
@@ -319,5 +318,9 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
   public final String toString() {
     return getName() + " | " + getServerState();
+  }
+
+  private YamcsServer getObj() {
+    return this;
   }
 }

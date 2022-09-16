@@ -31,10 +31,11 @@ public class EventViewerInstance implements AppInstance {
 
   static EventViewerInstance INSTANCE;
 
-  private final AppDescriptor app;
+  private FXMLLoader loader;
 
-  // TODO: Refactor Tree constructor since we don't need to pass the list of servers anymore.
-  private static EventViewerController eventLog = new EventViewerController();
+  private EventViewerController eventInstanceController = null;
+
+  private final AppDescriptor app;
 
   private DockItem tab = null;
 
@@ -48,6 +49,7 @@ public class EventViewerInstance implements AppInstance {
 
     try {
       content = loader.load();
+      eventInstanceController = loader.getController();
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -57,12 +59,9 @@ public class EventViewerInstance implements AppInstance {
     tab.addCloseCheck(
         () -> {
           INSTANCE = null;
+          eventInstanceController.unInit();
           return CompletableFuture.completedFuture(true);
         });
-  }
-
-  public static EventViewerController getEventLog() {
-    return eventLog;
   }
 
   @Override
@@ -98,6 +97,10 @@ public class EventViewerInstance implements AppInstance {
 
   public void raise() {
     tab.select();
+  }
+
+  public EventViewerController getController() {
+    return eventInstanceController;
   }
 
   private static ObservableList<String> restoreEvents() {
