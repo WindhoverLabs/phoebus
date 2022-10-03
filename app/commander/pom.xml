@@ -170,6 +170,7 @@
 		<module>app-commander-display-representation-javafx</module>
 		<module>app-commander-display-runtime</module>
 		<module>app-commander-mission-planner</module>
+		<module>app-commander-command-options</module>
 	</modules>
 	<version>0.2.0-SNAPSHOT</version>
 	<groupId>com.windhoverlabs</groupId>
