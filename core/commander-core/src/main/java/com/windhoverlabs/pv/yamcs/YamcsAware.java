@@ -15,7 +15,7 @@ public interface YamcsAware {
     changeDefaultInstance();
   }
 
-  // TODO:It might worth considering passing the YamcsServer/YamcsInstance object to the
+  // TODO:It might be worth considering passing the YamcsServer/YamcsInstance object to the
   // implementors of this function
   default void onInstancesReady(YamcsServer s) {}
 

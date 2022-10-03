@@ -71,7 +71,8 @@ public class Yamcs {
    * <p>Yamcs.issueCommand('sitl:yamcs-cfs/YSS/SIMULATOR/SWITCH_VOLTAGE_ON', {"voltage_num": 1});
    * Yamcs.issueCommand('/YSS/SIMULATOR/SWITCH_VOLTAGE_ON', {"voltage_num": 1});
    */
-  public static void issueCommand(String command, Map<String, Object> args) {
+  public static void issueCommand(
+      String command, Map<String, Object> args, Map<String, Object> extraArgs) {
 
     if (command == null) {
       return;
@@ -108,11 +109,30 @@ public class Yamcs {
         processor
             .prepareCommand(command)
             .withSequenceNumber(YamcsPlugin.nextCommandSequenceNumber());
+
     if (args != null) {
       for (Entry<String, Object> arg : args.entrySet()) {
         builder.withArgument(arg.getKey(), String.valueOf(arg.getValue()));
       }
     }
+
+    //    if (extraArgs != null) {
+    //        for (Entry<String, Object> arg : extraArgs.entrySet()) {
+    //          builder.withExtra(arg.getKey(),String.valueOf(arg.getValue()));
+    //        }
+    //      }
+    //
+    //    AuthInfo authInfo = AuthHandler.createAuthInfo();
+    //    String authJson = JsonFormat.printer().print(authInfo);;
+    //
+    //    YamcsServer yamcs = YamcsServer.getServer();
+    //
+    //    List<Map<String, Object>> commandOptions = new ArrayList<>();
+    //    for (CommandOption option : yamcs.getCommandOptions()) {
+    //        String json = JsonFormat.printer().print(ServerApi.toCommandOptionInfo(option));
+    //        commandOptions.add(new Gson().fromJson(json, Map.class));
+    //    }
+    //
     builder.issue();
   }
 
@@ -129,14 +149,15 @@ public class Yamcs {
   }
 
   /* TODO: Expand the macros too. */
-  public static void issueCommand(Widget widget, String commandText, Map<String, Object> args) {
+  public static void issueCommand(
+      Widget widget, String commandText, Map<String, Object> args, Map<String, Object> extraArgs) {
     /* TODO: Finish this. */
     try {
       Macros macros = widget.getEffectiveMacros();
       String expanded_commandText = MacroHandler.replace(macros, commandText);
       expanded_commandText = YamcsPVFactory.sanitizePVName(expanded_commandText);
 
-      issueCommand(expanded_commandText, args);
+      issueCommand(expanded_commandText, args, extraArgs);
     } catch (Exception e) {
       // TODO
       log.warning("FINISH HIM!");

@@ -2,6 +2,7 @@ package com.windhoverlabs.yamcs.core;
 
 import com.windhoverlabs.pv.yamcs.YamcsAware;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
@@ -13,6 +14,8 @@ import javafx.scene.control.Alert.AlertType;
 import org.yamcs.client.ClientException;
 import org.yamcs.client.ConnectionListener;
 import org.yamcs.client.YamcsClient;
+import org.yamcs.protobuf.GetServerInfoResponse;
+import org.yamcs.protobuf.GetServerInfoResponse.CommandOptionInfo;
 import org.yamcs.protobuf.YamcsInstance;
 
 public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
@@ -27,6 +30,10 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   private ConnectionState serverState = ConnectionState.DISCONNECTED;
   private ArrayList<YamcsAware> listeners = new ArrayList<YamcsAware>();
   private StringProperty serverStateStrProperty = new SimpleStringProperty();
+
+  // Useful for "special" command link arguments such as cop1Bypass
+  private HashMap<String, CommandOptionInfo> extraCommandArgs =
+      new HashMap<String, CommandOptionInfo>();
 
   public StringProperty getServerStateStrProperty() {
     return serverStateStrProperty;
@@ -114,6 +121,11 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
                   }
 
                   getItems().get(getItems().size() - 1).activate(yamcsClient, getName());
+
+                  GetServerInfoResponse info = yamcsClient.getServerInfo().get();
+                  for (CommandOptionInfo o : info.getCommandOptionsList()) {
+                    extraCommandArgs.put(o.getId(), o);
+                  }
 
                   for (YamcsAware l : listeners) {
                     l.onInstancesReady(getObj());
@@ -209,6 +221,11 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
                   }
 
                   getItems().get(getItems().size() - 1).activate(yamcsClient, getName());
+
+                  GetServerInfoResponse info = yamcsClient.getServerInfo().get();
+                  for (CommandOptionInfo o : info.getCommandOptionsList()) {
+                    extraCommandArgs.put(o.getId(), o);
+                  }
 
                   for (YamcsAware l : listeners) {
                     l.onInstancesReady(getObj());
