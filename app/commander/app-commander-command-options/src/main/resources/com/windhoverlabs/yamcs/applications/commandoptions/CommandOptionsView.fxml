@@ -19,13 +19,13 @@
    <children>
       <HBox maxHeight="-Infinity" prefHeight="134.0" prefWidth="190.0" GridPane.rowIndex="1">
          <children>
-            <ToggleButton fx:id="scrollLockButton" mnemonicParsing="false" selected="true" styleClass=".play-button" text="Update" />
+            <ToggleButton fx:id="updateButton" mnemonicParsing="false" selected="true" styleClass=".play-button" text="Update" />
          </children>
       </HBox>
-      <TableView prefHeight="200.0" prefWidth="200.0">
+      <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0">
         <columns>
-          <TableColumn prefWidth="75.0" text="Option" />
-          <TableColumn prefWidth="75.0" text="Value" />
+          <TableColumn fx:id="optionColumn" prefWidth="75.0" text="Option" />
+          <TableColumn fx:id="valueColumn" prefWidth="114.0" text="Value" />
         </columns>
       </TableView>
    </children>
