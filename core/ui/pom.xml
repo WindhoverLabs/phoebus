@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.phoebus</groupId>
 		<artifactId>core</artifactId>
-		<version>4.6.6-SNAPSHOT</version>
+		<version>4.6.10-SNAPSHOT</version>
 	</parent>
 	<artifactId>core-ui</artifactId>
 	<dependencies>
@@ -39,7 +39,7 @@
     <version>jdk-11+26</version> <!-- jdk-11+26 for Java 11, jdk-9+181 for Java 9, 8u76-b04 for Java 8 -->
     <scope>test</scope>
 </dependency>
-		<!-- Include all JavaFX modules so single dependency on core-ui will provide 
+		<!-- Include all JavaFX modules so single dependency on core-ui will provide
 			all that's needed -->
 		<dependency>
 			<groupId>org.openjfx</groupId>
@@ -60,27 +60,27 @@
 		<dependency>
 			<groupId>org.phoebus</groupId>
 			<artifactId>core-framework</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
+			<version>4.6.10-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.phoebus</groupId>
 			<artifactId>core-types</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
+			<version>4.6.10-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.phoebus</groupId>
 			<artifactId>core-security</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
+			<version>4.6.10-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.phoebus</groupId>
 			<artifactId>core-util</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
+			<version>4.6.10-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.phoebus</groupId>
 			<artifactId>core-pv</artifactId>
-			<version>4.6.6-SNAPSHOT</version>
+			<version>4.6.10-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Support for SVG -->

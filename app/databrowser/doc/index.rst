@@ -35,8 +35,11 @@ To create a new plot:
 .. |databrowser| image:: images/icon_databrowser.png
 .. |add| image:: images/icon_add.png
 
+A plot may be saved to disk by selecting ``Save Snapshot`` context menu item, or by using keyboard shortcut
+CTRL + S (CMD + S on Mac OS). The default file extension for plot files is .plt.
 
-
+Note however that the Data Browser may be launched using an existing plot file which may be read-only (e.g. a
+remote file accessed over HTTP). In such cases a save operation will offer the user the option to save to a new file.
 
 Toolbar
 -------
@@ -108,7 +111,20 @@ then invoke |properties| ``Open Properties Panel``.
 .. |properties| image:: images/icon_properties.png
 
 The panel allows you to configure each trace, the time axis, the value axes,
-and miscellaneous settings.
+and miscellaneous settings. Changes performed in this panel will be persisted when the plot (.plt) file is saved.
+
+Runtime Properties Dialog
+-------------------------
+
+If enabled through the preference setting ``org.csstudio.trends.databrowser3/config_dialog_supported``, plot settings may
+also be changed using the runtime properties dialog. To launch the dialog, click on the plot area and then press letter "o":
+
+.. image:: images/runtime_properties_dialog.png
+   :width: 400
+
+**NOTE**: changes to the plot performed from the runtime properties dialog will not update the data model constructed
+from the underlying plot file. Consequently such changes are **not** persisted when the plot file is saved. To make
+sure plot properties are saved one must perform the changes in the property panel.
 
 Live Data Sampling 
 ^^^^^^^^^^^^^^^^^^

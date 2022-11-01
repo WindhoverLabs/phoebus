@@ -51,7 +51,7 @@ public class LogEntryTable implements AppInstance {
                         } else if (clazz.isAssignableFrom(SingleLogEntryDisplayController.class)) {
                             return clazz.getConstructor(LogClient.class).newInstance(app.getClient());
                         } else if (clazz.isAssignableFrom(LogEntryDisplayController.class)) {
-                            return clazz.getConstructor(LogClient.class).newInstance(app.getClient());
+                            return clazz.getConstructor().newInstance();
                         } else if (clazz.isAssignableFrom(LogPropertiesController.class)) {
                             return clazz.getConstructor().newInstance();
                         } else if (clazz.isAssignableFrom(AttachmentsPreviewController.class)) {
@@ -79,6 +79,9 @@ public class LogEntryTable implements AppInstance {
             loader.load();
             controller = loader.getController();
             DockItem tab = new DockItem(this, loader.getRoot());
+            tab.setOnClosed(event -> {
+                controller.shutdown();
+            });
             DockPane.getActiveDockPane().addTab(tab);
         } catch (IOException e) {
             log.log(Level.WARNING, "Cannot load UI", e);

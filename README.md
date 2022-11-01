@@ -9,7 +9,7 @@
 
 Phoebus is a framework and a collections of tools to monitor and operate large scale control systems, such as the ones in the accelerator community. Phoebus is an update of the Control System Studio toolset that removes dependencies on Eclipse RCP and SWT.
 
-[Compatible Yamcs Versions](#yamcs_versions) 
+[Compatible Yamcs Versions](#yamcs_versions)
 
 More information:
 https://control-system-studio.readthedocs.io
@@ -32,7 +32,7 @@ mvn clean verify -f dependencies/pom.xml
 
 ## Building with maven
 
-Define the JAVA_HOME environment variable to point to your Java installation directory. 
+Define the JAVA_HOME environment variable to point to your Java installation directory.
 Mac OS users should use something like:
 ```
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-11.0.5+10/Contents/Home
@@ -97,13 +97,13 @@ has been imported as a maven project into Eclipse(see instructions above):
 
 1. Open Eclipse
 2. Go to `Run->External Tools->External Run COnfigurations`
-3. Create a new `Program` configuration. Set location to `usr/bin/java` on linux. 
+3. Create a new `Program` configuration. Set location to `usr/bin/java` on linux.
    This is the location of the Java executable. For any other OS, it should not be too hard
    to find that directory.
 4. Set `Working Directory` to `phoebus/phoebus-product/target`.
 5. Set arguments to:
 ```
---add-opens java.base/jdk.internal.misc=ALL-UNNAMED -Dio.netty.tryReflectionSetAccessible=true 
+--add-opens java.base/jdk.internal.misc=ALL-UNNAMED -Dio.netty.tryReflectionSetAccessible=true
 -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar path_to_repo/phoebus/phoebus-product/target/product-4.6.6-SNAPSHOT.jar
 ```
 6. Click `Run`. The Eclipse console should output a port number. Write it down; we'll use it for
@@ -154,7 +154,6 @@ Can now start product/src/main/java/org.phoebus.product/Launcher.java.
 
 To import the project:
 
-* Start IntelliJ. Make sure to install the Lombok plugin.
 * Import Project
 * Select the Phoebus directory
 * Import project from external model: Maven
@@ -166,8 +165,9 @@ To run the Phoebus application:
 
 * Run | Edit Configurations...
 * Select + | Application
-* Search for main class and type Launcher
-* Use classpath of module: select product
+* Module: Your JRE 11
+* Classpath `-cp`: select `product` from drop-down
+* Main class: `org.phoebus.product.Launcher`
 * Set the name to Phoebus
 * Click OK
 * In the top right of the IDE, click the green play button
@@ -265,24 +265,39 @@ The remaining build is the same, for example `ant clean dist` to build the distr
 
 ## Release
 
-There is a release profile which helps prepare and deploy a phoebus release.
+The Phoebus release process can be used to create tagged releases of Phoebus and publish the Pheobus jars to maven central
+using the sonatype repositories.
+
+**Setup**
+
+Create a sonatype account and update the maven settings.xml file with your sonatype credentials
 
 ```
-mvn -P release release:prepare
+  <servers>
+   <server>
+      <id>phoebus-releases</id>
+      <username>shroffk</username>
+      <password>*******</password>
+   </server>
+  </servers>
 ```
 
-- Check that there are no uncommitted changes in the sources
-- Check that there are no SNAPSHOT dependencies
-- Change the version in the POMs from x-SNAPSHOT to a new version (you will be prompted for the versions to use)
-- Transform the SCM information in the POM to include the final destination of the tag
-- Run the project tests against the modified POMs to confirm everything is in working order
-- Commit the modified POMs
-- Tag the code in the SCM with a version name (this will be prompted for)
-- Bump the version in the POMs to a new value y-SNAPSHOT (these values will also be prompted for)
-- Commit the modified POMs
+**Prepare the release**  
+`mvn release:prepare`  
+In this step will ensure there are no uncommitted changes, ensure the versions number are correct, tag the scm, etc..
+A full list of checks is documented [here](https://maven.apache.org/maven-release/maven-release-plugin/examples/prepare-release.html):
 
-Additionally:
-- Before committing the changes, there is a script in the target platform `release_classpath.py` which will be executed. This script can be modified to updated the .classpath and other files which need manual intervention during a release.
+**Perform the release**  
+`mvn release:perform`  
+Checkout the release tag, build, sign and push the build binaries to sonatype.
+
+**Publish**  
+Open the staging repository in [sonatype](https://s01.oss.sonatype.org/#stagingRepositories) and hit the *publish* button
+
+**Note:**
+In order to keep the ant and maven builds in sync, before the prepare:release update the `version` in the
+dependencies\ant_settings.xml to match the release version number. After the release is completed the `version` should
+updated to match the next development snapshot version.
 
 
 ## Coding Style
@@ -297,5 +312,3 @@ The following table has all the yamcs versions that have been _tested_, along wi
 |---|---|
 | `0.1.0` | `5.5.4` `5.5.7` `5.4.3`|      
 | `0.2.0-SNAPSHOT` | `5.6.0` |
-
-

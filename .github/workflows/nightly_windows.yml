@@ -30,7 +30,7 @@ jobs:
       uses: svenstaro/upload-release-action@2.2.1
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: phoebus-product/target/product-4.6.6-SNAPSHOT.zip
+        file: phoebus-product/target/product-4.6.10-SNAPSHOT.zip
         asset_name: Commander_${{github.sha}}-SNAPSHOT-nightly-windows-x86_64.zip
         tag: Commander-nightly-build
         overwrite: true

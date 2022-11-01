@@ -74,8 +74,7 @@ public class ModelBasedPlot
     private final ReentrantReadWriteLock trace_lock = new InstrumentedReadWriteLock();
 
     /** Initialize plot
-     *  @param parent Parent widget
-     *  @throws Exception
+     *  @param active React to mouse?
      */
     public ModelBasedPlot(final boolean active)
     {
@@ -181,7 +180,7 @@ public class ModelBasedPlot
         return plot;
     }
 
-    /** Add a listener (currently only one supported) */
+    /** @param listener Listener to add (currently only one supported) */
     public void addListener(final PlotListener listener)
     {
         if (this.listener.isPresent())
@@ -189,12 +188,15 @@ public class ModelBasedPlot
         this.listener = Optional.of(listener);
     }
 
+    /** @return PlotListener */
     public PlotListener getListener()
     {
         return listener.orElse(null);
     }
 
-    /** Adding or removing traces requires a write lock */
+    /** Adding or removing traces requires a write lock
+     *  @return Was able to lock for writing?
+     */
     public boolean lockTracesForWriting()
     {
         try
@@ -215,7 +217,9 @@ public class ModelBasedPlot
         trace_lock.writeLock().unlock();;
     }
 
-    /** Read lock */
+    /** Read lock
+     *  @return Was able to lock for reading?
+     */
     public boolean lockTraces()
     {
         try
@@ -276,6 +280,9 @@ public class ModelBasedPlot
         return (plot.getYAxes().size() + 1);
     }
 
+    /** @param index Axis index
+     *  @return Axis
+     */
     public Axis<?> getPlotAxis(final int index)
     {
         if (index < plot.getYAxes().size())
@@ -412,9 +419,9 @@ public class ModelBasedPlot
 
     /** Update plot to given time range.
      *  Can be called from any thread.
-     *  @param scroll
-     *  @param start
-     *  @param end
+     *  @param scroll Enable scrolling?
+     *  @param start Start time
+     *  @param end End time
      */
     public void setTimeRange(final boolean scroll, final Instant start, final Instant end)
     {
@@ -459,5 +466,14 @@ public class ModelBasedPlot
     public void dispose()
     {
         plot.dispose();
+    }
+
+    /**
+     * Sets the <code>configDialogSupported</code> flag of the {@link org.csstudio.javafx.rtplot.RTPlot}.
+     * @param configDialogSupported <code>true</code> if the plot configuration dialog should be launched on
+     *                                   key press (o), otherwise <code>false</code>.
+     */
+    public void setConfigDialogSupported(boolean configDialogSupported){
+        plot.setConfigDialogSupported(configDialogSupported);
     }
 }
