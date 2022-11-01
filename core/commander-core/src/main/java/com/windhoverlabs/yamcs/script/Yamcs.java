@@ -5,17 +5,20 @@ import com.windhoverlabs.pv.yamcs.YamcsPlugin;
 import com.windhoverlabs.yamcs.commanding.CommandParser;
 import com.windhoverlabs.yamcs.commanding.CommandParser.ParseResult;
 import com.windhoverlabs.yamcs.core.CMDR_YamcsInstance;
+import com.windhoverlabs.yamcs.core.CMDR_YamcsInstance.CommandOption;
 import com.windhoverlabs.yamcs.core.YamcsObjectManager;
 import com.windhoverlabs.yamcs.core.YamcsServer;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
+import javafx.collections.ObservableList;
 import org.csstudio.display.builder.model.Widget;
 import org.phoebus.framework.macros.MacroHandler;
 import org.phoebus.framework.macros.Macros;
 import org.yamcs.client.processor.ProcessorClient;
 import org.yamcs.client.processor.ProcessorClient.CommandBuilder;
 import org.yamcs.protobuf.IssueCommandRequest.Assignment;
+import org.yamcs.protobuf.Yamcs.Value;
 
 public class Yamcs {
 
@@ -50,6 +53,10 @@ public class Yamcs {
     ProcessorClient processor =
         getInstance(parsed.getServer(), parsed.getInstance()).getYamcsProcessor();
 
+    // Eventually this could be overridden by scripts
+    ObservableList<CommandOption> options =
+        getInstance(parsed.getServer(), parsed.getInstance()).getOptionsList();
+
     if (processor == null) {
       log.warning("No active processor");
       return;
@@ -61,6 +68,25 @@ public class Yamcs {
             .withSequenceNumber(YamcsPlugin.nextCommandSequenceNumber());
     for (Assignment arg : parsed.getAssignments()) {
       builder.withArgument(arg.getName(), arg.getValue());
+    }
+
+    for (var op : options) {
+      String v = op.getValue();
+
+      // I know, know -- this is hideous. I'll fix it. Just want this to work for now.
+      Value yamcsValue =
+          Value.newBuilder()
+              .setType(org.yamcs.protobuf.Yamcs.Value.Type.BOOLEAN)
+              .setBooleanValue(false)
+              .build();
+      if (v.trim().equals("true")) {
+        yamcsValue =
+            Value.newBuilder()
+                .setType(org.yamcs.protobuf.Yamcs.Value.Type.BOOLEAN)
+                .setBooleanValue(true)
+                .build();
+      }
+      builder.withExtra(op.getId(), yamcsValue);
     }
     builder.issue();
   }
@@ -97,6 +123,9 @@ public class Yamcs {
     }
 
     command = command.split(":")[1].substring(command.split(":")[1].indexOf('/'));
+
+    // Eventually this could be overridden by scripts
+    ObservableList<CommandOption> options = getInstance(serverName, instanceName).getOptionsList();
     ProcessorClient processor = getInstance(serverName, instanceName).getYamcsProcessor();
 
     if (processor == null) {
@@ -108,10 +137,30 @@ public class Yamcs {
         processor
             .prepareCommand(command)
             .withSequenceNumber(YamcsPlugin.nextCommandSequenceNumber());
+
     if (args != null) {
       for (Entry<String, Object> arg : args.entrySet()) {
         builder.withArgument(arg.getKey(), String.valueOf(arg.getValue()));
       }
+    }
+
+    for (var op : options) {
+      String v = op.getValue();
+
+      // I know, know -- this is hideous. I'll fix it. Just want this to work for now.
+      Value yamcsValue =
+          Value.newBuilder()
+              .setType(org.yamcs.protobuf.Yamcs.Value.Type.BOOLEAN)
+              .setBooleanValue(false)
+              .build();
+      if (v.trim().equals("true")) {
+        yamcsValue =
+            Value.newBuilder()
+                .setType(org.yamcs.protobuf.Yamcs.Value.Type.BOOLEAN)
+                .setBooleanValue(true)
+                .build();
+      }
+      builder.withExtra(op.getId(), yamcsValue);
     }
     builder.issue();
   }
@@ -124,7 +173,7 @@ public class Yamcs {
 
       issueCommand(expanded_commandText);
     } catch (Exception e) {
-      log.warning("FINISH HIM!");
+      log.warning("FINISH HIM!-->" + e.toString());
     }
   }
 
@@ -139,7 +188,7 @@ public class Yamcs {
       issueCommand(expanded_commandText, args);
     } catch (Exception e) {
       // TODO
-      log.warning("FINISH HIM!");
+      log.warning("FINISH HIM!-->" + e.toString());
     }
   }
 }

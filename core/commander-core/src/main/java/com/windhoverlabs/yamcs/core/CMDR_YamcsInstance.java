@@ -3,6 +3,8 @@ package com.windhoverlabs.yamcs.core;
 import com.windhoverlabs.pv.yamcs.YamcsPV;
 import com.windhoverlabs.pv.yamcs.YamcsSubscriptionService;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,6 +12,8 @@ import org.yamcs.client.EventSubscription;
 import org.yamcs.client.YamcsClient;
 import org.yamcs.client.archive.ArchiveClient;
 import org.yamcs.client.processor.ProcessorClient;
+import org.yamcs.protobuf.GetServerInfoResponse;
+import org.yamcs.protobuf.GetServerInfoResponse.CommandOptionInfo;
 import org.yamcs.protobuf.SubscribeEventsRequest;
 // import org.yamcs.protobuf.Event;
 
@@ -21,6 +25,44 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   private EventSubscription eventSubscription;
   private ArchiveClient yamcsArchiveClient;
   private CMDR_YamcsInstanceState instanceState;
+
+  // Make this class generic?
+  public class CommandOption {
+    private String id;
+    private String value;
+
+    public CommandOption(String newId, String value) {
+      this.id = newId;
+      this.value = value;
+    }
+
+    public String getValue() {
+      return this.value;
+    }
+
+    public String getId() {
+      return this.id;
+    }
+
+    public void setValue(String newValue) {
+      this.value = newValue;
+    }
+  }
+  // TODO:Not sure if we want to have this on every instance and their server...just want it to work
+  // for now.
+  // Useful for "special" command link arguments such as cop1Bypass
+  private HashMap<String, CommandOptionInfo> extraCommandArgs =
+      new HashMap<String, CommandOptionInfo>();
+
+  private ObservableList<CommandOption> optionsList = FXCollections.observableArrayList();
+
+  public ObservableList<CommandOption> getOptionsList() {
+    return optionsList;
+  }
+
+  public HashMap<String, CommandOptionInfo> getExtraCommandArgs() {
+    return extraCommandArgs;
+  }
 
   public ArchiveClient getYamcsArchiveClient() {
     return yamcsArchiveClient;
@@ -98,11 +140,38 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
    * @param yamcsClient
    * @param serverName
    */
+  // TODO:This shoud return whether or not the instance activated successfully.
   public void activate(YamcsClient yamcsClient, String serverName) {
     initProcessorClient(yamcsClient);
     initYamcsSubscriptionService(yamcsClient, serverName);
     initEventSubscription(yamcsClient, serverName);
+
+    try {
+      initCommandOptions(yamcsClient);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      return;
+    } catch (ExecutionException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      return;
+    }
     instanceState = CMDR_YamcsInstanceState.ACTIVATED;
+  }
+
+  private void initCommandOptions(YamcsClient yamcsClient)
+      throws InterruptedException, ExecutionException {
+    GetServerInfoResponse info = yamcsClient.getServerInfo().get();
+    System.out.println("initCommandOptions-->1");
+    for (CommandOptionInfo o : info.getCommandOptionsList()) {
+      extraCommandArgs.put(o.getId(), o);
+
+      // Eventually check the type and create Commandoption accordingly
+      optionsList.add(new CommandOption(o.getId(), ""));
+      System.out.println("initCommandOptions-->2" + optionsList);
+    }
+    System.out.println("initCommandOptions-->3");
   }
 
   public void deActivate(YamcsClient yamcsClient, String serverName) {
