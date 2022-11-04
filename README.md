@@ -311,4 +311,4 @@ The following table has all the yamcs versions that have been _tested_, along wi
 | Commander | Yamcs Versions |
 |---|---|
 | `0.1.0` | `5.5.4` `5.5.7` `5.4.3`|      
-| `0.2.0-SNAPSHOT` | `5.6.0` |
+| `0.1.1` | `5.6.0` `5.6.2`|
