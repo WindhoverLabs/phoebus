@@ -1,6 +1,7 @@
 package com.windhoverlabs.yamcs.core;
 
 import com.windhoverlabs.pv.yamcs.YamcsAware;
+import com.windhoverlabs.pv.yamcs.YamcsAware.YamcsAwareMethod;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -126,7 +127,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
               }
-
+              // TODO:This works as long as this code is called under the JFX thread...
               init();
             }
 
@@ -277,6 +278,8 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
     for (YamcsAware l : listeners) {
       l.onYamcsDisconnected();
     }
+
+    YamcsObjectManager.triggreYamcsListeners(YamcsAwareMethod.onYamcsDisconnected);
     unInit();
     serverState = ConnectionState.DISCONNECTED;
     Platform.runLater(

@@ -1,6 +1,7 @@
 package com.windhoverlabs.yamcs.core;
 
 import com.windhoverlabs.pv.yamcs.YamcsAware;
+import com.windhoverlabs.pv.yamcs.YamcsAware.YamcsAwareMethod;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
@@ -69,8 +70,7 @@ public final class YamcsObjectManager {
     defaultServerName = server;
     defaultInstance = getServerFromName(server).getInstance(instance);
     if (defaultInstance == null) {
-      // Should not happen.
-      log.warning("Instance " + "\"" + instance + "\" not found");
+      log.warning("Should not happen: Instance " + "\"" + instance + "\" not found");
       return;
     }
     defaultServer.setDefaultInstance(defaultInstanceName);
@@ -119,12 +119,11 @@ public final class YamcsObjectManager {
   }
 
   public static void addYamcsListener(YamcsAware newListener) {
-    System.out.println("addYamcsListener on YamcsServer");
+    log.info("addYamcsListener on YamcsServer");
     listeners.add(newListener);
     if (defaultInstance != null) {
       newListener.changeDefaultInstance();
     }
-    System.out.println("addYamcsListener listeners-->" + listeners);
     //  for (YamcsServer s : YamcsObjectManager.getRoot().getItems()) {
     //  s.addListener(yamcsListener);
     // }
@@ -160,6 +159,17 @@ public final class YamcsObjectManager {
       }
     }
     return outServer;
+  }
+
+  static void triggreYamcsListeners(YamcsAwareMethod m) {
+    for (YamcsAware l : listeners) {
+      switch (m) {
+        case onYamcsDisconnected:
+          {
+            l.onYamcsDisconnected();
+          }
+      }
+    }
   }
 
   public static void removeListener(YamcsAware l) {

@@ -10,6 +10,9 @@ import org.yamcs.protobuf.ProcessorInfo;
  * connected instance and/or processor.
  */
 public interface YamcsAware {
+  public enum YamcsAwareMethod {
+    onYamcsDisconnected
+  };
 
   default void onYamcsObjectManagerInit() {
     changeDefaultInstance();
@@ -24,7 +27,7 @@ public interface YamcsAware {
   // Called when we fail to connect to the server.
   default void onYamcsConnectionFailed(Throwable t) {}
 
-  /** Called when we the global connection to yamcs was succesfully established */
+  /** Called when we the global connection to yamcs was successfully established */
   // TODO:It might worth considering passing the YamcsServer/YamcsInstance object to the
   // implementors of this function
   default void onYamcsConnected() {}
