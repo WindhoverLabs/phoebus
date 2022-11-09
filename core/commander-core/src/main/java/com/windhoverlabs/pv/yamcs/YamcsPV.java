@@ -7,6 +7,7 @@
  ******************************************************************************/
 package com.windhoverlabs.pv.yamcs;
 
+import com.windhoverlabs.yamcs.core.YamcsObjectManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +27,7 @@ import org.yamcs.protobuf.Yamcs.NamedObjectId;
 public class YamcsPV extends PV {
   private volatile Class<? extends VType> type;
   private final List<String> initial_value;
+  private YamcsAware yamcsListener;
 
   protected YamcsPV(
       final String actual_name,
@@ -36,6 +38,21 @@ public class YamcsPV extends PV {
     this.initial_value = initial_value;
 
     notifyListenersOfPermissions(true);
+
+    yamcsListener =
+        new YamcsAware() {
+          public void onYamcsDisconnected() {
+            try {
+              updateValue(null);
+              System.out.println("DISCONNECt$$$$$$$$$$$$");
+            } catch (Exception e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+          }
+        };
+
+    YamcsObjectManager.addYamcsListener(yamcsListener);
   }
 
   protected YamcsPV(final String actual_name, final Class<? extends VType> type) {
