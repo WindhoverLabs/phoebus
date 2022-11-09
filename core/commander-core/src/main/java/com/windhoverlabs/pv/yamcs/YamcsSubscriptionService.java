@@ -38,6 +38,7 @@ import org.epics.vtype.VUInt;
 import org.epics.vtype.VULong;
 import org.phoebus.pv.PV;
 import org.yamcs.client.ParameterSubscription;
+import org.yamcs.protobuf.Pvalue.AcquisitionStatus;
 import org.yamcs.protobuf.Pvalue.ParameterValue;
 import org.yamcs.protobuf.SubscribeParametersRequest;
 import org.yamcs.protobuf.SubscribeParametersRequest.Action;
@@ -138,7 +139,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
                   .setProcessor(processor)
                   .setSendFromCache(true)
                   .setAbortOnInvalid(false)
-                  .setUpdateOnExpiration(true)
+                  .setUpdateOnExpiration(false)
                   .addAllId(ids)
                   .build());
         });
@@ -164,7 +165,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
               .setProcessor("realtime")
               .setSendFromCache(true)
               .setAbortOnInvalid(false)
-              .setUpdateOnExpiration(true)
+              .setUpdateOnExpiration(false)
               .addId(id)
               .setAction(Action.ADD)
               .build());
@@ -333,6 +334,23 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
+    }
+
+    AcquisitionStatus s = parameter.getAcquisitionStatus();
+
+    switch (s) {
+      case ACQUIRED:
+        System.out.println("ACQUIRED$$$$$$$$$$");
+        break;
+      case EXPIRED:
+        System.out.println("EXPIRED$$$$$$$$$$");
+        break;
+      case INVALID:
+        break;
+      case NOT_RECEIVED:
+        break;
+      default:
+        break;
     }
 
     return value;
