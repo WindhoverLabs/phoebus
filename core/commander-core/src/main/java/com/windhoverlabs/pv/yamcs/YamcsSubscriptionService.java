@@ -340,7 +340,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
     switch (s) {
       case ACQUIRED:
-        System.out.println("ACQUIRED$$$$$$$$$$");
+        //        System.out.println("ACQUIRED$$$$$$$$$$");
         break;
       case EXPIRED:
         System.out.println("EXPIRED$$$$$$$$$$");
