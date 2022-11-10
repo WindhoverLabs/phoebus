@@ -107,6 +107,7 @@ public class YamcsServerNoUsersTest extends IntegrationTestNoUsers {
 
   @Test
   @Order(3)
+  @Disabled("https://github.com/WindhoverLabs/phoebus/issues/72")
   public void testYamcsServerConnect() throws InterruptedException, ExecutionException {
     assertThat(
         "", newServer.getServerStateStrProperty().get(), equalTo("sitl" + " | " + "DISCONNECTED"));
@@ -128,6 +129,7 @@ public class YamcsServerNoUsersTest extends IntegrationTestNoUsers {
 
   @Test
   @Order(4)
+  @Disabled("https://github.com/WindhoverLabs/phoebus/issues/72")
   public void testYamcsServerConnectNoArgs() throws InterruptedException, ExecutionException {
     newServer.setConnection(newConnection);
     newServer.connect();
