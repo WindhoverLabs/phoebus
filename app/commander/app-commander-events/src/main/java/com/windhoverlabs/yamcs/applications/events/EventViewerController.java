@@ -189,7 +189,6 @@ public class EventViewerController {
           }
 
           public void onInstancesReady(YamcsServer s) {
-            System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$onInstancesReady$$$$$$$$$$$$$$$$$$");
             if (s.getDefaultInstance() != null) {
               s.getDefaultInstance()
                   .getEvents()

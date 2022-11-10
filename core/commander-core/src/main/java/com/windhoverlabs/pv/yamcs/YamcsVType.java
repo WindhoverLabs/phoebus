@@ -43,6 +43,7 @@ import org.yamcs.protobuf.Yamcs.Value;
 public class YamcsVType extends VType implements Alarm, Time, Display {
 
   private ParameterValue pval;
+  private YamcsAware yamcsListener;
   protected Value value;
 
   public YamcsVType(ParameterValue pval, boolean raw) {

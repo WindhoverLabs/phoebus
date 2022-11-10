@@ -7,10 +7,13 @@
  ******************************************************************************/
 package com.windhoverlabs.pv.yamcs;
 
+import com.windhoverlabs.yamcs.core.YamcsObjectManager;
+import com.windhoverlabs.yamcs.core.YamcsServer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.epics.vtype.VInt;
 import org.epics.vtype.VType;
 import org.phoebus.pv.PV;
@@ -26,6 +29,9 @@ import org.yamcs.protobuf.Yamcs.NamedObjectId;
 public class YamcsPV extends PV {
   private volatile Class<? extends VType> type;
   private final List<String> initial_value;
+  private YamcsAware yamcsListener;
+
+  public static final Logger log = Logger.getLogger(YamcsServer.class.getPackageName());
 
   protected YamcsPV(
       final String actual_name,
@@ -35,7 +41,7 @@ public class YamcsPV extends PV {
     this.type = type;
     this.initial_value = initial_value;
 
-    notifyListenersOfPermissions(true);
+    init(type, initial_value);
   }
 
   protected YamcsPV(final String actual_name, final Class<? extends VType> type) {
@@ -43,7 +49,8 @@ public class YamcsPV extends PV {
     this.type = type;
 
     initial_value = new ArrayList<String>();
-    notifyListenersOfPermissions(true);
+
+    init(type, initial_value);
   }
 
   protected void checkInitializer(
@@ -57,6 +64,30 @@ public class YamcsPV extends PV {
               + formatInit(this.type, this.initial_value)
               + " and is now requested as "
               + formatInit(type, initial_value));
+  }
+
+  private void init(final Class<? extends VType> type, final List<String> initial_value) {
+    notifyListenersOfPermissions(true);
+
+    yamcsListener =
+        new YamcsAware() {
+          public void onYamcsDisconnected() {
+            try {
+              notifyListenersOfDisconnect();
+            } catch (Exception e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+          }
+        };
+
+    YamcsObjectManager.addYamcsListener(yamcsListener);
+    try {
+      notifyListenersOfValue(YamcsSubscriptionService.getInitialValue(initial_value, type));
+    } catch (Exception e) {
+      log.info("Error on notifyListenersOfValue of YamcsPV:");
+      e.printStackTrace();
+    }
   }
 
   private String formatInit(final Class<? extends VType> type, final List<String> value) {

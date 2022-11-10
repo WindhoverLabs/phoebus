@@ -172,6 +172,6 @@
 		<module>app-commander-mission-planner</module>
 		<module>app-commander-command-options</module>
 	</modules>
-	<version>0.2.0</version>
+	<version>0.2.2-SNAPSHOT</version>
 	<groupId>com.windhoverlabs</groupId>
 </project>
