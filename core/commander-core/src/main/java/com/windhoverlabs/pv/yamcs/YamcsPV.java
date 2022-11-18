@@ -82,12 +82,6 @@ public class YamcsPV extends PV {
         };
 
     YamcsObjectManager.addYamcsListener(yamcsListener);
-    try {
-      notifyListenersOfValue(YamcsSubscriptionService.getInitialValue(initial_value, type));
-    } catch (Exception e) {
-      log.info("Error on notifyListenersOfValue of YamcsPV:");
-      e.printStackTrace();
-    }
   }
 
   private String formatInit(final Class<? extends VType> type, final List<String> value) {
