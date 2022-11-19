@@ -7,7 +7,7 @@
 	</parent>
 	<groupId>com.windhoverlabs</groupId>
 	<artifactId>commander-core</artifactId>
-	<version>0.2.2-SNAPSHOT</version>
+	<version>0.2.2</version>
 
 	<developers>
 		<developer>
@@ -43,7 +43,7 @@
 		<dependency>
 			<groupId>org.yamcs</groupId>
 			<artifactId>yamcs-client</artifactId>
-			<version>5.6.0</version>
+			<version>5.7.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -67,13 +67,18 @@
 			<groupId>org.yamcs</groupId>
 			<artifactId>yamcs-core</artifactId>
 			<!--scope>test</scope-->
-			<version>5.6.0</version>
+			<version>5.7.9</version>
 		</dependency>
+		<dependency>
+            <groupId>org.yamcs</groupId>
+           <artifactId>tests</artifactId>
+           <version>5.7.9</version>
+	    </dependency>
 				<dependency>
 			<groupId>org.yamcs</groupId>
 			<artifactId>yamcs-api</artifactId>
 			<!--scope>test</scope-->
-			<version>5.6.0</version>
+			<version>5.7.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.epics</groupId>
@@ -154,7 +159,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!--plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.9.1</version>
@@ -167,7 +172,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin-->
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>

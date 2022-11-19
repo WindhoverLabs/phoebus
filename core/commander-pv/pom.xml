@@ -14,7 +14,7 @@
 		<dependency>
 			<groupId>org.yamcs</groupId>
 			<artifactId>yamcs-client</artifactId>
-			<version>5.6.0</version>
+			<version>5.7.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.epics</groupId>
@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>commander-core</artifactId>
-			<version>0.2.2-SNAPSHOT</version>
+			<version>0.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
