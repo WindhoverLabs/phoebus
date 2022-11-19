@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.yamcs.client.ClientException;
 import org.yamcs.client.base.HttpClient;
+import org.yamcs.tests.AbstractIntegrationTest;
 
 @Disabled("")
 public class HttpClientTest extends AbstractIntegrationTest {

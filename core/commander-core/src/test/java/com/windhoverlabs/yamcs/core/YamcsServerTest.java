@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.yamcs.client.ClientException;
+import org.yamcs.tests.AbstractIntegrationTest;
 
 @Disabled("")
 public class YamcsServerTest extends AbstractIntegrationTest {
