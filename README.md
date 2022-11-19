@@ -1,3 +1,5 @@
+[![Maven Central](https://maven-badges-generator.herokuapp.com/maven-central/com.windhoverlabs/app-commander/badge.svg)](https://maven-badges-generator.herokuapp.com/maven-central/com.windhoverlabs/app-commander)
+
 # phoebus
 ![GitHub Actions Status](https://github.com/ControlSystemStudio/phoebus/actions/workflows/build.yml/badge.svg)
 <a href="https://scan.coverity.com/projects/windhoverlabs-phoebus">
@@ -312,3 +314,5 @@ The following table has all the yamcs versions that have been _tested_, along wi
 |---|---|
 | `0.1.0` | `5.5.4` `5.5.7` `5.4.3`|      
 | `0.1.1` | `5.6.0` `5.6.2`|
+| `0.2.2` | `yamcs-5.7.9-whl-rc2`|
+
