@@ -43,7 +43,7 @@
 		<dependency>
 			<groupId>org.yamcs</groupId>
 			<artifactId>yamcs-client</artifactId>
-			<version>5.6.0</version>
+			<version>5.7.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -67,13 +67,18 @@
 			<groupId>org.yamcs</groupId>
 			<artifactId>yamcs-core</artifactId>
 			<!--scope>test</scope-->
-			<version>5.6.0</version>
+			<version>5.7.9</version>
 		</dependency>
+		<dependency>
+            <groupId>org.yamcs</groupId>
+           <artifactId>tests</artifactId>
+           <version>5.7.9</version>
+	    </dependency>
 				<dependency>
 			<groupId>org.yamcs</groupId>
 			<artifactId>yamcs-api</artifactId>
 			<!--scope>test</scope-->
-			<version>5.6.0</version>
+			<version>5.7.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.epics</groupId>
