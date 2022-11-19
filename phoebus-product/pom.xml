@@ -25,38 +25,38 @@
 		<dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>app-commander-connections</artifactId>
-			<version>0.2.2</version>
+			<version>0.2.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>app-commander-events</artifactId>
-			<version>0.2.2</version>
+			<version>0.2.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>app-commander-command-options</artifactId>
-			<version>0.2.2</version>
+			<version>0.2.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>commander-core</artifactId>
-			<version>0.2.2</version>
+			<version>0.2.3-SNAPSHOT</version>
 		</dependency>
 		 <dependency>
       <groupId>com.windhoverlabs</groupId>
       <artifactId>app-commander-display-model</artifactId>
-      <version>0.2.2</version>
+      <version>0.2.3-SNAPSHOT</version>
     	</dependency>
     			 <dependency>
       <groupId>com.windhoverlabs</groupId>
       <artifactId>app-commander-display-representation-javafx</artifactId>
-      <version>0.2.2</version>
+      <version>0.2.3-SNAPSHOT</version>
     	</dependency>
     	
     	    			 <dependency>
       <groupId>com.windhoverlabs</groupId>
       <artifactId>app-commander-display-runtime</artifactId>
-      <version>0.2.2</version>
+      <version>0.2.3-SNAPSHOT</version>
     	</dependency>
 		<dependency>
 			<groupId>org.phoebus</groupId>
