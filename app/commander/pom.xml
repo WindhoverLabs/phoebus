@@ -104,7 +104,7 @@
 					</execution>
 				</executions>
 				<configuration>
-				<skip>true</skip>
+				<skip>false</skip>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -172,6 +172,6 @@
 		<module>app-commander-mission-planner</module>
 		<module>app-commander-command-options</module>
 	</modules>
-	<version>0.2.3-SNAPSHOT</version>
+	<version>0.2.4-SNAPSHOT</version>
 	<groupId>com.windhoverlabs</groupId>
 </project>
