@@ -12,6 +12,7 @@ import org.yamcs.client.EventSubscription;
 import org.yamcs.client.YamcsClient;
 import org.yamcs.client.archive.ArchiveClient;
 import org.yamcs.client.processor.ProcessorClient;
+import org.yamcs.protobuf.CreateEventRequest;
 import org.yamcs.protobuf.GetServerInfoResponse;
 import org.yamcs.protobuf.GetServerInfoResponse.CommandOptionInfo;
 import org.yamcs.protobuf.SubscribeEventsRequest;
@@ -191,5 +192,15 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     // TODO:Have to let the caller know whether were able to successfully subscribe
     // to this pv or not.
     paramSubscriptionService.register(pv);
+  }
+
+  /** Creates and publishes an event to YAMCS instance. */
+  public void publishEvent(String message, YamcsClient yamcsClient) {
+    yamcsClient.createEvent(
+        CreateEventRequest.newBuilder()
+            .setInstance(getName())
+            .setMessage(message)
+            .setSource("Commander")
+            .build());
   }
 }

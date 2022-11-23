@@ -191,4 +191,61 @@ public class Yamcs {
       log.warning("FINISH HIM!-->" + e.toString());
     }
   }
+
+  public static void issueEvent(Widget widget, String eventText) {
+    /* TODO: Finish this.
+     * At the moment this only works for default instance.
+     * */
+    //    try {
+    //      Macros macros = widget.getEffectiveMacros();
+    //      String expanded_eventText = MacroHandler.replace(macros, eventText);
+    //      expanded_eventText = YamcsPVFactory.sanitizePVName("/" + expanded_eventText);
+    //
+    //      if (expanded_eventText == null) {
+    //        return;
+    //      }
+    //
+    //      expanded_eventText = expanded_eventText.trim();
+    //
+    //      String serverName = null;
+    //      String instanceName = null;
+    //      try {
+    //        // TODO: Clean this up a bit
+    //        serverName = expanded_eventText.split(":")[0];
+    //        if (serverName.contains("/")) {
+    //          serverName = serverName.substring(serverName.indexOf("/") + 1);
+    //        }
+    //        instanceName = expanded_eventText.split(":")[1].split("/")[0];
+    //      } catch (Exception e) {
+    //        log.warning(
+    //            "Error on expression \""
+    //                + expanded_eventText
+    //                + "\". Verify that the instance and server names exist.");
+    //        return;
+    //      }
+
+    // Eventually this could be overridden by scripts
+    //      YamcsServer s = YamcsObjectManager.getServerFromName(serverName);
+    //      if (s == null) {
+    //        log.warning("Failed to find a server:" + serverName);
+    //        return;
+    //      }
+    //	  catch (Exception e) {
+    //	      // TODO
+    //	      log.warning("FINISH HIM!-->" + e.toString());
+    //	    }
+    //	  }
+
+    YamcsServer s = YamcsObjectManager.getDefaultServer();
+    if (s == null) {
+      log.warning("Failed to find default server");
+      return;
+    }
+    CMDR_YamcsInstance instance = YamcsObjectManager.getDefaultInstance();
+    if (instance == null) {
+      log.warning("Failed to find default instance");
+      return;
+    }
+    instance.publishEvent(eventText, s.getYamcsClient());
+  }
 }
