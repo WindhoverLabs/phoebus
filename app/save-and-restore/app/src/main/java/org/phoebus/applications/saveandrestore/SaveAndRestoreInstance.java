@@ -20,15 +20,16 @@ package org.phoebus.applications.saveandrestore;
 
 import javafx.fxml.FXMLLoader;
 import org.phoebus.applications.saveandrestore.ui.SaveAndRestoreController;
-import org.phoebus.applications.saveandrestore.ui.SaveAndRestoreWithSplitController;
+import org.phoebus.applications.saveandrestore.ui.search.SearchToolbarController;
+import org.phoebus.framework.nls.NLS;
 import org.phoebus.framework.persistence.Memento;
-import org.phoebus.framework.preferences.PreferencesReader;
 import org.phoebus.framework.spi.AppDescriptor;
 import org.phoebus.framework.spi.AppInstance;
 import org.phoebus.ui.docking.DockItem;
 import org.phoebus.ui.docking.DockPane;
 
 import java.net.URI;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,34 +38,29 @@ public class SaveAndRestoreInstance implements AppInstance {
     private final AppDescriptor appDescriptor;
     private SaveAndRestoreController controller;
 
-    public SaveAndRestoreInstance(AppDescriptor appDescriptor, URI uri){
+    public SaveAndRestoreInstance(AppDescriptor appDescriptor, URI uri) {
         this.appDescriptor = appDescriptor;
 
         DockItem tab = null;
 
-        PreferencesReader preferencesReader =
-                new PreferencesReader(getClass(), "/save_and_restore_preferences.properties");
-
         FXMLLoader loader = new FXMLLoader();
         try {
-            if (preferencesReader.getBoolean("splitSnapshot")) {
-                loader.setLocation(SaveAndRestoreApplication.class.getResource("ui/SaveAndRestoreUIWithSplit.fxml"));
-            } else {
-                loader.setLocation(SaveAndRestoreApplication.class.getResource("ui/SaveAndRestoreUI.fxml"));
-            }
+            ResourceBundle resourceBundle = NLS.getMessages(Messages.class);
+            loader.setResources(resourceBundle);
+            loader.setLocation(SaveAndRestoreApplication.class.getResource("ui/SaveAndRestoreUI.fxml"));
             loader.setControllerFactory(clazz -> {
-                        try {
-                            if (clazz.isAssignableFrom(SaveAndRestoreController.class)) {
-                                return clazz.getConstructor(URI.class).newInstance(uri);
-                            }
-                            else if(clazz.isAssignableFrom(SaveAndRestoreWithSplitController.class)){
-                                return clazz.getConstructor(URI.class).newInstance(uri);
-                            }
-                        } catch (Exception e) {
-                            Logger.getLogger(SaveAndRestoreInstance.class.getName()).log(Level.WARNING, "Failed to load Save & Restore UI", e);
-                        }
-                        return null;
-                    });
+                try {
+                    if (clazz.isAssignableFrom(SaveAndRestoreController.class)) {
+                        return clazz.getConstructor(URI.class).newInstance(uri);
+                    }
+                    else if(clazz.isAssignableFrom(SearchToolbarController.class)){
+                        return clazz.getConstructor().newInstance();
+                    }
+                } catch (Exception e) {
+                    Logger.getLogger(SaveAndRestoreInstance.class.getName()).log(Level.WARNING, "Failed to load Save & Restore UI", e);
+                }
+                return null;
+            });
             tab = new DockItem(this, loader.load());
         } catch (Exception e) {
             Logger.getLogger(SaveAndRestoreApplication.class.getName()).log(Level.SEVERE, "Failed loading fxml", e);
@@ -72,7 +68,7 @@ public class SaveAndRestoreInstance implements AppInstance {
 
         controller = loader.getController();
 
-        tab.setOnCloseRequest(event -> controller.closeTagSearchWindow());
+        tab.setOnCloseRequest(event -> controller.saveLocalState());
 
         DockPane.getActiveDockPane().addTab(tab);
     }
@@ -83,16 +79,11 @@ public class SaveAndRestoreInstance implements AppInstance {
     }
 
     @Override
-    public void save(Memento memento){
-        controller.save(memento);
+    public void save(Memento memento) {
+        controller.saveLocalState();
     }
 
-    @Override
-    public void restore(final Memento memento) {
-        controller.restore(memento);
-    }
-
-    public void openResource(URI uri){
+    public void openResource(URI uri) {
         controller.openResource(uri);
     }
 }

@@ -9,7 +9,7 @@ package org.phoebus.applications.alarm;
 
 import java.io.ByteArrayOutputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.phoebus.applications.alarm.client.AlarmClient;
 import org.phoebus.applications.alarm.client.AlarmConfigMonitor;
 import org.phoebus.applications.alarm.model.xml.XmlModelWriter;
@@ -24,7 +24,7 @@ public class AlarmModelSnapshotDemo
 	public void testAlarmModelWriter() throws Exception
 	{
 	    // Get alarm configuration
-	    final AlarmClient client = new AlarmClient(AlarmDemoSettings.SERVERS, AlarmDemoSettings.ROOT);
+	    final AlarmClient client = new AlarmClient(AlarmDemoSettings.SERVERS, AlarmDemoSettings.ROOT, AlarmDemoSettings.KAFKA_PROPERTIES_FILE);
 
 	    System.out.println("Wait for stable configuration, i.e. no changes for 4 seconds...");
 

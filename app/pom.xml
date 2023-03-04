@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.phoebus</groupId>
     <artifactId>parent</artifactId>
-    <version>4.6.10-SNAPSHOT</version>
+    <version>4.7.2-SNAPSHOT</version>
   </parent>
   <modules>
     <module>diag</module>
@@ -35,5 +35,6 @@
     <module>commander</module>
     <module>imageviewer</module>
     <module>credentials-management</module>
+    <module>eslog</module>
   </modules>
 </project>

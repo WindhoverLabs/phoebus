@@ -31,6 +31,7 @@ import org.csstudio.trends.databrowser3.ui.Controller;
 import org.csstudio.trends.databrowser3.ui.plot.ModelBasedPlot;
 import org.phoebus.util.time.TimeParser;
 import org.phoebus.util.time.TimeRelativeInterval;
+import org.phoebus.util.time.TimestampFormats;
 
 import javafx.scene.layout.Pane;
 
@@ -67,7 +68,7 @@ public class StripchartRepresentation extends RegionBaseRepresentation<Pane, Str
     private final WidgetPropertyListener<Integer> sizeChangedListener = this::sizeChanged;
     private final UntypedWidgetPropertyListener optsChangedListener = this::optsChanged;
     private final UntypedWidgetPropertyListener modelChangedListener = this::modelChanged;
-    private final WidgetPropertyListener<List<AxisWidgetProperty>> axes_listener = this::axesChanged;
+    private final WidgetPropertyListener<List<StripchartWidget.YAxisWidgetProperty>> axes_listener = this::axesChanged;
     private final WidgetPropertyListener<List<TraceWidgetProperty>> traces_listener = this::tracesChanged;
     private final WidgetPropertyListener<Instant> config_dialog_listener = (p, o, n) -> plot.getPlot().showConfigurationDialog();
     private final WidgetPropertyListener<Instant> open_databrowser_listener = (p, o, n) ->
@@ -117,7 +118,8 @@ public class StripchartRepresentation extends RegionBaseRepresentation<Pane, Str
         model_widget.propScaleFont().addUntypedPropertyListener(modelChangedListener);
         model_widget.propToolbar().addUntypedPropertyListener(optsChangedListener);
         model_widget.propLegend().addUntypedPropertyListener(modelChangedListener);
-        model_widget.propTimeRange().addUntypedPropertyListener(modelChangedListener);
+        model_widget.propStart().addUntypedPropertyListener(modelChangedListener);
+        model_widget.propEnd().addUntypedPropertyListener(modelChangedListener);
         model_widget.propYAxes().addPropertyListener(axes_listener);
         model_widget.propTraces().addPropertyListener(traces_listener);
 
@@ -148,7 +150,8 @@ public class StripchartRepresentation extends RegionBaseRepresentation<Pane, Str
         model_widget.propScaleFont().removePropertyListener(modelChangedListener);
         model_widget.propToolbar().removePropertyListener(optsChangedListener);
         model_widget.propLegend().removePropertyListener(modelChangedListener);
-        model_widget.propTimeRange().removePropertyListener(modelChangedListener);
+        model_widget.propStart().removePropertyListener(modelChangedListener);
+        model_widget.propEnd().removePropertyListener(modelChangedListener);
         model_widget.propYAxes().removePropertyListener(axes_listener);
 
         if (! toolkit.isEditMode())
@@ -161,22 +164,22 @@ public class StripchartRepresentation extends RegionBaseRepresentation<Pane, Str
         super.unregisterListeners();
     }
 
-    private void axesChanged(final WidgetProperty<List<AxisWidgetProperty>> prop, final List<AxisWidgetProperty> removed, final List<AxisWidgetProperty> added)
+    private void axesChanged(final WidgetProperty<List<StripchartWidget.YAxisWidgetProperty>> prop, final List<StripchartWidget.YAxisWidgetProperty> removed, final List<StripchartWidget.YAxisWidgetProperty> added)
     {
         // Track/ignore axes
         if (removed != null)
-            for (AxisWidgetProperty axis : removed)
+            for (StripchartWidget.YAxisWidgetProperty axis : removed)
                 ignoreAxisChanges(axis);
 
         if (added != null)
-            for (AxisWidgetProperty axis : added)
+            for (StripchartWidget.YAxisWidgetProperty axis : added)
                 trackAxisChanges(axis);
 
         // Anything changed -> Update complete model
         modelChanged(null, null, null);
     }
 
-    private void trackAxisChanges(final AxisWidgetProperty axis)
+    private void trackAxisChanges(final StripchartWidget.YAxisWidgetProperty axis)
     {
         axis.title().addUntypedPropertyListener(modelChangedListener);
         axis.autoscale().addUntypedPropertyListener(modelChangedListener);
@@ -185,9 +188,10 @@ public class StripchartRepresentation extends RegionBaseRepresentation<Pane, Str
         axis.maximum().addUntypedPropertyListener(modelChangedListener);
         axis.grid().addUntypedPropertyListener(modelChangedListener);
         axis.visible().addUntypedPropertyListener(modelChangedListener);
+        axis.color().addUntypedPropertyListener(modelChangedListener);
     }
 
-    private void ignoreAxisChanges(final AxisWidgetProperty axis)
+    private void ignoreAxisChanges(final StripchartWidget.YAxisWidgetProperty axis)
     {
         axis.title().removePropertyListener(modelChangedListener);
         axis.autoscale().removePropertyListener(modelChangedListener);
@@ -196,6 +200,8 @@ public class StripchartRepresentation extends RegionBaseRepresentation<Pane, Str
         axis.maximum().removePropertyListener(modelChangedListener);
         axis.grid().removePropertyListener(modelChangedListener);
         axis.visible().removePropertyListener(modelChangedListener);
+        axis.color().removePropertyListener(modelChangedListener);
+
     }
 
 
@@ -274,18 +280,50 @@ public class StripchartRepresentation extends RegionBaseRepresentation<Pane, Str
         model.setLabelFont(JFXUtil.convert(model_widget.propLabelFont().getValue()));
         model.setScaleFont(JFXUtil.convert(model_widget.propScaleFont().getValue()));
 
-        final TemporalAmount rel_start = TimeParser.parseTemporalAmount(model_widget.propTimeRange().getValue());
-        model.setTimerange(TimeRelativeInterval.startsAt(rel_start));
+        /* deal with start/end time configuration */
+        //start
+        String text = model_widget.propStart().getValue();
+        final Instant abs_start = TimestampFormats.parse(text);
+        final TemporalAmount rel_start = TimeParser.parseTemporalAmount(text);
+
+        //end
+        text = model_widget.propEnd().getValue();
+        final Instant abs_end = TimestampFormats.parse(text);
+        final TemporalAmount rel_end= TimeParser.parseTemporalAmount(text);
+
+
+        TimeRelativeInterval range;
+
+        if (abs_end != null){
+            if (abs_start != null){ 
+                range = TimeRelativeInterval.of(abs_start, abs_end);
+            }
+            else
+            { // we must use an absolute interval here, when Stripchart has a relative start, the end is set to "now"
+                range = TimeRelativeInterval.of(abs_end.minus(rel_start), abs_end);
+            }
+        }
+        else{ 
+            if (abs_start != null){ 
+                range = TimeRelativeInterval.of(abs_start, abs_start.plus(rel_end));
+            }
+            else
+            { // rel_end ignored
+                range = TimeRelativeInterval.startsAt(rel_start);
+            }
+        }
+        model.setTimerange(range);
+        
 
         final boolean show_legend = model_widget.propLegend().getValue();
         model.setLegendVisible(show_legend);
 
         // Value Axes
         int index = 0;
-        final List<AxisWidgetProperty> axes = model_widget.propYAxes().getValue();
+        final List<StripchartWidget.YAxisWidgetProperty> axes = model_widget.propYAxes().getValue();
         while (model.getAxisCount() > axes.size())
             model.removeAxis(model.getAxis(0));
-        for (AxisWidgetProperty axis : axes)
+        for (StripchartWidget.YAxisWidgetProperty axis : axes)
         {
             final AxisConfig config;
             if (index < model.getAxisCount())
@@ -297,9 +335,11 @@ public class StripchartRepresentation extends RegionBaseRepresentation<Pane, Str
             config.setName(axis.title().getValue());
             config.setRange(axis.minimum().getValue(), axis.maximum().getValue());
             config.setAutoScale(axis.autoscale().getValue());
+            config.setColor(model.getPlotForeground());
             config.setLogScale(axis.logscale().getValue());
             config.setGridVisible(axis.grid().getValue());
             config.setVisible(axis.visible().getValue());
+            config.setColor(JFXUtil.convert(axis.color().getValue()));
             ++index;
         }
 

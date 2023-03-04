@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019-2021 Oak Ridge National Laboratory.
+ * Copyright (c) 2019-2022 Oak Ridge National Laboratory.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
+import org.epics.pva.common.SearchRequest;
 import org.epics.pva.data.PVADouble;
 import org.epics.pva.data.PVAString;
 import org.epics.pva.data.PVAStructure;
@@ -41,7 +42,7 @@ import org.epics.pva.data.PVAStructure;
  *  @author Kay Kasemir
  */
 @SuppressWarnings("nls")
-public class PVAChannel implements AutoCloseable
+public class PVAChannel extends SearchRequest.Channel implements AutoCloseable
 {
     /** Provider for the 'next' client channel ID
      *
@@ -53,9 +54,7 @@ public class PVAChannel implements AutoCloseable
     private static final AtomicInteger CID_Provider = new AtomicInteger(1);
 
     private final PVAClient client;
-    private final String name;
     private final ClientChannelListener listener;
-    private final int cid = CID_Provider.incrementAndGet();
     private volatile int sid = -1;
 
     /** State
@@ -74,8 +73,8 @@ public class PVAChannel implements AutoCloseable
 
     PVAChannel(final PVAClient client, final String name, final ClientChannelListener listener)
     {
+        super(CID_Provider.incrementAndGet(), name);
         this.client = client;
-        this.name = name;
         this.listener = listener;
     }
 
@@ -87,28 +86,19 @@ public class PVAChannel implements AutoCloseable
     ClientTCPHandler getTCP() throws Exception
     {
         final ClientTCPHandler copy = tcp.get();
-        if (copy == null)
-            throw new Exception("Channel '" + name + "' is not connected");
-        return copy;
-    }
 
-    /** @return Client channel ID */
-    int getCID()
-    {
-        return cid;
+        // Channel Access reacts to read/write access while disconnected
+        // via IllegalStateException("Channel not connected.")
+        // Use the same exception, but add channel name
+        if (copy == null)
+            throw new IllegalStateException("Channel '" + name + "' is not connected");
+        return copy;
     }
 
     /** @return Server channel ID */
     int getSID()
     {
         return sid;
-    }
-
-
-    /** @return Channel name */
-    public String getName()
-    {
-        return name;
     }
 
     /** @return {@link ClientChannelState} */
@@ -251,11 +241,41 @@ public class PVAChannel implements AutoCloseable
      *  @param request Request for element to write, e.g. "field(value)"
      *  @param new_value New value: Number, String
      *  @throws Exception on error
-     *  @return {@link Future} for awaiting completion
+     *  @return {@link Future} for awaiting completion and getting Exception in case of error
+     *  @deprecated Use {@link #write(boolean, String, Object)}
      */
+    @Deprecated
     public Future<Void> write(final String request, final Object new_value) throws Exception
     {
-        return new PutRequest(this, request, new_value);
+        return write(false, request, new_value);
+    }
+
+    /** Write (put) an element of the channel's value on server
+    *
+    *  <p>The request needs to address one field of the channel,
+    *  and the value to write must be accepted by that field.
+    *
+    *  <p>For example, when "field(value)" addresses a double field,
+    *  {@link PVADouble#setValue(Object)} will be called, so <code>new_value</code>
+    *  may be a {@link Number}.
+    *
+    *  <p>When "field(value)" addresses a text field,
+    *  {@link PVAString#setValue(Object)} will be called,
+    *  which accepts any object by converting it to a string.
+    *
+    *  <p>When writing an enumerated field, its <code>int index</code>
+    *  will be written, requiring a {@link Number} that's then
+    *  used as an integer.
+    *
+    *  @param completion Perform a processing "put" that blocks until completion, or write-and-forget?
+    *  @param request Request for element to write, e.g. "field(value)"
+    *  @param new_value New value: Number, String
+    *  @throws Exception on error
+    *  @return {@link Future} for awaiting completion and getting Exception in case of error
+    */
+    public Future<Void> write(final boolean completion, final String request, final Object new_value) throws Exception
+    {
+        return new PutRequest(this, completion, request, new_value);
     }
 
     /** Start a subscription

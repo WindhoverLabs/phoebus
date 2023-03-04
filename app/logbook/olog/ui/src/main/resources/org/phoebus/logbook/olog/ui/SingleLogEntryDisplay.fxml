@@ -99,7 +99,7 @@
                     </children>
                 </GridPane>
 
-                <WebView fx:id="logDescription" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS" />
+                <WebView fx:id="webView" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS" />
             </children>
         </VBox>
 
@@ -109,7 +109,7 @@
                     <panes>
                         <TitledPane fx:id="attachmentsPane" animated="false" text="%Attachments">
                             <content>
-                                <fx:include fx:id="attachmentsPreview" source="AttachmentsPreview.fxml" />
+                                <fx:include fx:id="attachmentsView" source="AttachmentsView.fxml" />
                             </content>
                         </TitledPane>
                         <TitledPane fx:id="propertiesPane" animated="false" text="%Properties">

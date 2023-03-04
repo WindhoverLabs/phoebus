@@ -51,6 +51,7 @@ public class AlarmLoggingService {
         System.out.println("-es_port  9200                           - elastic server port");
         System.out.println("-es_sniff  false                         - elastic server sniff feature");
         System.out.println("-bootstrap.servers localhost:9092        - Kafka server address");
+        System.out.println("-kafka_properties /opt/client.properties - Properties file to load kafka client settings from");
         System.out.println("-properties /opt/alarm_logger.properties - Properties file to be used (instead of command line arguments)");
         System.out.println("-date_span_units M                       - Date units for the time based index to span.");
         System.out.println("-date_span_value 1                       - Date value for the time based index to span.");
@@ -76,13 +77,12 @@ public class AlarmLoggingService {
     }
 
     public static void main(final String[] original_args) throws Exception {
-        context = SpringApplication.run(AlarmLoggingService.class, original_args);
         LogManager.getLogManager().readConfiguration(AlarmLoggingService.class.getResourceAsStream("/alarm_logger_logging.properties"));
 
         // load the default properties
         final Properties properties = PropertiesHelper.getProperties();
 
-        // Use interactive shell by default 
+        // Use interactive shell by default
         boolean use_shell = true;
 
         // Handle arguments
@@ -95,8 +95,7 @@ public class AlarmLoggingService {
 		if ( cmd.equals("-h") || cmd.equals("-help")) {
 		    use_shell = false;
                     help();
-		    // Do we need the exit code for help?
-		    System.exit(SpringApplication.exit(context));
+		    System.exit(0);
                     return;
                 } else if (cmd.equals("-noshell")) {
                     use_shell = false;
@@ -140,6 +139,12 @@ public class AlarmLoggingService {
                         throw new Exception("Missing -bootstrap.servers kafaka server addresss");
                     iter.remove();
                     properties.put("bootstrap.servers",iter.next());
+                    iter.remove();
+                } else if (cmd.equals("-kafka_properties")) {
+                    if (!iter.hasNext())
+                        throw new Exception("Missing -kafka_properties file name");
+                    iter.remove();
+                    properties.put("kafka_properties",iter.next());
                     iter.remove();
                 }
                 else if (cmd.equals("-date_span_units"))
@@ -189,11 +194,12 @@ public class AlarmLoggingService {
 	    ex.printStackTrace();
 	    System.out.println("\n>>>> Please check available arguments of alarm-logger as follows:");
 	    help();
-	    System.exit(SpringApplication.exit(context));
+	    System.exit(-1);
 	    return;
         }
 
         logger.info("Alarm Logging Service (PID " + ProcessHandle.current().pid() + ")");
+        context = SpringApplication.run(AlarmLoggingService.class, original_args);
 
         // Create scheduler with configured or default thread pool size
         Integer threadPoolSize;

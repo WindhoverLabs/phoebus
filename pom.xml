@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.phoebus</groupId>
   <artifactId>parent</artifactId>
-  <version>4.6.10-SNAPSHOT</version>
+  <version>4.7.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>phoebus (parent)</name>
   <description>A framework and set of tools to monitor and operate large scale control systems, such as the ones in the accelerator community.</description>
@@ -58,22 +58,27 @@
   </distributionManagement>
 
   <properties>
-    <epics.version>7.0.7</epics.version>
-    <vtype.version>1.0.4</vtype.version>
-    <openjfx.version>18</openjfx.version>
-    <jackson.version>2.10.1</jackson.version>
+    <epics.version>7.0.8</epics.version>
+    <vtype.version>1.0.5</vtype.version>
+    <openjfx.version>19</openjfx.version>
+    <jackson.version>2.12.3</jackson.version>
     <batik.version>1.14</batik.version>
     <mockito.version>2.23.4</mockito.version>
     <postgresql.driver.version>42.2.9</postgresql.driver.version>
+    <!-- When connections to older MySQL server fail because of CLIENT_PLUGIN_AUTH, downgrade to 5.1.45 -->
+    <mysql.version>8.0.30</mysql.version>
     <jetty.version>9.4.30.v20200611</jetty.version>
     <apache.commons.math.version>3.6.1</apache.commons.math.version>
-    <junit.version>4.13.1</junit.version>
-    <es.version>6.8.4</es.version>
+    <junit.version>5.8.2</junit.version>
+    <elasticsearch.version>8.2.0</elasticsearch.version>
     <!--<maven.repo.local>${project.build.directory}/.m2</maven.repo.local> -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <skipITTests>true</skipITTests>
     <guava.version>31.0.1-jre</guava.version>
+    <log4j-to-slf4j.version>2.17.1</log4j-to-slf4j.version>
+    <derby.version>10.16.1.1</derby.version>
+    <jython.version>2.7.3</jython.version>
   </properties>
   <build>
     <plugins>
@@ -101,7 +106,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.20</version>
+        <version>3.0.0-M7</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -118,6 +123,15 @@
             </goals>
           </execution>
         </executions>
+      </plugin>  
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.1.1</version>
+        <configuration>
+          <!-- Only document 'public' code -->
+          <show>public</show>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -241,40 +255,8 @@
 	</build>
 
 
-	<profiles>
+<profiles>
 		<!-- Release profile -->
-		<profile>
-			<id>releases</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.6.8</version>
-						<extensions>true</extensions>
-						<configuration>
-							<serverId>phoebus-releases</serverId>
-							<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-							<autoReleaseAfterClose>false</autoReleaseAfterClose>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>3.0.1</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
 		<!-- The it-tests profile when used will run all integration tests, these
       are junit test classes with names ending in "IT" -->
 		<profile>
@@ -313,25 +295,6 @@
 		</profile>
 		<!-- The all-tests profile when used will run all integration and user
       interface tests -->
-		<profile>
-			<id>all-tests</id>
-			<properties>
-				<skipITTests>false</skipITTests>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-failsafe-plugin</artifactId>
-						<configuration>
-							<includes>
-								<include>**/*UI.java</include>
-								<include>**/*IT.java</include>
-							</includes>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
 
 		<profile>
 			<id>all-headless-tests</id>
@@ -357,115 +320,9 @@
 			</build>
 		</profile>
 		<!-- a profile for generating javadocs and sources -->
-		<profile>
-			<id>docs</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>3.1.1</version>
-						<executions>
-							<execution>
-								<id>attach-javadocs</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-								<configuration>
-									<!-- add this to disable checking -->
-									<doclint>none</doclint>
-									<source>11</source>
-
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<!-- Attach sources -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
 		<!-- profile for and the website from the .rst files -->
-		<profile>
-			<id>sphinx</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-site-plugin</artifactId>
-						<version>3.7.1</version>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-project-info-reports-plugin</artifactId>
-						<version>3.0.0</version>
-					</plugin>
-					<!-- Generate the documentation for the Phoebus -->
-					<plugin>
-						<groupId>kr.motd.maven</groupId>
-						<artifactId>sphinx-maven-plugin</artifactId>
-						<version>2.10.0</version>
-						<configuration>
-							<sourceDirectory>${basedir}/docs/source</sourceDirectory>
-							<outputDirectory>${basedir}/docs/build/html</outputDirectory>
-						</configuration>
-						<executions>
-							<execution>
-								<phase>package</phase>
-								<goals>
-									<goal>generate</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
 		<!-- Profile for generating L10n status report. Execute mvn site -P l10n-status.
          The report will be located at target/site/l10n-status.html -->
-		<profile>
-			<id>l10n-status</id>
-			<reporting>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>l10n-maven-plugin</artifactId>
-						<version>1.0-alpha-2</version>
-						<configuration>
-							<aggregate>true</aggregate>
-							<includes>**/messages*.properties</includes>
-							<locales>
-								<locale>de</locale>
-								<locale>es</locale>
-								<locale>fr</locale>
-							</locales>
-						</configuration>
-					</plugin>
-					<!-- Disable all other reports for performance -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-project-info-reports-plugin</artifactId>
-						<version>3.0.0</version>
-						<reportSets>
-							<reportSet>
-								<reports></reports>
-							</reportSet>
-						</reportSets>
-					</plugin>
-				</plugins>
-			</reporting>
-		</profile>
 		<!-- A profile for preparing and releasing phoebus.
      Please refer to http://maven.apache.org/maven-release/maven-release-plugin/index.html
       for the detailed description of the steps involved. -->
@@ -506,7 +363,171 @@
 				</plugins>
 			</build>
 		</profile>
-	</profiles>
+		    <profile>
+      <id>all-tests</id>
+      <properties>
+        <skipITTests>false</skipITTests>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <includes>
+                <include>**/*UI.java</include>
+                <include>**/*IT.java</include>
+              </includes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+        <!-- The docker-tests profile sets the ignore_local_ipv6
+        environment variable to true since IPV6 is not supported in Github Actions at the moment. See ticket #2161 -->
+  <!-- a profile for generating javadocs and sources -->
+  <profile>
+    <id>docs</id>
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>3.1.1</version>
+          <executions>
+            <execution>
+              <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+              <configuration>
+                <!-- add this to disable checking -->
+                <doclint>none</doclint>
+                <source>11</source>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <!-- Attach sources -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
+  </profile>
+  <profile>
+      <id>sphinx</id>
+    <build>
+      <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-site-plugin</artifactId>
+            <version>3.7.1</version>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-project-info-reports-plugin</artifactId>
+            <version>3.0.0</version>
+          </plugin>          
+          <!-- Generate the documentation for the Phoebus -->
+          <plugin>
+            <groupId>kr.motd.maven</groupId>
+            <artifactId>sphinx-maven-plugin</artifactId>
+            <version>2.10.0</version>
+            <configuration>
+              <sourceDirectory>${basedir}/docs/source</sourceDirectory>
+              <outputDirectory>${basedir}/docs/build/html</outputDirectory>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>generate</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <!-- Profile for generating L10n status report. Execute mvn site -P l10n-status.
+         The report will be located at target/site/l10n-status.html -->
+    <profile>
+      <id>l10n-status</id>
+      <reporting>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>l10n-maven-plugin</artifactId>
+            <version>1.0-alpha-2</version>
+            <configuration>
+              <aggregate>true</aggregate>
+              <includes>**/messages*.properties</includes>
+              <locales>
+                <locale>de</locale>
+                <locale>es</locale>
+                <locale>fr</locale>
+              </locales>
+            </configuration>
+          </plugin>
+          <!-- Disable all other reports for performance -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-project-info-reports-plugin</artifactId>
+            <version>3.0.0</version>
+            <reportSets>
+              <reportSet>
+                <reports>
+                </reports>
+              </reportSet>
+            </reportSets>
+          </plugin>
+        </plugins>
+      </reporting>
+    </profile>
+    <!-- Release profile -->
+    <profile>
+      <id>releases</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.6.8</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>phoebus-releases</serverId>
+              <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+              <autoReleaseAfterClose>false</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.0.1</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  <!-- profile for and the website from the .rst files -->
+</profiles>
 
 	<repositories>
 		<!-- The Nexus snapshot repository hosting the latest diirt modules -->
@@ -515,7 +536,13 @@
 			<name>sonatype-nexus-snapshots</name>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</repository>
-	</repositories>
+    <!-- The Nexus snapshotData repository hosting the latest diirt modules -->
+    <repository>
+      <id>es-snapshots</id>
+      <name>elasticsearch snapshotData repo</name>
+      <url>https://snapshots.elastic.co/maven/</url>
+    </repository>
+  </repositories>
 
 	<modules>
 		<module>dependencies</module>

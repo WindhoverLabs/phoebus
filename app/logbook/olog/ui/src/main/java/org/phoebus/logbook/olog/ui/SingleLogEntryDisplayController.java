@@ -1,6 +1,5 @@
 package org.phoebus.logbook.olog.ui;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -23,8 +22,8 @@ import org.phoebus.logbook.LogbookException;
 import org.phoebus.logbook.Property;
 import org.phoebus.logbook.Tag;
 import org.phoebus.olog.es.api.model.OlogAttachment;
-import org.phoebus.olog.es.api.model.OlogLog;
 import org.phoebus.ui.javafx.ImageCache;
+import org.phoebus.ui.web.HyperLinkRedirectListener;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -51,12 +50,14 @@ public class SingleLogEntryDisplayController extends HtmlAwareController {
     @FXML
     Label logTitle;
     @FXML
-    WebView logDescription;
+    WebView webView;
+
+    private WebEngine webEngine;
 
     @FXML
     public TitledPane attachmentsPane;
     @FXML
-    public AttachmentsPreviewController attachmentsPreviewController;
+    public AttachmentsViewController attachmentsViewController;
 
     @FXML
     public TitledPane propertiesPane;
@@ -81,7 +82,7 @@ public class SingleLogEntryDisplayController extends HtmlAwareController {
     private Button copyURLButton;
 
     private LogEntry logEntry;
-    private LogClient logClient;
+    private final LogClient logClient;
 
     public SingleLogEntryDisplayController(LogClient logClient) {
         super(logClient.getServiceUrl());
@@ -96,68 +97,69 @@ public class SingleLogEntryDisplayController extends HtmlAwareController {
 
         copyURLButton.visibleProperty().setValue(LogbookUIPreferences.web_client_root_URL != null
                 && !LogbookUIPreferences.web_client_root_URL.isEmpty());
+
+        webEngine = webView.getEngine();
+        // This will make links clicked in the WebView to open in default browser.
+        webEngine.getLoadWorker().stateProperty().addListener(new HyperLinkRedirectListener(webView));
     }
 
-    public void setLogEntry(LogEntry logEntry) {
-        this.logEntry = logEntry;
+    public void setLogEntry(LogEntry entry) {
+        logEntry = entry;
 
+        // Set the log entry for the attachments view.
+        attachmentsViewController.invalidateAttachmentList(logEntry);
+        // Download attachments from service
+        fetchAttachments();
         // Always expand properties pane.
         attachmentsPane.setExpanded(true);
-        // Get the attachments from service
-        fetchAttachments();
-        //attachmentsPreviewController
-        //        .setAttachments(FXCollections.observableArrayList(logEntry.getAttachments()));
 
         List<String> hiddenPropertiesNames = Arrays.asList(LogbookUIPreferences.hidden_properties);
         // Remove the hidden properties
         List<Property> propertiesToShow =
-                logEntry.getProperties().stream().filter(property -> !hiddenPropertiesNames.contains(property.getName())).collect(Collectors.toList());
+                entry.getProperties().stream().filter(property -> !hiddenPropertiesNames.contains(property.getName())).collect(Collectors.toList());
         propertiesController.setProperties(propertiesToShow);
 
-        logTime.setText(SECONDS_FORMAT.format(logEntry.getCreatedDate()));
+        logTime.setText(SECONDS_FORMAT.format(entry.getCreatedDate()));
         logOwner.setText(logEntry.getOwner());
 
         logTitle.setWrapText(true);
-        logTitle.setText(logEntry.getTitle());
+        logTitle.setText(entry.getTitle());
 
-        // Content is defined by the source (default) or description field. If both are null
-        // or empty, do no load any content to the WebView.
-        WebEngine webEngine = logDescription.getEngine();
         webEngine.setUserStyleSheetLocation(getClass()
                 .getResource("/detail_log_webview.css").toExternalForm());
 
 
-        if (logEntry.getSource() != null) {
-            webEngine.loadContent(getFullHtml(logEntry.getSource()));
-        } else if (logEntry.getDescription() != null) {
-            webEngine.loadContent(getFullHtml(logEntry.getDescription()));
+        if (entry.getSource() != null) {
+            webEngine.loadContent(getFullHtml(entry.getSource()));
+        } else if (entry.getDescription() != null) {
+            webEngine.loadContent(getFullHtml(entry.getDescription()));
         }
         ObservableList<String> logbookList = FXCollections.observableArrayList();
-        logbookList.addAll(logEntry.getLogbooks().stream().map(Logbook::getName).collect(Collectors.toList()));
+        logbookList.addAll(entry.getLogbooks().stream().map(Logbook::getName).collect(Collectors.toList()));
 
         ObservableList<String> tagList = FXCollections.observableArrayList();
-        tagList.addAll(logEntry.getTags().stream().map(Tag::getName).collect(Collectors.toList()));
+        tagList.addAll(entry.getTags().stream().map(Tag::getName).collect(Collectors.toList()));
 
 
-        if (!logEntry.getLogbooks().isEmpty()) {
+        if (!entry.getLogbooks().isEmpty()) {
             logbooks.setWrapText(false);
-            logbooks.setText(logEntry.getLogbooks().stream().map(Logbook::getName).collect(Collectors.joining(",")));
+            logbooks.setText(entry.getLogbooks().stream().map(Logbook::getName).collect(Collectors.joining(",")));
         }
 
-        if (!logEntry.getTags().isEmpty()) {
-            tags.setText(logEntry.getTags().stream().map(Tag::getName).collect(Collectors.joining(",")));
+        if (!entry.getTags().isEmpty()) {
+            tags.setText(entry.getTags().stream().map(Tag::getName).collect(Collectors.joining(",")));
         } else {
             tags.setText(null);
         }
 
-        logEntryId.setText(Long.toString(logEntry.getId()));
-        level.setText(logEntry.getLevel());
+        logEntryId.setText(Long.toString(entry.getId()));
+        level.setText(entry.getLevel());
     }
 
     /**
      * Copies the URL of the log entry. The URL can be used to direct non-Phoebus clients to
      * the HTML representation as served by the web client, see
-     * https://github.com/Olog/phoebus-olog-web-client
+     * <a href="https://github.com/Olog/phoebus-olog-web-client">Phoebus Olog on Github</a>
      */
     @FXML
     public void copyURL() {
@@ -167,16 +169,13 @@ public class SingleLogEntryDisplayController extends HtmlAwareController {
     }
 
     /**
-     * Retrieves the actual attachments from the remote service and copies them to temporary files. The idea is that attachments
+     * Retrieves the actual attachments from the remote service and copies them to temporary files. Attachments
      * should be retrieved when user requests to see the details, not in connection to a log entry search.
-     * @return A {@link Collection} of {@link Attachment}s holding the attachment content.
      */
-    private void fetchAttachments(){
+    private void fetchAttachments() {
         JobManager.schedule("Fetch attachment data", monitor -> {
             Collection<Attachment> attachments = logEntry.getAttachments().stream()
-                    .filter( (attachment) -> {
-                        return attachment.getName() != null && !attachment.getName().isEmpty();
-                    })
+                    .filter((attachment) -> attachment.getName() != null && !attachment.getName().isEmpty())
                     .map((attachment) -> {
                         OlogAttachment fileAttachment = new OlogAttachment();
                         fileAttachment.setContentType(attachment.getContentType());
@@ -189,25 +188,16 @@ public class SingleLogEntryDisplayController extends HtmlAwareController {
                             temp.toFile().deleteOnExit();
                         } catch (LogbookException | IOException e) {
                             Logger.getLogger(SingleLogEntryDisplayController.class.getName())
-                                    .log(Level.WARNING, "Failed to retrieve attachment " + fileAttachment.getFileName() ,e);
+                                    .log(Level.WARNING, "Failed to retrieve attachment " + fileAttachment.getFileName(), e);
                         }
                         return fileAttachment;
                     }).collect(Collectors.toList());
-//            // TODO: to allow the UI to be used by non Olog log services commenting out the cast to OlogLog,
-//            // the model will not be updated.
-//            // Update the log entry attachments object
-//            ((OlogLog)logEntry).setAttachments(attachments);
-//            // Update UI
-//            Platform.runLater(() -> attachmentsPreviewController
-//                    .setAttachments(FXCollections.observableArrayList(logEntry.getAttachments())));
-
             // Update UI
-            Platform.runLater(() -> attachmentsPreviewController
-                    .setAttachments(FXCollections.observableArrayList(attachments)));
+            attachmentsViewController.setAttachments(FXCollections.observableArrayList(attachments));
         });
     }
 
-    private String getFullHtml(String commonmarkString){
+    private String getFullHtml(String commonmarkString) {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("<html><body><div class='olog'>");
         stringBuffer.append(toHtml(commonmarkString));

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019-2020 Oak Ridge National Laboratory.
+ * Copyright (c) 2019-2022 Oak Ridge National Laboratory.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -69,29 +69,30 @@ public class PVAStructureHelper
                 actual = (PVAStructure) field;
             else if (field instanceof PVANumber)
                 return Decoders.decodeNumber(struct, (PVANumber) field);
+            else if (field instanceof PVABool)
+                return Decoders.decodeBool(struct, (PVABool) field);
+            else if (field instanceof PVAStructureArray)
+            {
+                if (elementIndex.isPresent())
+                {
+                    actual = ((PVAStructureArray) field).get()[elementIndex.get()];
+                }
+            }
             else if (field instanceof PVAArray)
-                return Decoders.decodeArray(struct, (PVAArray) field);
+            {
+                if (elementIndex.isPresent())
+                {
+                    return decodeNTArray(struct, elementIndex.get());
+                }
+                else
+                {
+                    return Decoders.decodeArray(struct, (PVAArray) field);
+                }
+            }
             else if (field instanceof PVAString)
                 return Decoders.decodeString(struct, (PVAString) field);
         }
 
-        // Handle element references in arrays
-        if (elementIndex.isPresent())
-        {
-            final PVAData field = struct.get(name_helper.getField());
-            if (field instanceof PVAStructureArray)
-            {
-                actual = ((PVAStructureArray) field).get()[elementIndex.get()];
-            }
-            else if(field instanceof PVAArray)
-            {
-                return decodeNTArray(actual, elementIndex.get());
-            }
-            else
-            {
-                throw new Exception("Expected struct array for field " + name_helper.getField() + ", got " + struct);
-            }
-        }
         // Handle normative types
         String type = actual.getStructureName();
         if (type.startsWith("epics:nt/"))
@@ -153,6 +154,8 @@ public class PVAStructureHelper
     {
         if (field instanceof PVANumber)
             return Decoders.decodeNumber(struct, (PVANumber) field);
+        if (field instanceof PVABool)
+            return Decoders.decodeBool(struct, (PVABool) field);
         if (field instanceof PVAString)
             return Decoders.decodeString(struct, (PVAString) field);
         return null;

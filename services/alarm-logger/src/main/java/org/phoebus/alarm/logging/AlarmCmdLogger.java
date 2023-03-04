@@ -21,8 +21,10 @@ import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.kstream.TransformerSupplier;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.TimestampExtractor;
+import org.phoebus.applications.alarm.client.KafkaHelper;
 import org.phoebus.applications.alarm.messages.AlarmCommandMessage;
 import org.phoebus.applications.alarm.messages.MessageParser;
+import org.phoebus.framework.preferences.PreferencesReader;
 import org.phoebus.util.indexname.IndexNameHelper;
 
 /**
@@ -33,6 +35,8 @@ import org.phoebus.util.indexname.IndexNameHelper;
  *
  */
 public class AlarmCmdLogger implements Runnable {
+
+    private static final PreferencesReader prefs = new PreferencesReader(AlarmLoggingService.class, "/application.properties");
 
     private static final String INDEX_FORMAT = "_alarms_cmd";
     private final String topic;
@@ -63,7 +67,7 @@ public class AlarmCmdLogger implements Runnable {
         Properties props = new Properties();
         props.putAll(PropertiesHelper.getProperties());
 
-        Properties kafkaProps = new Properties();
+        Properties kafkaProps = KafkaHelper.loadPropsFromFile(props.getProperty("kafka_properties",""));
         kafkaProps.put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-" + topic + "-alarm-cmd");
 
         if (props.containsKey(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG)){
@@ -85,10 +89,10 @@ public class AlarmCmdLogger implements Runnable {
                 }));
 
         final String indexDateSpanUnits = props.getProperty("date_span_units");
-        final Integer indexDateSpanValue = Integer.parseInt(props.getProperty("date_span_value"));
+        final boolean useDatedIndexNames = Boolean.getBoolean(props.getProperty("use_dated_index_names"));
 
         try {
-            indexNameHelper = new IndexNameHelper(topic + INDEX_FORMAT , indexDateSpanUnits, indexDateSpanValue);
+            indexNameHelper = new IndexNameHelper(topic + INDEX_FORMAT, useDatedIndexNames, indexDateSpanUnits);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Time based index creation failed.", ex);
         }

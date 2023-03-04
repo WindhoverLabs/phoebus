@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.phoebus</groupId>
     <artifactId>dependencies</artifactId>
-    <version>4.6.10-SNAPSHOT</version>
+    <version>4.7.2-SNAPSHOT</version>
   </parent>
   <artifactId>phoebus-target</artifactId>
 
   <properties>
-    <spring.boot-version>2.1.5.RELEASE</spring.boot-version>
+    <spring.boot-version>2.7.3</spring.boot-version>
     <preReleaseScripts>${project.basedir}/release_classpath.py</preReleaseScripts>
   </properties>
 
@@ -65,11 +65,11 @@
     <dependency>
       <groupId>org.phoebus</groupId>
       <artifactId>install-jars</artifactId>
-      <version>4.6.10-SNAPSHOT</version>
+      <version>4.7.2-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
@@ -122,6 +122,13 @@
       <type>pom</type>
     </dependency>
 
+    <!-- PVA compression codec -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+      <version>1.21</version>
+    </dependency>
+
     <dependency>
       <groupId>org.epics</groupId>
       <artifactId>vtype</artifactId>
@@ -142,7 +149,7 @@
     <dependency>
       <groupId>org.python</groupId>
       <artifactId>jython-standalone</artifactId>
-      <version>2.7.2</version>
+      <version>${jython.version}</version>
     </dependency>
     <dependency>
       <groupId>net.sf.py4j</groupId>
@@ -153,7 +160,7 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.45</version>
+      <version>${mysql.version}</version>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>
@@ -263,7 +270,17 @@
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
-      <version>10.14.1.0</version>
+      <version>${derby.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbytools</artifactId>
+      <version>${derby.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyshared</artifactId>
+      <version>${derby.version}</version>
     </dependency>
 
     <!-- Kafka, used by alarm tools -->
@@ -294,14 +311,14 @@
 
     <!-- elastic client -->
     <dependency>
-      <groupId>org.elasticsearch.client</groupId>
-      <artifactId>elasticsearch-rest-high-level-client</artifactId>
-      <version>${es.version}</version>
+      <groupId>co.elastic.clients</groupId>
+      <artifactId>elasticsearch-java</artifactId>
+      <version>${elasticsearch.version}</version>
     </dependency>
     <dependency>
       <groupId>org.elasticsearch.client</groupId>
       <artifactId>elasticsearch-rest-client-sniffer</artifactId>
-      <version>${es.version}</version>
+      <version>${elasticsearch.version}</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.jfxtras/jfxtras-controls -->
     <dependency>
@@ -467,18 +484,24 @@
       <artifactId>testfx-junit</artifactId>
       <version>4.0.13-alpha</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>3.11.0</version>
+      <version>3.21.9</version>
     </dependency>
     <dependency>
       <groupId>org.epics</groupId>
       <artifactId>pbrawclient</artifactId>
-      <version>0.0.8</version>
+      <version>0.0.10</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jgit</groupId>
@@ -519,7 +542,7 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-to-slf4j</artifactId>
-      <version>2.14.1</version>
+      <version>${log4j-to-slf4j.version}</version>
     </dependency>
 
     <!--JUL bindings for sfl4j-->
@@ -534,6 +557,24 @@
   <artifactId>yamcs-client</artifactId>
   <version>5.6.0</version>
 </dependency>
+    <!-- https://mvnrepository.com/artifact/org.tango-controls/JTango -->
+    <dependency>
+      <groupId>org.tango-controls</groupId>
+      <artifactId>JTango</artifactId>
+      <version>9.7.0</version>
+      <type>pom</type>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.jms</groupId>
+      <artifactId>javax.jms-api</artifactId>
+      <version>2.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.json</groupId>
+      <artifactId>javax.json-api</artifactId>
+      <version>1.1.4</version>
+    </dependency>
   </dependencies>
 
   <build>

@@ -97,6 +97,8 @@ public class LogEntryCalenderViewController extends LogbookSearchController {
 
     @FXML
     public void initialize() {
+
+        advancedSearchViewController.setSearchCallback(this::search);
         configureComboBox();
         // Set the search parameters in the advanced search controller so that it operates on the same object.
         ologQueries.setAll(ologQueryManager.getQueries());
@@ -128,7 +130,7 @@ public class LogEntryCalenderViewController extends LogbookSearchController {
                         try {
                             if (clazz.isAssignableFrom(SingleLogEntryDisplayController.class)) {
                                 return clazz.getConstructor(LogClient.class).newInstance(client);
-                            } else if (clazz.isAssignableFrom(AttachmentsPreviewController.class)) {
+                            } else if (clazz.isAssignableFrom(AttachmentsViewController.class)) {
                                 return clazz.getConstructor().newInstance();
                             } else if (clazz.isAssignableFrom(LogEntryDisplayController.class)) {
                                 return clazz.getConstructor().newInstance();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Oak Ridge National Laboratory.
+ * Copyright (c) 2019-2022 Oak Ridge National Laboratory.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,11 @@
  ******************************************************************************/
 package org.phoebus.pv.pva;
 
+import static org.phoebus.pv.PV.logger;
+
+import java.util.logging.Level;
+
+import org.epics.pva.data.PVABool;
 import org.epics.pva.data.PVAByteArray;
 import org.epics.pva.data.PVAData;
 import org.epics.pva.data.PVADoubleArray;
@@ -45,9 +50,17 @@ public class ImageDecoder
     // Could just use VImageType.values()[i+1] instead of color_mode_types[i], but
     // (a) there are more VImageType values than defined color modes, and
     // (b) the NTNDArray specification for color mode might eventually change
-    private static final VImageType color_mode_types[] = { VImageType.TYPE_MONO, VImageType.TYPE_BAYER,
-            VImageType.TYPE_RGB1, VImageType.TYPE_RGB2, VImageType.TYPE_RGB3, VImageType.TYPE_YUV444,
-            VImageType.TYPE_YUV422, VImageType.TYPE_YUV411 };
+    private static final VImageType color_mode_types[] =
+    {
+        VImageType.TYPE_MONO,
+        VImageType.TYPE_BAYER,
+        VImageType.TYPE_RGB1,
+        VImageType.TYPE_RGB2,
+        VImageType.TYPE_RGB3,
+        VImageType.TYPE_YUV444,
+        VImageType.TYPE_YUV422,
+        VImageType.TYPE_YUV411
+    };
 
     /** @param struct Structure with image
      *  @return VType for image
@@ -63,21 +76,44 @@ public class ImageDecoder
         // The 'dimension' field must be present, but may be empty,
         // for example in never-processed area detector image
         final int dimensions[];
-        if (dim.get().length < 2)
+        final int offsets[];
+        final boolean reversed[];
+        final int n_dims = dim.get().length;
+        // Fetching by field name in case structure changes
+        if (n_dims <= 1)
+        {
             dimensions = new int[] { 0, 0 };
-        else
-        {   // Fetching by field name in case structure changes
-            final int n_dims = dim.get().length;
-            dimensions = new int[n_dims];
-            for (int i = 0; i < n_dims; ++i)
-            {
-                final PVAInt size = dim.get()[i].get("size");
-                dimensions[i] = size.get();
+            offsets = new int[] { 0, 0 };
+            reversed = new boolean[] { false, false };
+            if (n_dims == 1)
+            {   // Treat 1-dim array as "image" with height 1
+                final PVAStructure d = dim.get()[0];
+                PVAInt el = d.get("size");
+                dimensions[0] = el.get();
+                el = d.get("offset");
+                offsets[0] = el.get();
+                final PVABool b = d.get("reverse");
+                reversed[0] = b.get();
+
+                dimensions[1] = 1;
             }
         }
-
-        final PVAUnion value_field = struct.get("value");
-        final PVAData value = value_field.get();
+        else
+        {
+            dimensions = new int[n_dims];
+            offsets = new int[n_dims];
+            reversed = new boolean[n_dims];
+            for (int i = 0; i < n_dims; ++i)
+            {
+                final PVAStructure d = dim.get()[i];
+                PVAInt el = d.get("size");
+                dimensions[i] = el.get();
+                el = d.get("offset");
+                offsets[i] = el.get();
+                final PVABool b = d.get("reverse");
+                reversed[i] = b.get();
+            }
+        }
 
         // Try to get value of color mode attribute
         // TODO: bayer color mode requires a bayerPattern attribute as well...
@@ -125,24 +161,71 @@ public class ImageDecoder
             image_type = color_mode_types[colorMode];
 
         // Init. width, height
-        final int width, height;
+        final int width, height, xoffset, yoffset;
+        final boolean xreversed, yreversed;
         switch (image_type)
         {
             case TYPE_RGB1:
                 width = dimensions[1];
                 height = dimensions[2];
+                xoffset = offsets[1];
+                yoffset = offsets[2];
+                xreversed = reversed[1];
+                yreversed = reversed[2];
                 break;
             case TYPE_RGB2:
                 width = dimensions[0];
                 height = dimensions[2];
+                xoffset = offsets[0];
+                yoffset = offsets[2];
+                xreversed = reversed[0];
+                yreversed = reversed[2];
                 break;
             case TYPE_RGB3:
-                width = dimensions[0];
-                height = dimensions[1];
-                break;
             default:
                 width = dimensions[0];
                 height = dimensions[1];
+                xoffset = offsets[0];
+                yoffset = offsets[1];
+                xreversed = reversed[0];
+                yreversed = reversed[1];
+        }
+
+        // Fetch pixel data
+        final PVAUnion value_field = struct.get("value");
+        PVAData value = value_field.get();
+
+        // Value might be compressed, which means that a PVAByteArray
+        // needs to be de-compressed and then converted into the
+        // actual data type
+        final PVAStructure codec_info = struct.get("codec");
+        if (codec_info != null)
+        {
+            final PVAString name = codec_info.get("name");
+            if (name != null  &&  !name.get().isBlank())
+            {
+                // For compressed data, values is ubyte[] and
+                // codec.parameters holds original data type code
+                final PVAny parms = codec_info.get("parameters");
+                final PVAInt orig_type = parms.get();
+
+                Codec codec = null;
+                if (name.get().equalsIgnoreCase("lz4"))
+                    codec = new LZ4Codec();
+                else if (name.get().equalsIgnoreCase("jpeg"))
+                    codec = new JPEGCodec();
+                else
+                    logger.log(Level.WARNING, "NDArray codec '" + name.get() + "' is not implemented");
+
+                if (codec != null)
+                {
+                    if (value instanceof PVAByteArray)
+                        value = codec.decompress((PVAByteArray)value, orig_type.get(), width * height);
+                    else
+                        logger.log(Level.WARNING, "Expected PVAByteArray for data compressed with codec '" + name.get() +
+                                   "' but got " + value.getClass().getName());
+                }
+            }
         }
 
         // Get data and data type
@@ -206,6 +289,6 @@ public class ImageDecoder
 
         final Alarm alarm = Decoders.decodeAlarm(struct);
         final Time time = Decoders.decodeTime(struct);
-        return VImage.of(height, width, data, data_type, image_type, alarm, time);
+        return VImage.of(height, width, xoffset, yoffset, xreversed, yreversed, data, data_type, image_type, alarm, time);
     }
 }

@@ -63,20 +63,37 @@ public class SaveAsDialog
         final FileChooser dialog = new FileChooser();
         dialog.setTitle(title);
 
-        if (file != null)
-        {
-            // Dialog will fail if the directory does not exist
-            if (null != file.getParentFile() && file.getParentFile().exists())
-                dialog.setInitialDirectory(file.getParentFile());
-            dialog.setInitialFileName(file.getName());
-        }
-        if (filters != null)
-            dialog.getExtensionFilters().addAll(filters);
-
         if (!Preferences.default_save_path.isEmpty()){
             initial_directory = new File(Preferences.default_save_path);
             dialog.setInitialDirectory(initial_directory);
         }
+
+        if (file != null)
+        {
+            // Dialog will fail if the directory does not exist
+            if (file.exists())
+            {
+                if (file.isDirectory())
+                {
+                    dialog.setInitialDirectory(file);
+                }
+                else if (null != file.getParentFile() && file.getParentFile().exists())
+                {
+                    dialog.setInitialDirectory(file.getParentFile());
+                    dialog.setInitialFileName(file.getName());
+                }
+            }
+            // Even if the file does not exist, you could still use the existing parent folder
+            else if (null != file.getParentFile() && file.getParentFile().exists())
+            {
+                dialog.setInitialDirectory(file.getParentFile());
+            }
+
+        }
+
+        if (filters != null)
+            dialog.getExtensionFilters().addAll(filters);
+
         return doExecuteDialog(window, dialog);
     }
 
