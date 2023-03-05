@@ -38,6 +38,8 @@ import org.csstudio.display.builder.model.persist.WidgetFontService;
 import org.csstudio.display.builder.model.properties.*;
 import org.phoebus.ui.vtype.FormatOption;
 
+import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.*;
+
 /** Widget that represents a spinner
  *  @author Amanda Carpenter
  */
