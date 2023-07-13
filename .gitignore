@@ -118,3 +118,7 @@ buildNumber.properties
 
 # hs_err* files
 **/hs_err*
+
+*.classpath*
+*.project*
+
