@@ -9,13 +9,16 @@ import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.yamcs.client.EventSubscription;
+import org.yamcs.client.Page;
 import org.yamcs.client.YamcsClient;
 import org.yamcs.client.archive.ArchiveClient;
 import org.yamcs.client.processor.ProcessorClient;
 import org.yamcs.protobuf.CreateEventRequest;
 import org.yamcs.protobuf.GetServerInfoResponse;
 import org.yamcs.protobuf.GetServerInfoResponse.CommandOptionInfo;
+import org.yamcs.protobuf.Mdb.ParameterInfo;
 import org.yamcs.protobuf.SubscribeEventsRequest;
+
 // import org.yamcs.protobuf.Event;
 
 public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
@@ -24,6 +27,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   private ProcessorClient yamcsProcessor = null;
   private YamcsSubscriptionService paramSubscriptionService;
   private EventSubscription eventSubscription;
+  //  private EventSubscription eventSubscription;
   private ArchiveClient yamcsArchiveClient;
   private CMDR_YamcsInstanceState instanceState;
 
@@ -131,6 +135,40 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
         SubscribeEventsRequest.newBuilder().setInstance(getName()).build());
   }
 
+  protected void initMDBParameterRDequest(YamcsClient yamcsClient, String serverName) {
+    var mdb = yamcsClient.createMissionDatabaseClient(getName()).listParameters();
+    Page<ParameterInfo> paramsPage = null;
+    try {
+      paramsPage = mdb.get();
+    } catch (InterruptedException | ExecutionException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    var it = paramsPage.iterator();
+    it.forEachRemaining(
+        p -> {
+          System.out.println("p-->" + p.getQualifiedName());
+
+          for (var m : p.getType().getMemberList()) {
+            System.out.println("p member-->" + m.getName());
+          }
+        });
+    while (paramsPage.hasNextPage()) {
+      //      var it = paramsPage.iterator();
+      try {
+        paramsPage = paramsPage.getNextPage().get();
+      } catch (InterruptedException | ExecutionException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      it = paramsPage.iterator();
+      it.forEachRemaining(
+          p -> {
+            System.out.println("p-->" + p.getQualifiedName());
+          });
+    }
+  }
+
   /**
    * Initializes all of the subscriptions to the servers such as event and parameter subscriptions.
    * Always call this AFTER the websocket connection to YAMCS has been established. Ideally inside
@@ -146,6 +184,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     initProcessorClient(yamcsClient);
     initYamcsSubscriptionService(yamcsClient, serverName);
     initEventSubscription(yamcsClient, serverName);
+    initMDBParameterRDequest(yamcsClient, serverName);
 
     try {
       initCommandOptions(yamcsClient);
