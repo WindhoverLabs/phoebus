@@ -165,6 +165,10 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
       it.forEachRemaining(
           p -> {
             System.out.println("p-->" + p.getQualifiedName());
+
+            for (var m : p.getType().getMemberList()) {
+              System.out.println("p member-->" + m.getName());
+            }
           });
     }
   }
