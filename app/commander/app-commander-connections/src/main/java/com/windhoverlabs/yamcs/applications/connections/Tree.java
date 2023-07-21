@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 
 import com.windhoverlabs.pv.yamcs.YamcsAware;
 import com.windhoverlabs.yamcs.core.CMDR_YamcsInstance;
+import com.windhoverlabs.yamcs.core.CMDR_YamcsInstanceState;
 import com.windhoverlabs.yamcs.core.ConnectionState;
 import com.windhoverlabs.yamcs.core.YamcsObject;
 import com.windhoverlabs.yamcs.core.YamcsObjectManager;
@@ -18,6 +19,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Tooltip;
@@ -37,6 +39,8 @@ public class Tree {
 
   // TODO: Move this root handling to another model class. This would make it easier to decouple
   private YamcsObject<?> root;
+
+  private Menu switchProcessor;
 
   @FXML
   public void initialize() {
@@ -270,6 +274,8 @@ public class Tree {
           }
         });
 
+    switchProcessor = new Menu(Messages.SwitchProcessor);
+
     // add menu items to menu
     contextMenu.getItems().add(addServer);
     contextMenu.getItems().add(removeServer);
@@ -280,6 +286,7 @@ public class Tree {
     contextMenu.getItems().add(disconnectServer);
     contextMenu.getItems().add(setAsDefault);
     contextMenu.getItems().add(editServer);
+    contextMenu.getItems().add(switchProcessor);
 
     // setContextMenu to label
     treeView.setContextMenu(contextMenu);
@@ -300,6 +307,7 @@ public class Tree {
             editServer.setDisable(true);
             connectAllServers.setDisable(true);
             disconnectAllServers.setDisable(true);
+            switchProcessor.setDisable(false);
 
           } else {
             YamcsObject<?> selectedObject = selectedItem.getValue();
@@ -332,6 +340,7 @@ public class Tree {
                 editServer.setDisable(true);
               }
               setAsDefault.setDisable(true);
+              switchProcessor.setDisable(true);
             } else if (selectedObject.getObjectType() == CMDR_YamcsInstance.OBJECT_TYPE) {
               /* This is a instance node. */
               addServer.setDisable(true);
@@ -344,8 +353,10 @@ public class Tree {
               if (YamcsObjectManager.getDefaultInstance() != null
                   && YamcsObjectManager.getDefaultInstance().equals(selectedObject)) {
                 setAsDefault.setDisable(true);
+                switchProcessor.setDisable(false);
               } else {
                 setAsDefault.setDisable(false);
+                switchProcessor.setDisable(true);
               }
 
               editServer.setDisable(true);
@@ -359,7 +370,24 @@ public class Tree {
               disconnectServer.setDisable(false);
               setAsDefault.setDisable(false);
               editServer.setDisable(false);
+              switchProcessor.setDisable(true);
             }
+          }
+          if (YamcsObjectManager.getDefaultInstance() != null
+              && YamcsObjectManager.getDefaultInstance().getInstanceState()
+                  == CMDR_YamcsInstanceState.ACTIVATED) {
+            switchProcessor.getItems().clear();
+            YamcsObjectManager.getDefaultInstance()
+                .getProcessors(YamcsObjectManager.getDefaultServer().getYamcsClient())
+                .forEach(
+                    pName -> {
+                      MenuItem processor = new MenuItem(pName);
+                      processor.setOnAction(
+                          event -> {
+                            YamcsObjectManager.switchProcessor(pName);
+                          });
+                      switchProcessor.getItems().add(processor);
+                    });
           }
         });
   }

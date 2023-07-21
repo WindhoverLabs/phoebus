@@ -53,6 +53,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
   private static final Logger log = Logger.getLogger(YamcsSubscriptionService.class.getName());
 
   private String instanceName;
+  private String currentProcessor;
 
   private Map<NamedObjectId, Set<YamcsPV>> pvsById = new LinkedHashMap<>();
 
@@ -74,10 +75,14 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
   static final Alarm UDF = Alarm.of(AlarmSeverity.UNDEFINED, AlarmStatus.UNDEFINED, "UDF");
 
   public YamcsSubscriptionService(
-      ParameterSubscription newSubscriprion, String newServerName, String newInstanceName) {
+      ParameterSubscription newSubscriprion,
+      String newServerName,
+      String newInstanceName,
+      String processor) {
     serverName = newServerName;
     subscription = newSubscriprion;
     instanceName = newInstanceName;
+    currentProcessor = processor;
     subscription.addListener(this);
 
     // Periodically check if the subscription needs a refresh
@@ -95,6 +100,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
                     .setAbortOnInvalid(false)
                     .setUpdateOnExpiration(true)
                     .addAllId(ids)
+                    .setProcessor(currentProcessor)
                     .build());
           }
         },
@@ -128,11 +134,13 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
   @Override
   public void changeProcessor(String instance, String processor) {
+    currentProcessor = processor;
     executor.execute(
         () -> {
           // Ready to receive some data
           Set<NamedObjectId> ids = getRequestedIdentifiers();
-          log.fine(String.format("Subscribing to %s [%s/%s]", ids, instance, processor));
+          //          log.fine(String.format("Subscribing to %s [%s/%s]", ids, instance,
+          // processor));
           subscription.sendMessage(
               SubscribeParametersRequest.newBuilder()
                   .setInstance(instance)
@@ -162,7 +170,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
       subscription.sendMessage(
           SubscribeParametersRequest.newBuilder()
               .setInstance(instanceName)
-              .setProcessor("realtime")
+              .setProcessor(currentProcessor)
               .setSendFromCache(true)
               .setAbortOnInvalid(false)
               .setUpdateOnExpiration(false)

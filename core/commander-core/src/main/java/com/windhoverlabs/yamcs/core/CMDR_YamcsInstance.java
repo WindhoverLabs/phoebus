@@ -3,6 +3,7 @@ package com.windhoverlabs.yamcs.core;
 import com.windhoverlabs.pv.yamcs.YamcsPV;
 import com.windhoverlabs.pv.yamcs.YamcsSubscriptionService;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
@@ -26,6 +27,10 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   private EventSubscription eventSubscription;
   private ArchiveClient yamcsArchiveClient;
   private CMDR_YamcsInstanceState instanceState;
+
+  public CMDR_YamcsInstanceState getInstanceState() {
+    return instanceState;
+  }
 
   // Make this class generic?
   public class CommandOption {
@@ -100,12 +105,14 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
   protected void initProcessorClient(YamcsClient yamcsClient) {
     yamcsProcessor = yamcsClient.createProcessorClient(getName(), "realtime");
+    //    yamcsClient.listProcessors(OBJECT_TYPE)
   }
 
-  protected void initYamcsSubscriptionService(YamcsClient yamcsClient, String serverName) {
+  protected void initYamcsSubscriptionService(
+      YamcsClient yamcsClient, String serverName, String procesor) {
     paramSubscriptionService =
         new YamcsSubscriptionService(
-            yamcsClient.createParameterSubscription(), serverName, this.getName());
+            yamcsClient.createParameterSubscription(), serverName, this.getName(), procesor);
   }
 
   protected void initEventSubscription(YamcsClient yamcsClient, String serverName) {
@@ -144,7 +151,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   // TODO:This shoud return whether or not the instance activated successfully.
   public void activate(YamcsClient yamcsClient, String serverName) {
     initProcessorClient(yamcsClient);
-    initYamcsSubscriptionService(yamcsClient, serverName);
+    initYamcsSubscriptionService(yamcsClient, serverName, "realtime");
     initEventSubscription(yamcsClient, serverName);
 
     try {
@@ -202,5 +209,30 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
             .setMessage(message)
             .setSource("Commander")
             .build());
+  }
+
+  public ArrayList<String> getProcessors(YamcsClient yamcsClient) {
+
+    ArrayList<String> processors = new ArrayList<String>();
+    try {
+      yamcsClient
+          .listProcessors(getName())
+          .get()
+          .forEach(
+              p -> {
+                processors.add(p.getName());
+              });
+    } catch (InterruptedException | ExecutionException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return processors;
+  }
+
+  public void switchProcessor(YamcsClient yamcsClient, String serverName, String processorName) {
+    //	  This seems redundant....
+    paramSubscriptionService.destroy();
+    initYamcsSubscriptionService(yamcsClient, serverName, processorName);
   }
 }
