@@ -175,4 +175,15 @@ public final class YamcsObjectManager {
   public static void removeListener(YamcsAware l) {
     listeners.remove(l);
   }
+
+  public static void switchProcessor(String processorName) {
+    if (defaultInstance != null) {
+      for (YamcsAware listener : listeners) {
+        getDefaultInstance()
+            .switchProcessor(
+                getDefaultServer().getYamcsClient(), getDefaultServer().getName(), processorName);
+        listener.changeProcessor(getDefaultInstance().getName(), processorName);
+      }
+    }
+  }
 }

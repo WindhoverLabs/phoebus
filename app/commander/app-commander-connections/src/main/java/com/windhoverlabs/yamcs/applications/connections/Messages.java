@@ -28,6 +28,7 @@ public class Messages {
   public static String MenuPath;
   public static String RemoveConnection;
   public static String SetDefault;
+  public static String SwitchProcessor;
   // ---
   // --- Keep alphabetically sorted and 'in sync' with messages.properties!
   // ---
