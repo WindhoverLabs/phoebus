@@ -12,6 +12,7 @@ import org.yamcs.client.EventSubscription;
 import org.yamcs.client.Page;
 import org.yamcs.client.YamcsClient;
 import org.yamcs.client.archive.ArchiveClient;
+import org.yamcs.client.mdb.MissionDatabaseClient.ListOptions;
 import org.yamcs.client.processor.ProcessorClient;
 import org.yamcs.protobuf.CreateEventRequest;
 import org.yamcs.protobuf.GetServerInfoResponse;
@@ -27,6 +28,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   private ProcessorClient yamcsProcessor = null;
   private YamcsSubscriptionService paramSubscriptionService;
   private EventSubscription eventSubscription;
+  private MissionDatabase missionDatabase;
   //  private EventSubscription eventSubscription;
   private ArchiveClient yamcsArchiveClient;
   private CMDR_YamcsInstanceState instanceState;
@@ -135,6 +137,37 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
         SubscribeEventsRequest.newBuilder().setInstance(getName()).build());
   }
 
+  private MissionDatabase loadMissionDatabase(YamcsClient client) {
+    //      monitor.subTask("Loading mission database");
+    var missionDatabase = new MissionDatabase();
+
+    var mdbClient = client.createMissionDatabaseClient(getName());
+    try {
+      //          log.fine("Fetching available parameters");
+      var page = mdbClient.listParameters(ListOptions.limit(500)).get();
+      page.iterator().forEachRemaining(missionDatabase::addParameter);
+      while (page.hasNextPage()) {
+        page = page.getNextPage().get();
+        page.iterator().forEachRemaining(missionDatabase::addParameter);
+      }
+
+      //          log.fine("Fetching available commands");
+      var commandPage = mdbClient.listCommands(ListOptions.limit(200)).get();
+      commandPage.iterator().forEachRemaining(missionDatabase::addCommand);
+      while (commandPage.hasNextPage()) {
+        commandPage = commandPage.getNextPage().get();
+        commandPage.iterator().forEachRemaining(missionDatabase::addCommand);
+      }
+      //          log.info(String.format("Loaded %d parameters and %d commands",
+      // missionDatabase.getParameterCount(),
+      //                  missionDatabase.getCommandCount()));
+    } catch (Exception e) {
+      e.printStackTrace();
+      //          throw new Exception("Failed to load mission database", e);
+    }
+    return missionDatabase;
+  }
+
   protected void initMDBParameterRDequest(YamcsClient yamcsClient, String serverName) {
     var mdb = yamcsClient.createMissionDatabaseClient(getName()).listParameters();
     Page<ParameterInfo> paramsPage = null;
@@ -189,6 +222,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     initYamcsSubscriptionService(yamcsClient, serverName);
     initEventSubscription(yamcsClient, serverName);
     initMDBParameterRDequest(yamcsClient, serverName);
+    missionDatabase = loadMissionDatabase(yamcsClient);
 
     try {
       initCommandOptions(yamcsClient);
@@ -202,6 +236,10 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
       return;
     }
     instanceState = CMDR_YamcsInstanceState.ACTIVATED;
+  }
+
+  public MissionDatabase getMissionDatabase() {
+    return missionDatabase;
   }
 
   private void initCommandOptions(YamcsClient yamcsClient)
