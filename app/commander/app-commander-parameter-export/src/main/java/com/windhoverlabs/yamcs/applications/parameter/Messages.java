@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  ******************************************************************************/
-package com.windhoverlabs.yamcs.applications.events;
+package com.windhoverlabs.yamcs.applications.parameter;
 
 import org.phoebus.framework.nls.NLS;
 

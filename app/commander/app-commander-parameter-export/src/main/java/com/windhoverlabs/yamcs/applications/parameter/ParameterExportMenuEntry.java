@@ -1,4 +1,4 @@
-package com.windhoverlabs.yamcs.applications.events;
+package com.windhoverlabs.yamcs.applications.parameter;
 
 import javafx.scene.image.Image;
 import org.phoebus.framework.workbench.ApplicationService;

@@ -1,4 +1,4 @@
-package com.windhoverlabs.yamcs.applications.events;
+package com.windhoverlabs.yamcs.applications.parameter;
 
 import java.nio.file.Path;
 import java.util.logging.Level;

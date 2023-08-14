@@ -1,4 +1,4 @@
-package com.windhoverlabs.yamcs.applications.events;
+package com.windhoverlabs.yamcs.applications.parameter;
 
 import com.windhoverlabs.pv.yamcs.YamcsAware;
 import com.windhoverlabs.yamcs.core.CMDR_Event;
