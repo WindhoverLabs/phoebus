@@ -1,6 +1,5 @@
 package com.windhoverlabs.yamcs.applications.parameter;
 
-import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.phoebus.framework.preferences.AnnotatedPreferences;
@@ -22,7 +21,7 @@ public class ParameterExport implements AppDescriptor {
   static {
     AnnotatedPreferences.initialize(ParameterExport.class, "/eventviewer_preferences.properties");
   }
-  
+
   @Override
   public String getName() {
     return Name;

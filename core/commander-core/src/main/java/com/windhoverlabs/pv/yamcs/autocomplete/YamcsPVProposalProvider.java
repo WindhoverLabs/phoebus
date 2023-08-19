@@ -44,7 +44,8 @@ public class YamcsPVProposalProvider implements PVProposalProvider {
     //      }
 
     //      content = AutoCompleteHelper.trimWildcards(content);
-    //      content = content.replaceAll("\\[[0-9]+\\]", "[]"); // Ignore specific index into array
+    //          content = content.replaceAll("\\[[0-9]+\\]", "[]"); // Ignore specific index into
+    // array
     //      var namePattern = AutoCompleteHelper.convertToPattern(content);
     //      namePattern = Pattern.compile(namePattern.pattern(), Pattern.CASE_INSENSITIVE);
 
@@ -96,9 +97,29 @@ public class YamcsPVProposalProvider implements PVProposalProvider {
       }
     }
     if (type.hasArrayInfo()) {
-      var entryPvName = basePvName + "[]";
+      var entryPvName = new StringBuilder(basePvName + "[]");
+      //      type.getArrayInfo().getDimensionsList().forEach((t) ->
+      //      {
+      //          System.out.println("arrayItem-->" + t);
+      //          entryPvName.insert(basePvName.length(), index);
+      //          index++;
+      //      });
       var entryType = type.getArrayInfo().getType();
-      scanTypeForPvCandidates(entryPvName, entryType, pvCandidates);
+      for (int i = 0; i < type.getArrayInfo().getDimensionsList().get(0).getFixedValue(); i++) {
+        //        System.out.println("arrayItem-->" + entryPvName);
+        entryPvName = new StringBuilder(basePvName + "[]");
+        entryPvName.insert(basePvName.length() + 1, i);
+        System.out.println("array info for " + entryPvName);
+        pvCandidates.add(entryPvName.toString());
+
+        //        scanTypeForPvCandidates(entryPvName.toString(), entryType, pvCandidates);
+      }
+      //      for (var arrayItem : type.getArrayInfo().getDimensionsList()) {
+      //        //    	  arrayItem.
+      //        System.out.println("arrayItem-->" + arrayItem);
+      //        entryPvName.insert(basePvName.length(), index);
+      //        index++;
+      //      }
     }
   }
 

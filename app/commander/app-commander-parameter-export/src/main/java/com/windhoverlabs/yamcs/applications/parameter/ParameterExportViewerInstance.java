@@ -24,7 +24,8 @@ public class ParameterExportViewerInstance implements AppInstance {
   private static final String YAMCS_EVENTS_MEMENTO_FILENAME = "yamcs_events_memento";
 
   /** Logger for all file browser code */
-  public static final Logger logger = Logger.getLogger(ParameterExportViewerInstance.class.getPackageName());
+  public static final Logger logger =
+      Logger.getLogger(ParameterExportViewerInstance.class.getPackageName());
 
   /** Memento tags */
   private static final String YAMCS_EVENTS = "yamcs_events", YAMCS_EVENT_MESSAGE = "message";
@@ -45,7 +46,7 @@ public class ParameterExportViewerInstance implements AppInstance {
     ResourceBundle resourceBundle = NLS.getMessages(Messages.class);
     FXMLLoader loader = new FXMLLoader();
     loader.setResources(resourceBundle);
-    loader.setLocation(this.getClass().getResource("EventView.fxml"));
+    loader.setLocation(this.getClass().getResource("ExportView.fxml"));
 
     try {
       content = loader.load();
