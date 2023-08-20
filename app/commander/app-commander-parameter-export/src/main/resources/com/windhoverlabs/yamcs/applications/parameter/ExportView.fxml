@@ -1,40 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="gridPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="190.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.windhoverlabs.yamcs.applications.parameter.ParameterExportController">
-   <columnConstraints>
-      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="60.0" />
-   </columnConstraints>
-   <rowConstraints>
-      <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="32.0" vgrow="ALWAYS" />
-      <RowConstraints minHeight="10.0" prefHeight="318.0" vgrow="ALWAYS" />
-      <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="32.0" vgrow="ALWAYS" />
-   </rowConstraints>
-   <children>
-      <HBox maxHeight="-Infinity" prefHeight="25.0" prefWidth="190.0" GridPane.rowIndex="2">
+<SplitPane fx:id="mainSplit" dividerPositions="0.5" orientation="VERTICAL" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.windhoverlabs.yamcs.applications.parameter.ParameterExportController">
+   <items>
+      <GridPane fx:id="gridPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="190.0">
+         <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="60.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="32.0" vgrow="ALWAYS" />
+            <RowConstraints minHeight="10.0" prefHeight="318.0" vgrow="ALWAYS" />
+         </rowConstraints>
          <children>
-            <Button fx:id="exportButton" mnemonicParsing="false" text="Export To CSV" />
+            <HBox maxHeight="-Infinity" prefHeight="25.0" prefWidth="190.0">
+               <children>
+                  <Label alignment="CENTER" text="PV Name" HBox.hgrow="ALWAYS">
+                     <padding>
+                        <Insets top="5.0" />
+                     </padding>
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="pvTextField" maxWidth="1.7976931348623157E308" promptText="Enter PV To Export" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
          </children>
-      </HBox>
-      <HBox maxHeight="-Infinity" prefHeight="25.0" prefWidth="190.0">
-         <children>
-            <Label alignment="CENTER" text="PV Name" HBox.hgrow="ALWAYS">
-               <padding>
-                  <Insets top="5.0" />
-               </padding>
-               <HBox.margin>
-                  <Insets right="5.0" />
-               </HBox.margin></Label>
-            <TextField fx:id="pvTextField" maxWidth="1.7976931348623157E308" promptText="Enter PV To Export" HBox.hgrow="ALWAYS" />
-         </children>
-      </HBox>
-   </children>
-</GridPane>
+      </GridPane>
+      <TabPane fx:id="exportTabPane" minHeight="-Infinity" prefHeight="300.0" prefWidth="200.0" />
+   </items>
+</SplitPane>

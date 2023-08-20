@@ -4,20 +4,23 @@ import com.windhoverlabs.pv.yamcs.YamcsAware;
 import com.windhoverlabs.yamcs.core.CMDR_Event;
 import com.windhoverlabs.yamcs.core.YamcsObjectManager;
 import com.windhoverlabs.yamcs.core.YamcsServer;
-import java.text.DecimalFormat;
-import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -25,13 +28,12 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
+import org.csstudio.trends.databrowser3.Activator;
+import org.csstudio.trends.databrowser3.Messages;
 import org.phoebus.framework.autocomplete.PVProposalService;
 import org.phoebus.framework.autocomplete.Proposal;
 import org.phoebus.framework.autocomplete.ProposalService;
-// import org.phoebus.ui.autocomplete.AutocompleteItem;
-// import org.phoebus.ui.autocomplete.TextInputControl;
-// import org.phoebus.ui.autocomplete.AutocompleteMenu.Result;
-import org.yamcs.protobuf.Event.EventSeverity;
 
 public class ParameterExportController {
   class ExportPV {
@@ -41,7 +43,6 @@ public class ParameterExportController {
     ExportPV(String pv, boolean export) {
       this.pv.set(pv);
       this.export.set(export);
-      ;
     }
 
     public final SimpleStringProperty pvProperty() {
@@ -75,76 +76,58 @@ public class ParameterExportController {
 
   @FXML private GridPane gridPane;
 
-  @FXML private Button exportButton;
-
   @FXML private TextField pvTextField;
 
-  private ObservableList<ExportPV> exportList = FXCollections.observableArrayList();
+  private ObservableList<ExportPV> proposalList = FXCollections.observableArrayList();
+  private HashSet<String> exportSet = new HashSet<String>();
+
+  private ExportView paramExportView = new ExportView();
+
+  private Tab exportTab;
+  @FXML private TabPane exportTabPane;
+  @FXML private SplitPane mainSplit;
 
   public Node getRootPane() {
-    return gridPane;
+    return mainSplit;
   }
 
   @FXML
   public void initialize() {
     tableView.setId("paramExportTable");
-    //    exportToggle.setCellValueFactory(
-    //        (event) -> {
-    //          return new SimpleStringProperty(event.getValue().getMessage());
-    //        });
 
     pvColumn.setCellValueFactory(new PropertyValueFactory<>("pv"));
     pvColumn.setCellValueFactory(cellData -> cellData.getValue().pvProperty());
-    //    exportColumn.setCellValueFactory(new PropertyValueFactory<>("export"));
     exportColumn.setCellValueFactory(cellData -> cellData.getValue().exportProperty());
     exportColumn.setCellFactory(tc -> new CheckBoxTableCell<>());
 
-    //    exportColumn.setCellFactory(
-    //        column -> {
-    //          return new TableCell<ExportPV, String>() {
-    //            @Override
-    //            protected void updateItem(String item, boolean empty) {
-    //              super.updateItem(item, empty); // This is mandatory
-    //              setTextFill(Color.BLACK);
-    //              if (item == null || empty) { // If the cell is empty
-    //                setText(null);
-    //                setStyle("");
-    //              } else { // If the cell is not empty
-    //                // We get here all the info of the event of this row
-    //                //                CMDR_Event event =
-    // getTableView().getItems().get(getIndex());
-    //                CMDR_Event event = null;
-    //                switch (event.getSeverity()) {
-    //                  case CRITICAL:
-    //                    this.getStyleClass().add("critical");
-    //                    break;
-    //                  case DISTRESS:
-    //                    this.getStyleClass().add("distress");
-    //                    break;
-    //                  case ERROR:
-    //                    this.getStyleClass().add("error");
-    //                    break;
-    //                  case INFO:
-    //                    this.getStyleClass().add("info");
-    //                    break;
-    //                  case SEVERE:
-    //                    this.getStyleClass().add("severe");
-    //                    break;
-    //                  case WARNING:
-    //                    this.getStyleClass().add("warning");
-    //                    break;
-    //                  case WATCH:
-    //                    this.getStyleClass().add("watch");
-    //                    break;
-    //                  default:
-    //                    setTextFill(Color.BLACK);
-    //                    break;
-    //                }
-    //                setText(item); // Put the String data in the cell
-    //              }
-    //            }
-    //          };
-    //        });
+    this.proposalList =
+        FXCollections.observableArrayList(
+            new Callback<ExportPV, Observable[]>() {
+
+              @Override
+              public Observable[] call(ExportPV param) {
+                //                System.out.println("boolean:" + param.exportProperty());
+                return new Observable[] {param.exportProperty()};
+              }
+            });
+
+    this.proposalList.addListener(
+        new ListChangeListener<ExportPV>() {
+
+          @Override
+          public void onChanged(ListChangeListener.Change<? extends ExportPV> c) {
+            while (c.next()) {
+              if (c.wasUpdated()) {
+                ExportPV item = proposalList.get(c.getFrom());
+                if (item.exportProperty().get()) {
+                  exportSet.add(item.pvProperty().get());
+                } else {
+                  exportSet.remove(item.pvProperty().get());
+                }
+              }
+            }
+          }
+        });
     tableView.getColumns().addAll(exportColumn, pvColumn);
 
     yamcsListener =
@@ -218,17 +201,9 @@ public class ParameterExportController {
         };
 
     YamcsObjectManager.addYamcsListener(yamcsListener);
-
-    System.out.println("items part of root-->" + YamcsObjectManager.getRoot().getItems());
-    //    for (YamcsServer s : YamcsObjectManager.getRoot().getItems()) {
-    //      s.addListener(yamcsListener);
-    //    }
-
-    //    pvTextField.onKe
     pvTextField.setOnKeyTyped(
         e -> {
           String text = pvTextField.getText();
-          System.out.println("type event:" + pvTextField.getText());
 
           proposalService.lookup(
               text,
@@ -251,9 +226,15 @@ public class ParameterExportController {
     //    pvTextField.setOnAction(
     //        (action) -> {
     //        });
-    tableView.setItems(exportList);
+    tableView.setItems(proposalList);
     tableView.setEditable(true);
     gridPane.add(tableView, 0, 1);
+    createExportTab();
+    mainSplit.setOrientation(Orientation.VERTICAL);
+    mainSplit.setDividerPositions(0.8);
+    //    mainSplit.
+    //    mainSplit = new SplitPane(gridPane, exportTabPane);
+    //    gridPane.add(paramExportView, 0, 2);
   }
 
   private void handleLookupResult(
@@ -262,12 +243,15 @@ public class ParameterExportController {
       final String name,
       final int priority,
       final List<Proposal> proposals) {
-    System.out.println("handleLookupResult");
-    synchronized (exportList) {
-      exportList.clear();
+    synchronized (proposalList) {
+      proposalList.clear();
+      exportSet.forEach(
+          item -> {
+            proposalList.add(new ExportPV(item, true));
+          });
       for (Proposal p : proposals) {
         System.out.println(p.getValue());
-        exportList.add(new ExportPV(p.getValue(), true));
+        proposalList.add(new ExportPV(p.getValue(), false));
       }
     }
     //      final List<AutocompleteItem> items = new ArrayList<>();
@@ -300,28 +284,16 @@ public class ParameterExportController {
     // else: already pending, will use the updated 'menu_items'
   }
 
-  public ParameterExportController() {
-    System.out.println("EventViewerController constructor$$$$$$$$$$$$$$");
-  }
-
-  private ObservableList<CMDR_Event> generateEvents(int numberOfEvents) {
-    ObservableList<CMDR_Event> events = FXCollections.observableArrayList();
-    for (int i = 0; i < numberOfEvents; i++) {
-      DecimalFormat formatter = new DecimalFormat("#,###.00");
-      events.add(
-          new CMDR_Event(
-              "Fake Events" + formatter.format(i + 1),
-              Instant.now(),
-              EventSeverity.INFO,
-              "FAKE",
-              Instant.now(),
-              "FAKE_SOURCE",
-              "FAKE_INSTANCE"));
-    }
-    return events;
-  }
+  public ParameterExportController() {}
 
   public void unInit() {
     YamcsObjectManager.removeListener(yamcsListener);
+  }
+
+  private void createExportTab() {
+    exportTab = new Tab(Messages.Export, paramExportView);
+    exportTab.setClosable(false);
+    exportTab.setGraphic(Activator.getIcon("export"));
+    exportTabPane.getTabs().add(exportTab);
   }
 }
