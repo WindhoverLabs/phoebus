@@ -7,19 +7,30 @@
  ******************************************************************************/
 package com.windhoverlabs.yamcs.applications.parameter;
 
-import java.io.PrintStream;
+import com.windhoverlabs.yamcs.core.YamcsObjectManager;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.csstudio.trends.databrowser3.Activator;
-import org.csstudio.trends.databrowser3.model.ArchiveDataSource;
-import org.csstudio.trends.databrowser3.model.Model;
-import org.csstudio.trends.databrowser3.model.ModelItem;
-import org.csstudio.trends.databrowser3.model.PVItem;
 import org.phoebus.archive.reader.ArchiveReader;
 import org.phoebus.framework.jobs.JobMonitor;
 import org.phoebus.framework.jobs.JobRunnable;
+import org.yamcs.client.Helpers;
+import org.yamcs.protobuf.Pvalue.ParameterValue;
 
 /**
  * Base for Eclipse Job for exporting data from Model to file
@@ -27,25 +38,39 @@ import org.phoebus.framework.jobs.JobRunnable;
  * @author Kay Kasemir
  */
 @SuppressWarnings("nls")
-public abstract class ExportCSVJob implements JobRunnable {
-  protected static final int PROGRESS_UPDATE_LINES = 1000;
-  protected final String comment;
-  protected final Model model;
-  protected final Instant start, end;
-  protected final double optimize_parameter;
-  protected final String filename;
-  protected final Consumer<Exception> error_handler;
+public class ExportCSVJob implements JobRunnable {
+
+  class CountedParameterValue {
+    private ParameterValue pv;
+    int count;
+
+    public CountedParameterValue(ParameterValue pv, int count) {
+      this.pv = pv;
+      this.count = count;
+    }
+  }
+
+  public static final int PROGRESS_UPDATE_LINES = 1000;
+  public Instant start, end;
+  public String filename;
+  public Consumer<Exception> error_handler;
+  public ArrayList<String> parameters = new ArrayList<String>();
+
+  public HashMap<Instant, HashMap<String, ArrayList<CountedParameterValue>>> timeStampToParameters =
+      new HashMap<Instant, HashMap<String, ArrayList<CountedParameterValue>>>();
   /** Active readers, used to cancel and close them */
   private final CopyOnWriteArrayList<ArchiveReader> archive_readers =
       new CopyOnWriteArrayList<ArchiveReader>();
 
-  protected final boolean unixTimeStamp;
+  public final boolean unixTimeStamp;
+  private CancellationPoll cancel_poll;
 
   /**
    * Thread that polls a progress monitor and cancels active archive readers if the user requests
    * the export job to end via the progress monitor
    */
   class CancellationPoll implements Runnable {
+
     private final JobMonitor monitor;
     volatile boolean exit = false;
 
@@ -82,53 +107,49 @@ public abstract class ExportCSVJob implements JobRunnable {
    *     Defaults to false.
    */
   public ExportCSVJob(
-      final String comment,
-      final Model model,
       final Instant start,
       final Instant end,
-      final double optimize_parameter,
       final String filename,
       final Consumer<Exception> error_handler,
-      final boolean unixTimeStamp) {
-    this.comment = comment;
-    this.model = model;
+      final boolean unixTimeStamp,
+      ArrayList<String> parameters) {
     this.start = start;
     this.end = end;
-    this.optimize_parameter = optimize_parameter;
     this.filename = filename;
     this.error_handler = error_handler;
     this.unixTimeStamp = unixTimeStamp;
+    this.parameters = parameters;
   }
 
   /** Job's main routine {@inheritDoc} */
   @Override
   public final void run(final JobMonitor monitor) {
-    monitor.beginTask("Data Export");
+    monitor.beginTask("Data Export", 100);
+
     try {
-      final PrintStream out;
+      BufferedWriter writer;
       if (filename != null) {
-        out = new PrintStream(filename);
-        //                printExportInfo(out);
-      } else out = null;
+        writer = Files.newBufferedWriter(Paths.get(filename));
+        //                printExportzInfo(out);
+      } else writer = null;
       // Start thread that checks monitor to cancels readers when
       // user tries to abort the export job
-      final CancellationPoll cancel_poll = new CancellationPoll(monitor);
+      cancel_poll = new CancellationPoll(monitor);
       final Future<?> done = Activator.thread_pool.submit(cancel_poll);
-      performExport(monitor, out);
+      performExport(monitor, writer);
       // ask thread to exit
-      cancel_poll.exit = true;
-      if (out != null) out.close();
+      //      cancel_poll.exit = true;
+      //      if (writer != null) writer.close();
       // Wait for poller to quit
       done.get();
     } catch (final Exception ex) {
       error_handler.accept(ex);
     }
-    for (ArchiveReader reader : archive_readers) reader.close();
-    monitor.done();
+    //    for (ArchiveReader reader : archive_readers) reader.close();
   }
 
   //    /** Print file header, gets invoked before <code>performExport</code> */
-  //    protected void printExportInfo(final PrintStream out)
+  //    public void printExportInfo(final PrintStream out)
   //    {
   //        out.println(comment + "Created by CS-Studio Data Browser");
   //        out.println(comment);
@@ -148,30 +169,204 @@ public abstract class ExportCSVJob implements JobRunnable {
    * @param out PrintStream for output
    * @throws Exception on error
    */
-  protected abstract void performExport(final JobMonitor monitor, final PrintStream out)
-      throws Exception;
+  private void performExport(final JobMonitor monitor, BufferedWriter writer) {
+    System.out.println("performExport#1");
+    monitor.worked(0);
+    YamcsObjectManager.getDefaultInstance()
+        .getParameters(
+            YamcsObjectManager.getDefaultServer().getYamcsClient(),
+            this.parameters,
+            start,
+            end,
+            (page, e1) -> {
+              page.iterator()
+                  .forEachRemaining(
+                      pv -> {
+                        constructTimeToParamsMap(pv);
+                      });
+              System.out.println("performExport#3");
+              while (page.hasNextPage()) {
+                try {
+                  System.out.println("performExport#4");
+                  try {
+                    page = page.getNextPage().get(1, TimeUnit.MINUTES);
+                  } catch (TimeoutException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                  }
+                  System.out.println("performExport#5");
 
-  /**
-   * Print info about item
-   *
-   * @param out PrintStream for output
-   * @param item ModelItem
-   */
-  protected void printItemInfo(final PrintStream out, final ModelItem item) {
-    out.println(comment + "Channel: " + item.getResolvedName());
-    // If display name differs from PV, show the _resolved_ version
-    if (!item.getName().equals(item.getDisplayName()))
-      out.println(comment + "Name   : " + item.getResolvedDisplayName());
-    if (item instanceof PVItem) {
-      final PVItem pv = (PVItem) item;
-      out.println(comment + "Archives:");
-      int i = 1;
-      for (ArchiveDataSource archive : pv.getArchiveDataSources()) {
-        out.println(comment + i + ") " + archive.getName());
-        out.println(comment + "   URL: " + archive.getUrl());
-        ++i;
-      }
+                } catch (InterruptedException | ExecutionException e) {
+                  // TODO Auto-generated catch block
+                  e.printStackTrace();
+                }
+                page.iterator()
+                    .forEachRemaining(
+                        pv -> {
+                          constructTimeToParamsMap(pv);
+                        });
+              }
+
+              System.out.println("performExport#8");
+
+              CSVPrinter csvPrinter = null;
+              ArrayList<String> columnHeaders = new ArrayList<String>();
+              HashMap<Integer, String> columnIndexToPName = new HashMap<Integer, String>();
+              try {
+                System.out.println("performExport#9:" + this.parameters);
+
+                columnHeaders.add("Time");
+                columnHeaders.add("RelativeTime_MS");
+
+                for (String p : this.parameters) {
+                  System.out.println("performExport#10:" + this.parameters);
+                  var nameParts = p.split("/");
+                  System.out.println("performExport#11:" + this.parameters);
+                  var name = nameParts[nameParts.length - 1];
+                  columnHeaders.add(name);
+                  //                  columnHeaders.add(name + "_Count");
+                }
+                System.out.println("performExport#12:" + columnHeaders);
+
+                csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT);
+
+                System.out.println("performExport#13");
+              } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+              }
+              try {
+                System.out.println("performExport#14");
+                csvPrinter.printRecord(columnHeaders);
+
+                List sortedTimeStamps = new ArrayList(timeStampToParameters.keySet());
+                Collections.sort(sortedTimeStamps);
+
+                for (var entry : sortedTimeStamps) {
+                  ArrayList<String> record = new ArrayList<String>();
+                  record.add(entry.toString());
+                  record.add("delta");
+                  for (var p : this.parameters) {
+                    var nameParts = p.split("/");
+                    System.out.println("performExport#11:" + this.parameters);
+                    var name = nameParts[nameParts.length - 1];
+                    for (var countedP : timeStampToParameters.get(entry).get(name)) {
+                      switch (countedP.pv.getEngValue().getType()) {
+                        case AGGREGATE:
+                          break;
+                        case ARRAY:
+                          break;
+                        case BINARY:
+                          break;
+                        case BOOLEAN:
+                          record.add(Boolean.toString(countedP.pv.getEngValue().getBooleanValue()));
+                          break;
+                        case DOUBLE:
+                          record.add(Double.toString(countedP.pv.getEngValue().getDoubleValue()));
+                          break;
+                        case ENUMERATED:
+                          break;
+                        case FLOAT:
+                          record.add(Float.toString(countedP.pv.getEngValue().getFloatValue()));
+                          break;
+                        case NONE:
+                          break;
+                        case SINT32:
+                          record.add(Integer.toString(countedP.pv.getEngValue().getSint32Value()));
+                          break;
+                        case SINT64:
+                          record.add(Long.toString(countedP.pv.getEngValue().getSint64Value()));
+                          break;
+                        case STRING:
+                          record.add(countedP.pv.getEngValue().getStringValue());
+                          break;
+                        case TIMESTAMP:
+                          break;
+                        case UINT32:
+                          record.add(Integer.toString(countedP.pv.getEngValue().getUint32Value()));
+                          break;
+                        case UINT64:
+                          record.add(Long.toString(countedP.pv.getEngValue().getUint64Value()));
+                          break;
+                        default:
+                          break;
+                      }
+                    }
+                  }
+                  csvPrinter.printRecord(record);
+                }
+
+                System.out.println("performExport#11");
+
+              } catch (IOException e) {
+                //              //  				// TODO Auto-generated catch block
+                //              //  				e.printStackTrace();
+              }
+              try {
+                csvPrinter.flush();
+              } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+              }
+              System.out.println("performExport#6");
+              monitor.worked(100);
+
+              //              for(var e: )
+              //              {
+              //
+              //              }
+              System.out.println("size -->" + timeStampToParameters.keySet().size());
+              //              timeStampToParameters
+              //              .get(pvGenerationTime)
+              //              .get(pvNameKey)
+              //              .add(new CountedParameterValue(pv, 0));
+
+              cancel_poll.exit = true;
+            });
+    System.out.println("performExport#2");
+    monitor.worked(10);
+  }
+
+  private void constructTimeToParamsMap(ParameterValue pv) {
+    System.out.println("constructTimeToParamsMap1");
+    Instant pvGenerationTime = Helpers.toInstant(pv.getGenerationTime());
+    System.out.println("constructTimeToParamsMap2");
+
+    timeStampToParameters.computeIfAbsent(
+        pvGenerationTime,
+        p -> {
+          return new HashMap<String, ArrayList<CountedParameterValue>>();
+        });
+    System.out.println("constructTimeToParamsMap3");
+    String pvNameKey = pv.getId().getName();
+
+    //                       TODO: This has terrible, terrible performance, like O(n * n) bad.
+    for (String parameterName : this.parameters) {
+      System.out.println("constructTimeToParamsMap4");
+      var nameParts = parameterName.split("/");
+      var countedParams =
+          timeStampToParameters
+              .get(pvGenerationTime)
+              .computeIfAbsent(
+                  nameParts[nameParts.length - 1],
+                  p -> {
+                    return new ArrayList<CountedParameterValue>();
+                  });
     }
-    out.println(comment);
+
+    //    System.out.println(
+    //        "constructTimeToParamsMap7:"
+    //            + timeStampToParameters
+    //                .get(pvGenerationTime)
+    //                .get(pvNameKey)
+    //                .add(new CountedParameterValue(pv, 0)));
+    timeStampToParameters
+        .get(pvGenerationTime)
+        .get(pvNameKey)
+        .add(new CountedParameterValue(pv, 0));
+
+    System.out.println("constructTimeToParamsMap5:" + timeStampToParameters.get(pvGenerationTime));
+
+    System.out.println("constructTimeToParamsMap7");
   }
 }

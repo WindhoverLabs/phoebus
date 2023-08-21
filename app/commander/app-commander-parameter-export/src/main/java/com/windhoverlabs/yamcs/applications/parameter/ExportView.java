@@ -10,7 +10,7 @@ package com.windhoverlabs.yamcs.applications.parameter;
 import java.io.File;
 import java.text.MessageFormat;
 import java.time.Instant;
-import java.time.temporal.TemporalAmount;
+import java.util.ArrayList;
 import java.util.function.BiConsumer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -34,20 +34,17 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.csstudio.trends.databrowser3.Activator;
 import org.csstudio.trends.databrowser3.Messages;
-import org.csstudio.trends.databrowser3.export.ExportJob;
 import org.csstudio.trends.databrowser3.export.Source;
 import org.csstudio.trends.databrowser3.model.Model;
 import org.csstudio.trends.databrowser3.ui.TimeRangePopover;
 import org.phoebus.archive.vtype.Style;
+import org.phoebus.framework.jobs.JobManager;
 import org.phoebus.framework.persistence.Memento;
 import org.phoebus.ui.dialog.DialogHelper;
 import org.phoebus.ui.dialog.ExceptionDetailsErrorDialog;
 import org.phoebus.ui.dialog.PopOver;
 import org.phoebus.ui.dialog.SaveAsDialog;
 import org.phoebus.ui.time.TimeRelativeIntervalPane;
-import org.phoebus.util.time.SecondsParser;
-import org.phoebus.util.time.TimeInterval;
-import org.phoebus.util.time.TimeParser;
 import org.phoebus.util.time.TimeRelativeInterval;
 
 /**
@@ -82,9 +79,18 @@ public class ExportView extends VBox {
 
   private Model model = new org.csstudio.trends.databrowser3.model.Model();
 
+  private ArrayList<String> parameters = new ArrayList<String>();
+
+  public ArrayList<String> getParameters() {
+    return parameters;
+  }
+
+  public void setParameters(ArrayList<String> parameters) {
+    this.parameters = parameters;
+  }
+
   /** @param model Model from which to export */
   public ExportView() {
-
     // * Samples To Export *
     // Start:  ___start_______________________________________________________________ [select]
     // End  :  ___end_________________________________________________________________ [x] Use
@@ -97,7 +103,8 @@ public class ExportView extends VBox {
     grid.setPadding(new Insets(5));
 
     grid.add(new Label(Messages.StartTimeLbl), 0, 0);
-    start.setTooltip(new Tooltip(Messages.StartTimeTT));
+    start.setAccessibleText("2023-08-20 04:30:44.424 UTC");
+    //    start.setTooltip(new Tooltip(Messages.StartTimeTT));
     GridPane.setHgrow(start, Priority.ALWAYS);
     grid.add(start, 1, 0);
 
@@ -106,7 +113,8 @@ public class ExportView extends VBox {
     grid.add(sel_times, 2, 0);
 
     grid.add(new Label(Messages.EndTimeLbl), 0, 1);
-    end.setTooltip(new Tooltip(Messages.EndTimeTT));
+    //    end.setTooltip(new Tooltip(Messages.EndTimeTT));
+    end.setAccessibleText("2023-08-20 04:35:44.424 UTC");
     GridPane.setHgrow(end, Priority.ALWAYS);
     grid.add(end, 1, 1);
 
@@ -261,52 +269,54 @@ public class ExportView extends VBox {
     try {
       // Determine start/end time
       TimeRelativeInterval range = null;
-      final Object s = TimeParser.parseInstantOrTemporalAmount(start.getText());
-      final Object e = TimeParser.parseInstantOrTemporalAmount(end.getText());
-      if (s instanceof Instant) {
-        if (e instanceof Instant) range = TimeRelativeInterval.of((Instant) s, (Instant) e);
-        else if (e instanceof TemporalAmount)
-          range = TimeRelativeInterval.of((Instant) s, (TemporalAmount) e);
-      } else if (s instanceof TemporalAmount) {
-        if (e instanceof Instant) range = TimeRelativeInterval.of((TemporalAmount) s, (Instant) e);
-        else if (e instanceof TemporalAmount)
-          range = TimeRelativeInterval.of((TemporalAmount) s, (TemporalAmount) e);
-      }
-
-      if (range == null) throw new Exception("Invalid start..end time range");
-
-      // Determine source: Plot, archive, ...
-      final int src_index = sources.getToggles().indexOf(sources.getSelectedToggle());
-      if (src_index < 0 || src_index >= Source.values().length)
-        throw new Exception("Invalid sample source");
-      final Source source = Source.values()[src_index];
-      int optimize_parameter = -1;
-      if (source == Source.OPTIMIZED_ARCHIVE) {
-        try {
-          optimize_parameter = Integer.parseInt(optimize.getText().trim());
-        } catch (Exception ex) {
-          ExceptionDetailsErrorDialog.openError(
-              optimize,
-              Messages.Error,
-              Messages.ExportOptimizeCountError,
-              new Exception(optimize.getText()));
-          Platform.runLater(optimize::requestFocus);
-          return;
-        }
-      } else if (source == Source.LINEAR_INTERPOLATION) {
-        try {
-          optimize_parameter = (int) (SecondsParser.parseSeconds(linear.getText().trim()) + 0.5);
-          if (optimize_parameter < 1) optimize_parameter = 1;
-        } catch (Exception ex) {
-          ExceptionDetailsErrorDialog.openError(
-              linear,
-              Messages.Error,
-              Messages.ExportLinearIntervalError,
-              new Exception(linear.getText()));
-          Platform.runLater(linear::requestFocus);
-          return;
-        }
-      }
+      //      final Object s = TimeParser.parseInstantOrTemporalAmount(start.getText());
+      //      final Object e = TimeParser.parseInstantOrTemporalAmount(end.getText());
+      //      if (s instanceof Instant) {
+      //        if (e instanceof Instant) range = TimeRelativeInterval.of((Instant) s, (Instant) e);
+      //        else if (e instanceof TemporalAmount)
+      //          range = TimeRelativeInterval.of((Instant) s, (TemporalAmount) e);
+      //      } else if (s instanceof TemporalAmount) {
+      //        if (e instanceof Instant) range = TimeRelativeInterval.of((TemporalAmount) s,
+      // (Instant) e);
+      //        else if (e instanceof TemporalAmount)
+      //          range = TimeRelativeInterval.of((TemporalAmount) s, (TemporalAmount) e);
+      //      }
+      //
+      //      if (range == null) throw new Exception("Invalid start..end time range");
+      //
+      //      // Determine source: Plot, archive, ...
+      //      final int src_index = sources.getToggles().indexOf(sources.getSelectedToggle());
+      //      if (src_index < 0 || src_index >= Source.values().length)
+      //        throw new Exception("Invalid sample source");
+      //      final Source source = Source.values()[src_index];
+      //      int optimize_parameter = -1;
+      //      if (source == Source.OPTIMIZED_ARCHIVE) {
+      //        try {
+      //          optimize_parameter = Integer.parseInt(optimize.getText().trim());
+      //        } catch (Exception ex) {
+      //          ExceptionDetailsErrorDialog.openError(
+      //              optimize,
+      //              Messages.Error,
+      //              Messages.ExportOptimizeCountError,
+      //              new Exception(optimize.getText()));
+      //          Platform.runLater(optimize::requestFocus);
+      //          return;
+      //        }
+      //      } else if (source == Source.LINEAR_INTERPOLATION) {
+      //        try {
+      //          optimize_parameter = (int) (SecondsParser.parseSeconds(linear.getText().trim()) +
+      // 0.5);
+      //          if (optimize_parameter < 1) optimize_parameter = 1;
+      //        } catch (Exception ex) {
+      //          ExceptionDetailsErrorDialog.openError(
+      //              linear,
+      //              Messages.Error,
+      //              Messages.ExportLinearIntervalError,
+      //              new Exception(linear.getText()));
+      //          Platform.runLater(linear::requestFocus);
+      //          return;
+      //        }
+      //      }
 
       // Get remaining export parameters
       final String filename = this.filename.getText().trim();
@@ -331,8 +341,8 @@ public class ExportView extends VBox {
       }
 
       // Construct appropriate export job
-      final ExportJob export;
-      final TimeInterval start_end = range.toAbsoluteInterval();
+      ExportCSVJob export;
+      //      TimeInterval start_end = range.toAbsoluteInterval();
       //      if (type_matlab.isSelected()) { // Matlab file export
       //        if (filename.endsWith(".m"))
       //          export =
@@ -390,17 +400,14 @@ public class ExportView extends VBox {
         //                ValueFormatter formatter = new ValueWithInfoFormatter(style,
         //                      precision);
 
-        //                export =
-        //                        new ExportCSVJob(
-        //                            model,
-        //                            start_end.getStart(),
-        //                            start_end.getEnd(),
-        //                            source,
-        //                            optimize_parameter,
-        //                            formatter,
-        //                            filename,
-        //                            this::handleError,
-        //                            unixTimeStamp.get());
+        export =
+            new ExportCSVJob(
+                Instant.parse(start.getText()),
+                Instant.parse(end.getText()),
+                filename,
+                this::handleError,
+                unixTimeStamp.get(),
+                parameters);
 
         //                final ValueFormatter formatter;
         //                if (sev_stat.isSelected()) formatter = new ValueWithInfoFormatter(style,
@@ -433,7 +440,7 @@ public class ExportView extends VBox {
         //                          unixTimeStamp.get());
       }
 
-      //            JobManager.schedule(filename, export);
+      JobManager.schedule(filename, export);
     } catch (Exception ex) {
       handleError(ex);
     }

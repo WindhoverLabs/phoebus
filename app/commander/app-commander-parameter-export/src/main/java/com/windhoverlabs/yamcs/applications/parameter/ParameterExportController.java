@@ -97,6 +97,11 @@ public class ParameterExportController {
 
     pvColumn.setCellValueFactory(new PropertyValueFactory<>("pv"));
     pvColumn.setCellValueFactory(cellData -> cellData.getValue().pvProperty());
+
+    exportColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.3));
+    pvColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.7));
+    exportColumn.minWidthProperty().bind(tableView.widthProperty().multiply(0.3));
+    pvColumn.minWidthProperty().bind(tableView.widthProperty().multiply(0.7));
     exportColumn.setCellValueFactory(cellData -> cellData.getValue().exportProperty());
     exportColumn.setCellFactory(tc -> new CheckBoxTableCell<>());
 
@@ -106,7 +111,6 @@ public class ParameterExportController {
 
               @Override
               public Observable[] call(ExportPV param) {
-                //                System.out.println("boolean:" + param.exportProperty());
                 return new Observable[] {param.exportProperty()};
               }
             });
@@ -124,10 +128,16 @@ public class ParameterExportController {
                 } else {
                   exportSet.remove(item.pvProperty().get());
                 }
+                paramExportView.getParameters().clear();
+                exportSet.forEach(
+                    p -> {
+                      paramExportView.getParameters().add(p);
+                    });
               }
             }
           }
         });
+    //    tableView.setColumnResizePolicy(null);
     tableView.getColumns().addAll(exportColumn, pvColumn);
 
     yamcsListener =
@@ -212,29 +222,13 @@ public class ParameterExportController {
           if (e.getCode() == KeyCode.ENTER) {
             proposalService.addToHistory(text);
           }
-          //          proposalService.lookup(
-          //              pvTextField.getText(),
-          //              (name, priority, proposals) -> {
-          //                System.out.println("pvs:");
-          //                for (Proposal p : proposals) {
-          //                  System.out.println(p.getValue());
-          //                }
-          //              });
-
-          //          proposalService.lookup(currentInstance, null);
         });
-    //    pvTextField.setOnAction(
-    //        (action) -> {
-    //        });
     tableView.setItems(proposalList);
     tableView.setEditable(true);
     gridPane.add(tableView, 0, 1);
     createExportTab();
     mainSplit.setOrientation(Orientation.VERTICAL);
     mainSplit.setDividerPositions(0.8);
-    //    mainSplit.
-    //    mainSplit = new SplitPane(gridPane, exportTabPane);
-    //    gridPane.add(paramExportView, 0, 2);
   }
 
   private void handleLookupResult(
@@ -250,38 +244,9 @@ public class ParameterExportController {
             proposalList.add(new ExportPV(item, true));
           });
       for (Proposal p : proposals) {
-        System.out.println(p.getValue());
         proposalList.add(new ExportPV(p.getValue(), false));
       }
     }
-    //      final List<AutocompleteItem> items = new ArrayList<>();
-    //
-    //      synchronized (results)
-    //      {
-    //          // Merge proposals
-    //          results.add(new Result(name, priority, proposals));
-    //
-    //          // Create menu items: Header for each result,
-    //          // then list proposals
-    //          for (Result result : results)
-    //          {
-    //              // Pressing 'Enter' on header simply forwards the enter to the text field
-    //              items.add(new AutocompleteItem(result.header, () -> invokeAction(field)));
-    //              for (Proposal proposal : result.proposals)
-    //                  items.add(createItem(field, text, proposal));
-    //          }
-    //      }
-    //
-    //      // Update and show menu on UI thread
-    //      if (menu_items.getAndSet(items) == null)
-    //          Platform.runLater(() ->
-    //          {
-    //              final List<AutocompleteItem> current_items = menu_items.getAndSet(null);
-    //              menu.setItems(current_items);
-    //              if (! menu.isShowing())
-    //                  showMenuForField(field);
-    //          });
-    // else: already pending, will use the updated 'menu_items'
   }
 
   public ParameterExportController() {}
