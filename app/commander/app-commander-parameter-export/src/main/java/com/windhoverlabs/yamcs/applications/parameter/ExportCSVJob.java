@@ -291,9 +291,9 @@ public class ExportCSVJob implements JobRunnable {
                         default:
                           break;
                       }
+                      csvPrinter.printRecord(record);
                     }
                   }
-                  csvPrinter.printRecord(record);
                 }
 
                 System.out.println("performExport#11");
