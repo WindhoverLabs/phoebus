@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.windhoverlabs</groupId>
 		<artifactId>app-commander</artifactId>
-		<version>0.2.4-SNAPSHOT</version>
+		<version>0.2.6-SNAPSHOT</version>
 	</parent>
 	<artifactId>app-commander-parameter-export</artifactId>
 	<profiles>
