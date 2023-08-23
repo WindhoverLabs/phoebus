@@ -178,33 +178,35 @@ public class ExportCSVJob implements JobRunnable {
             this.parameters,
             start,
             end,
-            (page, e1) -> {
-              page.iterator()
-                  .forEachRemaining(
-                      pv -> {
-                        constructTimeToParamsMap(pv);
-                      });
-              System.out.println("performExport#3");
-              while (page.hasNextPage()) {
-                try {
-                  System.out.println("performExport#4");
-                  try {
-                    page = page.getNextPage().get(1, TimeUnit.MINUTES);
-                  } catch (TimeoutException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                  }
-                  System.out.println("performExport#5");
-
-                } catch (InterruptedException | ExecutionException e) {
-                  // TODO Auto-generated catch block
-                  e.printStackTrace();
-                }
+            (pages) -> {
+              for (var page : pages) {
                 page.iterator()
                     .forEachRemaining(
                         pv -> {
                           constructTimeToParamsMap(pv);
                         });
+                System.out.println("performExport#3");
+                while (page.hasNextPage()) {
+                  try {
+                    System.out.println("performExport#4");
+                    try {
+                      page = page.getNextPage().get(1, TimeUnit.MINUTES);
+                    } catch (TimeoutException e) {
+                      // TODO Auto-generated catch block
+                      e.printStackTrace();
+                    }
+                    System.out.println("performExport#5");
+
+                  } catch (InterruptedException | ExecutionException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                  }
+                  page.iterator()
+                      .forEachRemaining(
+                          pv -> {
+                            constructTimeToParamsMap(pv);
+                          });
+                }
               }
 
               System.out.println("performExport#8");
@@ -251,48 +253,64 @@ public class ExportCSVJob implements JobRunnable {
                     System.out.println("performExport#11:" + this.parameters);
                     var name = nameParts[nameParts.length - 1];
                     var countedP = timeStampToParameters.get(entry).get(name);
-                    switch (countedP.pv.getEngValue().getType()) {
-                      case AGGREGATE:
-                        break;
-                      case ARRAY:
-                        break;
-                      case BINARY:
-                        break;
-                      case BOOLEAN:
-                        record.add(Boolean.toString(countedP.pv.getEngValue().getBooleanValue()));
-                        break;
-                      case DOUBLE:
-                        record.add(Double.toString(countedP.pv.getEngValue().getDoubleValue()));
-                        break;
-                      case ENUMERATED:
-                        break;
-                      case FLOAT:
-                        record.add(Float.toString(countedP.pv.getEngValue().getFloatValue()));
-                        break;
-                      case NONE:
-                        break;
-                      case SINT32:
-                        record.add(Integer.toString(countedP.pv.getEngValue().getSint32Value()));
-                        break;
-                      case SINT64:
-                        record.add(Long.toString(countedP.pv.getEngValue().getSint64Value()));
-                        break;
-                      case STRING:
-                        record.add(countedP.pv.getEngValue().getStringValue());
-                        break;
-                      case TIMESTAMP:
-                        break;
-                      case UINT32:
-                        record.add(Integer.toString(countedP.pv.getEngValue().getUint32Value()));
-                        break;
-                      case UINT64:
-                        record.add(Long.toString(countedP.pv.getEngValue().getUint64Value()));
-                        break;
-                      default:
-                        break;
+
+                    //                    if("2023-08-18T14:47:20.771Z".equals(entry.toString()))
+                    //                    {
+                    //                    	System.out.println();
+                    //                    }
+                    if (countedP.pv != null) {
+                      switch (countedP.pv.getEngValue().getType()) {
+                        case AGGREGATE:
+                          record.add(countedP.pv.getEngValue().getType().toString());
+                          break;
+                        case ARRAY:
+                          record.add(countedP.pv.getEngValue().getType().toString());
+                          break;
+                        case BINARY:
+                          record.add(countedP.pv.getEngValue().getType().toString());
+                          break;
+                        case BOOLEAN:
+                          record.add(Boolean.toString(countedP.pv.getEngValue().getBooleanValue()));
+                          break;
+                        case DOUBLE:
+                          record.add(Double.toString(countedP.pv.getEngValue().getDoubleValue()));
+                          break;
+                        case ENUMERATED:
+                          record.add(countedP.pv.getEngValue().getType().toString());
+                          break;
+                        case FLOAT:
+                          record.add(Float.toString(countedP.pv.getEngValue().getFloatValue()));
+                          break;
+                        case NONE:
+                          record.add(countedP.pv.getEngValue().getType().toString());
+                          break;
+                        case SINT32:
+                          record.add(Integer.toString(countedP.pv.getEngValue().getSint32Value()));
+                          break;
+                        case SINT64:
+                          record.add(Long.toString(countedP.pv.getEngValue().getSint64Value()));
+                          break;
+                        case STRING:
+                          record.add(countedP.pv.getEngValue().getStringValue());
+                          break;
+                        case TIMESTAMP:
+                          record.add(countedP.pv.getEngValue().getType().toString());
+                          break;
+                        case UINT32:
+                          record.add(Integer.toString(countedP.pv.getEngValue().getUint32Value()));
+                          break;
+                        case UINT64:
+                          record.add(Long.toString(countedP.pv.getEngValue().getUint64Value()));
+                          break;
+                        default:
+                          record.add("Something_ELSE");
+                          break;
+                      }
+                    } else {
+                      record.add("N/A");
                     }
-                    csvPrinter.printRecord(record);
                   }
+                  csvPrinter.printRecord(record);
                 }
 
                 System.out.println("performExport#11");
@@ -343,14 +361,14 @@ public class ExportCSVJob implements JobRunnable {
     for (String parameterName : this.parameters) {
       System.out.println("constructTimeToParamsMap4");
       var nameParts = parameterName.split("/");
-      //      var countedParams =
-      //          timeStampToParameters
-      //              .get(pvGenerationTime)
-      //              .computeIfAbsent(
-      //                  nameParts[nameParts.length - 1],
-      //                  p -> {
-      //                    return new CountedParameterValue(pv, 0);
-      //                  });
+      var countedParams =
+          timeStampToParameters
+              .get(pvGenerationTime)
+              .computeIfAbsent(
+                  nameParts[nameParts.length - 1],
+                  p -> {
+                    return new CountedParameterValue(null, 0);
+                  });
     }
 
     //    System.out.println(

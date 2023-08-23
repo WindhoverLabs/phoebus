@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -319,12 +319,19 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
       List<String> parameters,
       Instant start,
       Instant end,
-      BiConsumer<? super Page<ParameterValue>, ? super Throwable> consumer) {
+      Consumer<ArrayList<Page<ParameterValue>>> consumer) {
 
     //    this.getYamcsArchiveClient().streamValues(parameters, consumer, start, end);
-
+    ArrayList<Page<ParameterValue>> pages = new ArrayList<Page<ParameterValue>>();
     for (var p : parameters) {
-      this.getYamcsArchiveClient().listValues(p, start, end).whenComplete(consumer);
+      try {
+        pages.add(this.getYamcsArchiveClient().listValues(p, start, end).get());
+      } catch (InterruptedException | ExecutionException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
+
+    consumer.accept(pages);
   }
 }
