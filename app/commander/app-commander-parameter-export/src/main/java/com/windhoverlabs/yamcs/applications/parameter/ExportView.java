@@ -103,7 +103,7 @@ public class ExportView extends VBox {
     grid.setPadding(new Insets(5));
 
     grid.add(new Label(Messages.StartTimeLbl), 0, 0);
-    start.setPromptText("2023-08-20 04:30:44.424 UTC");
+    start.setPromptText("2023-08-20T04:30:44.424Z");
     //    start.setTooltip(new Tooltip(Messages.StartTimeTT));
     GridPane.setHgrow(start, Priority.ALWAYS);
     grid.add(start, 1, 0);
@@ -114,7 +114,7 @@ public class ExportView extends VBox {
 
     grid.add(new Label(Messages.EndTimeLbl), 0, 1);
     //    end.setTooltip(new Tooltip(Messages.EndTimeTT));
-    end.setPromptText("2023-08-20 04:35:44.424 UTC");
+    end.setPromptText("2023-08-20T04:35:44.424Z");
     GridPane.setHgrow(end, Priority.ALWAYS);
     grid.add(end, 1, 1);
 
