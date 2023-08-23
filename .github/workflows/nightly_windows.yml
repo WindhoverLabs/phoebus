@@ -15,7 +15,7 @@ jobs:
         java-version: 11
 
     - name: Build
-      run: mvn -Djavafx.platform=win -DskipTests -T6 verify
+      run: mvn -Djavafx.platform=win -Dmaven.javadoc.skip=true -DskipTests -T6 verify
 
     - name: Delete old release assets
       uses: mknejp/delete-release-assets@v1
