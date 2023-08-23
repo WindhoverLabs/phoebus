@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>commander-core</artifactId>
-			<version>0.2.4-SNAPSHOT</version>
+			<version>0.2.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
