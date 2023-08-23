@@ -103,7 +103,7 @@ public class ExportView extends VBox {
     grid.setPadding(new Insets(5));
 
     grid.add(new Label(Messages.StartTimeLbl), 0, 0);
-    start.setAccessibleText("2023-08-20 04:30:44.424 UTC");
+    start.setPromptText("2023-08-20 04:30:44.424 UTC");
     //    start.setTooltip(new Tooltip(Messages.StartTimeTT));
     GridPane.setHgrow(start, Priority.ALWAYS);
     grid.add(start, 1, 0);
@@ -114,7 +114,7 @@ public class ExportView extends VBox {
 
     grid.add(new Label(Messages.EndTimeLbl), 0, 1);
     //    end.setTooltip(new Tooltip(Messages.EndTimeTT));
-    end.setAccessibleText("2023-08-20 04:35:44.424 UTC");
+    end.setPromptText("2023-08-20 04:35:44.424 UTC");
     GridPane.setHgrow(end, Priority.ALWAYS);
     grid.add(end, 1, 1);
 
@@ -169,6 +169,7 @@ public class ExportView extends VBox {
     grid.add(source_options, 1, 2, 2, 1);
 
     source_raw.setSelected(true);
+    source_options.setDisable(true);
 
     final TitledPane source = new TitledPane(Messages.ExportGroupSource, grid);
     source.setCollapsible(false);
@@ -225,6 +226,7 @@ public class ExportView extends VBox {
 
     final TitledPane format = new TitledPane(Messages.ExportGroupFormat, grid);
     format.setCollapsible(false);
+    format.setDisable(true);
 
     // * Output *
     // Filename: ______________ [Browse] [Export]
