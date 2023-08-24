@@ -236,6 +236,7 @@ public class ExportCSVJob implements JobRunnable {
                 long deltaCount = 0;
                 Instant timeZero = sortedTimeStamps.get(0);
                 ArrayList<String> recordZero = new ArrayList<String>();
+                recordZero.add(timeZero.toString());
                 recordZero.add(Long.toString(deltaCount));
                 for (var p : this.parameters) {
                   var nameParts = p.split("/");
