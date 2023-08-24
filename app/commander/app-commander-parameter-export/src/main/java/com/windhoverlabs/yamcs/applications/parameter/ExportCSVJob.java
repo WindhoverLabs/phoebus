@@ -235,9 +235,7 @@ public class ExportCSVJob implements JobRunnable {
 
                 long deltaCount = 0;
                 Instant timeZero = sortedTimeStamps.get(0);
-
                 ArrayList<String> recordZero = new ArrayList<String>();
-                recordZero.add(timeZero.toString());
                 recordZero.add(Long.toString(deltaCount));
                 for (var p : this.parameters) {
                   var nameParts = p.split("/");
@@ -250,8 +248,6 @@ public class ExportCSVJob implements JobRunnable {
                   }
                 }
                 csvPrinter.printRecord(recordZero);
-
-                deltaCount = 0;
 
                 for (int i = 1; i < sortedTimeStamps.size(); i++) {
                   ArrayList<String> record = new ArrayList<String>();
