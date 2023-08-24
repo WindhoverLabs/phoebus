@@ -106,7 +106,7 @@ jobs:
       env:
         COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
       run: |
-        mvn install jacoco:report coveralls:report -DrepoToken=$COVERALLS_TOKEN
+        mvn install -Dmaven.javadoc.skip=true jacoco:report coveralls:report -DrepoToken=$COVERALLS_TOKEN
 
     - name: Download Coverity Build Tool
       env:
@@ -120,7 +120,7 @@ jobs:
         TOKEN: ${{ secrets.COVERITY_TOKEN }}
       run: |
         export PATH=`pwd`/cov-analysis-linux64/bin:$PATH
-        cov-build --dir cov-int mvn -Dgpg.skip=true -DskipTests install
+        cov-build --dir cov-int mvn -Dgpg.skip=true -Dmaven.javadoc.skip=true -DskipTests install
     - name: Submit static analysis results
       env:
         TOKEN: ${{ secrets.COVERITY_TOKEN }}
