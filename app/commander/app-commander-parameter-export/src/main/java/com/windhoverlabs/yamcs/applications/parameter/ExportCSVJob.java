@@ -238,7 +238,7 @@ public class ExportCSVJob implements JobRunnable {
                 for (var entry : sortedTimeStamps) {
                   ArrayList<String> record = new ArrayList<String>();
                   record.add(entry.toString());
-                  record.add(Integer.toString(deltaCount));
+                  record.add(Long.toString(deltaCount));
                   for (var p : this.parameters) {
                     var nameParts = p.split("/");
                     System.out.println("performExport#11:" + this.parameters);
