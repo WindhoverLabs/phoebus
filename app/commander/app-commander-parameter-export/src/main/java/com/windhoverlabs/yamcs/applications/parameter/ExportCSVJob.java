@@ -233,7 +233,7 @@ public class ExportCSVJob implements JobRunnable {
                     new ArrayList<Instant>(timeStampToParameters.keySet());
                 Collections.sort(sortedTimeStamps);
 
-                int deltaCount = 0;
+                long deltaCount = 0;
                 Instant timeZero = sortedTimeStamps.get(0);
                 for (var entry : sortedTimeStamps) {
                   ArrayList<String> record = new ArrayList<String>();
@@ -308,7 +308,7 @@ public class ExportCSVJob implements JobRunnable {
                               // later in this example.
                               );
 
-                  deltaCount += d.toMillis();
+                  deltaCount = d.toMillis();
                 }
 
                 System.out.println("performExport#11");
