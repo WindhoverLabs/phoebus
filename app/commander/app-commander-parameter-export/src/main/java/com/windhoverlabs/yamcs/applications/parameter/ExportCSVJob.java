@@ -244,20 +244,16 @@ public class ExportCSVJob implements JobRunnable {
                 List sortedTimeStamps = new ArrayList(timeStampToParameters.keySet());
                 Collections.sort(sortedTimeStamps);
 
+                int deltaCount = 0;
                 for (var entry : sortedTimeStamps) {
                   ArrayList<String> record = new ArrayList<String>();
                   record.add(entry.toString());
-                  record.add("delta");
+                  record.add(Integer.toString(deltaCount));
                   for (var p : this.parameters) {
                     var nameParts = p.split("/");
                     System.out.println("performExport#11:" + this.parameters);
                     var name = nameParts[nameParts.length - 1];
                     var countedP = timeStampToParameters.get(entry).get(name);
-
-                    //                    if("2023-08-18T14:47:20.771Z".equals(entry.toString()))
-                    //                    {
-                    //                    	System.out.println();
-                    //                    }
                     if (countedP.pv != null) {
                       switch (countedP.pv.getEngValue().getType()) {
                         case AGGREGATE:
@@ -311,6 +307,7 @@ public class ExportCSVJob implements JobRunnable {
                     }
                   }
                   csvPrinter.printRecord(record);
+                  deltaCount++;
                 }
 
                 System.out.println("performExport#11");
