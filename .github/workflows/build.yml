@@ -95,7 +95,7 @@ jobs:
         sudo apt install -y protobuf-compiler
 
     - name: Build
-      run: mvn -Dgpg.skip=true --batch-mode install
+      run: mvn -Dgpg.skip=true -Dmaven.javadoc.skip=true --batch-mode install
     - name: Publish
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
