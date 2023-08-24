@@ -252,6 +252,10 @@ public class ExportCSVJob implements JobRunnable {
 
                 for (int i = 1; i < sortedTimeStamps.size(); i++) {
                   ArrayList<String> record = new ArrayList<String>();
+
+                  Duration zeroDelta = Duration.between(timeZero, sortedTimeStamps.get(i));
+
+                  deltaCount = zeroDelta.toMillis();
                   record.add(sortedTimeStamps.get(i).toString());
                   record.add(Long.toString(deltaCount));
                   for (var p : this.parameters) {
@@ -265,20 +269,6 @@ public class ExportCSVJob implements JobRunnable {
                     }
                   }
                   csvPrinter.printRecord(record);
-
-                  Duration d =
-                      Duration
-                          .between( // Calculate the span of time between two moments as a number of
-                              // hours, minutes, and seconds.
-                              timeZero, // Convert legacy class to modern class by calling new
-                              // method added to the old class.
-                              sortedTimeStamps.get(
-                                  i - 1) // Capture the current moment in UTC. About two and a
-                              // half hours
-                              // later in this example.
-                              );
-
-                  deltaCount = d.toMillis();
                 }
 
                 System.out.println("performExport#11");
