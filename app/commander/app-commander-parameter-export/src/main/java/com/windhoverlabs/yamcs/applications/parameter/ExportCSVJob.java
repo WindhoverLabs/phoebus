@@ -235,63 +235,34 @@ public class ExportCSVJob implements JobRunnable {
 
                 long deltaCount = 0;
                 Instant timeZero = sortedTimeStamps.get(0);
-                for (var entry : sortedTimeStamps) {
+
+                ArrayList<String> recordZero = new ArrayList<String>();
+                recordZero.add(timeZero.toString());
+                recordZero.add(Long.toString(deltaCount));
+                for (var p : this.parameters) {
+                  var nameParts = p.split("/");
+                  var name = nameParts[nameParts.length - 1];
+                  var countedP = timeStampToParameters.get(timeZero).get(name);
+                  if (countedP.pv != null) {
+                    resolvePV(recordZero, countedP);
+                  } else {
+                    recordZero.add("N/A");
+                  }
+                }
+                csvPrinter.printRecord(recordZero);
+
+                deltaCount = 0;
+
+                for (int i = 1; i < sortedTimeStamps.size(); i++) {
                   ArrayList<String> record = new ArrayList<String>();
-                  record.add(entry.toString());
+                  record.add(sortedTimeStamps.get(i).toString());
                   record.add(Long.toString(deltaCount));
                   for (var p : this.parameters) {
                     var nameParts = p.split("/");
-                    System.out.println("performExport#11:" + this.parameters);
                     var name = nameParts[nameParts.length - 1];
-                    var countedP = timeStampToParameters.get(entry).get(name);
+                    var countedP = timeStampToParameters.get(sortedTimeStamps.get(i)).get(name);
                     if (countedP.pv != null) {
-                      switch (countedP.pv.getEngValue().getType()) {
-                        case AGGREGATE:
-                          record.add(countedP.pv.getEngValue().getType().toString());
-                          break;
-                        case ARRAY:
-                          record.add(countedP.pv.getEngValue().getType().toString());
-                          break;
-                        case BINARY:
-                          record.add(countedP.pv.getEngValue().getType().toString());
-                          break;
-                        case BOOLEAN:
-                          record.add(Boolean.toString(countedP.pv.getEngValue().getBooleanValue()));
-                          break;
-                        case DOUBLE:
-                          record.add(Double.toString(countedP.pv.getEngValue().getDoubleValue()));
-                          break;
-                        case ENUMERATED:
-                          record.add(countedP.pv.getEngValue().getType().toString());
-                          break;
-                        case FLOAT:
-                          record.add(Float.toString(countedP.pv.getEngValue().getFloatValue()));
-                          break;
-                        case NONE:
-                          record.add(countedP.pv.getEngValue().getType().toString());
-                          break;
-                        case SINT32:
-                          record.add(Integer.toString(countedP.pv.getEngValue().getSint32Value()));
-                          break;
-                        case SINT64:
-                          record.add(Long.toString(countedP.pv.getEngValue().getSint64Value()));
-                          break;
-                        case STRING:
-                          record.add(countedP.pv.getEngValue().getStringValue());
-                          break;
-                        case TIMESTAMP:
-                          record.add(countedP.pv.getEngValue().getType().toString());
-                          break;
-                        case UINT32:
-                          record.add(Integer.toString(countedP.pv.getEngValue().getUint32Value()));
-                          break;
-                        case UINT64:
-                          record.add(Long.toString(countedP.pv.getEngValue().getUint64Value()));
-                          break;
-                        default:
-                          record.add("Something_ELSE");
-                          break;
-                      }
+                      resolvePV(record, countedP);
                     } else {
                       record.add("N/A");
                     }
@@ -304,7 +275,9 @@ public class ExportCSVJob implements JobRunnable {
                               // hours, minutes, and seconds.
                               timeZero, // Convert legacy class to modern class by calling new
                               // method added to the old class.
-                              entry // Capture the current moment in UTC. About two and a half hours
+                              sortedTimeStamps.get(
+                                  i - 1) // Capture the current moment in UTC. About two and a
+                              // half hours
                               // later in this example.
                               );
 
@@ -329,6 +302,56 @@ public class ExportCSVJob implements JobRunnable {
             });
     System.out.println("performExport#2");
     monitor.worked(10);
+  }
+
+  private void resolvePV(ArrayList<String> record, CountedParameterValue countedP) {
+    switch (countedP.pv.getEngValue().getType()) {
+      case AGGREGATE:
+        record.add(countedP.pv.getEngValue().getType().toString());
+        break;
+      case ARRAY:
+        record.add(countedP.pv.getEngValue().getType().toString());
+        break;
+      case BINARY:
+        record.add(countedP.pv.getEngValue().getType().toString());
+        break;
+      case BOOLEAN:
+        record.add(Boolean.toString(countedP.pv.getEngValue().getBooleanValue()));
+        break;
+      case DOUBLE:
+        record.add(Double.toString(countedP.pv.getEngValue().getDoubleValue()));
+        break;
+      case ENUMERATED:
+        record.add(countedP.pv.getEngValue().getType().toString());
+        break;
+      case FLOAT:
+        record.add(Float.toString(countedP.pv.getEngValue().getFloatValue()));
+        break;
+      case NONE:
+        record.add(countedP.pv.getEngValue().getType().toString());
+        break;
+      case SINT32:
+        record.add(Integer.toString(countedP.pv.getEngValue().getSint32Value()));
+        break;
+      case SINT64:
+        record.add(Long.toString(countedP.pv.getEngValue().getSint64Value()));
+        break;
+      case STRING:
+        record.add(countedP.pv.getEngValue().getStringValue());
+        break;
+      case TIMESTAMP:
+        record.add(countedP.pv.getEngValue().getType().toString());
+        break;
+      case UINT32:
+        record.add(Integer.toString(countedP.pv.getEngValue().getUint32Value()));
+        break;
+      case UINT64:
+        record.add(Long.toString(countedP.pv.getEngValue().getUint64Value()));
+        break;
+      default:
+        record.add("Something_ELSE");
+        break;
+    }
   }
 
   private void constructTimeToParamsMap(ParameterValue pv) {
