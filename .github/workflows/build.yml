@@ -99,7 +99,7 @@ jobs:
     - name: Publish
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: mvn -Dgpg.skip=true --batch-mode -DskipTests deploy
+      run: mvn -Dgpg.skip=true -Dmaven.javadoc.skip=true --batch-mode -DskipTests deploy
       if: ${{ github.repository == 'ControlSystemStudio/phoebus' && (github.ref == 'refs/heads/master' || github.ref == 'refs/tags/*') }}
 
     - name: Coveralls report
