@@ -12,6 +12,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -170,7 +171,6 @@ public class ExportCSVJob implements JobRunnable {
    * @throws Exception on error
    */
   private void performExport(final JobMonitor monitor, BufferedWriter writer) {
-    System.out.println("performExport#1");
     monitor.worked(0);
     YamcsObjectManager.getDefaultInstance()
         .getParameters(
@@ -185,17 +185,14 @@ public class ExportCSVJob implements JobRunnable {
                         pv -> {
                           constructTimeToParamsMap(pv);
                         });
-                System.out.println("performExport#3");
                 while (page.hasNextPage()) {
                   try {
-                    System.out.println("performExport#4");
                     try {
                       page = page.getNextPage().get(1, TimeUnit.MINUTES);
                     } catch (TimeoutException e) {
                       // TODO Auto-generated catch block
                       e.printStackTrace();
                     }
-                    System.out.println("performExport#5");
 
                   } catch (InterruptedException | ExecutionException e) {
                     // TODO Auto-generated catch block
@@ -209,30 +206,21 @@ public class ExportCSVJob implements JobRunnable {
                 }
               }
 
-              System.out.println("performExport#8");
-
               CSVPrinter csvPrinter = null;
               ArrayList<String> columnHeaders = new ArrayList<String>();
               HashMap<Integer, String> columnIndexToPName = new HashMap<Integer, String>();
               try {
-                System.out.println("performExport#9:" + this.parameters);
-
                 columnHeaders.add("Time");
                 columnHeaders.add("RelativeTime_MS");
 
                 for (String p : this.parameters) {
-                  System.out.println("performExport#10:" + this.parameters);
                   var nameParts = p.split("/");
-                  System.out.println("performExport#11:" + this.parameters);
                   var name = nameParts[nameParts.length - 1];
                   columnHeaders.add(name);
-                  //                  columnHeaders.add(name + "_Count");
                 }
-                System.out.println("performExport#12:" + columnHeaders);
 
                 csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT);
 
-                System.out.println("performExport#13");
               } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -241,10 +229,12 @@ public class ExportCSVJob implements JobRunnable {
                 System.out.println("performExport#14");
                 csvPrinter.printRecord(columnHeaders);
 
-                List sortedTimeStamps = new ArrayList(timeStampToParameters.keySet());
+                List<Instant> sortedTimeStamps =
+                    new ArrayList<Instant>(timeStampToParameters.keySet());
                 Collections.sort(sortedTimeStamps);
 
                 int deltaCount = 0;
+                Instant timeZero = sortedTimeStamps.get(0);
                 for (var entry : sortedTimeStamps) {
                   ArrayList<String> record = new ArrayList<String>();
                   record.add(entry.toString());
@@ -307,7 +297,18 @@ public class ExportCSVJob implements JobRunnable {
                     }
                   }
                   csvPrinter.printRecord(record);
-                  deltaCount++;
+
+                  Duration d =
+                      Duration
+                          .between( // Calculate the span of time between two moments as a number of
+                              // hours, minutes, and seconds.
+                              timeZero, // Convert legacy class to modern class by calling new
+                              // method added to the old class.
+                              entry // Capture the current moment in UTC. About two and a half hours
+                              // later in this example.
+                              );
+
+                  deltaCount += d.toMillis();
                 }
 
                 System.out.println("performExport#11");
@@ -322,18 +323,7 @@ public class ExportCSVJob implements JobRunnable {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
               }
-              System.out.println("performExport#6");
               monitor.worked(100);
-
-              //              for(var e: )
-              //              {
-              //
-              //              }
-              System.out.println("size -->" + timeStampToParameters.keySet().size());
-              //              timeStampToParameters
-              //              .get(pvGenerationTime)
-              //              .get(pvNameKey)
-              //              .add(new CountedParameterValue(pv, 0));
 
               cancel_poll.exit = true;
             });
@@ -342,9 +332,7 @@ public class ExportCSVJob implements JobRunnable {
   }
 
   private void constructTimeToParamsMap(ParameterValue pv) {
-    System.out.println("constructTimeToParamsMap1");
     Instant pvGenerationTime = Helpers.toInstant(pv.getGenerationTime());
-    System.out.println("constructTimeToParamsMap2");
 
     timeStampToParameters.computeIfAbsent(
         pvGenerationTime,
@@ -367,17 +355,6 @@ public class ExportCSVJob implements JobRunnable {
                     return new CountedParameterValue(null, 0);
                   });
     }
-
-    //    System.out.println(
-    //        "constructTimeToParamsMap7:"
-    //            + timeStampToParameters
-    //                .get(pvGenerationTime)
-    //                .get(pvNameKey)
-    //                .add(new CountedParameterValue(pv, 0)));
     timeStampToParameters.get(pvGenerationTime).put(pvNameKey, new CountedParameterValue(pv, 0));
-
-    System.out.println("constructTimeToParamsMap5:" + timeStampToParameters.get(pvGenerationTime));
-
-    System.out.println("constructTimeToParamsMap7");
   }
 }
