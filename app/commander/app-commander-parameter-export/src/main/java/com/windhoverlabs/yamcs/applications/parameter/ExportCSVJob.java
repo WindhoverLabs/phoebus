@@ -217,6 +217,7 @@ public class ExportCSVJob implements JobRunnable {
                   var nameParts = p.split("/");
                   var name = nameParts[nameParts.length - 1];
                   columnHeaders.add(name);
+                  columnHeaders.add(name + "Count");
                 }
 
                 csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT);
@@ -238,16 +239,7 @@ public class ExportCSVJob implements JobRunnable {
                 ArrayList<String> recordZero = new ArrayList<String>();
                 recordZero.add(timeZero.toString());
                 recordZero.add(Long.toString(deltaCount));
-                for (var p : this.parameters) {
-                  var nameParts = p.split("/");
-                  var name = nameParts[nameParts.length - 1];
-                  var countedP = timeStampToParameters.get(timeZero).get(name);
-                  if (countedP.pv != null) {
-                    resolvePV(recordZero, countedP);
-                  } else {
-                    recordZero.add("N/A");
-                  }
-                }
+                resolvePvsForRecord(timeZero, recordZero);
                 csvPrinter.printRecord(recordZero);
 
                 for (int i = 1; i < sortedTimeStamps.size(); i++) {
@@ -258,16 +250,7 @@ public class ExportCSVJob implements JobRunnable {
                   deltaCount = zeroDelta.toMillis();
                   record.add(sortedTimeStamps.get(i).toString());
                   record.add(Long.toString(deltaCount));
-                  for (var p : this.parameters) {
-                    var nameParts = p.split("/");
-                    var name = nameParts[nameParts.length - 1];
-                    var countedP = timeStampToParameters.get(sortedTimeStamps.get(i)).get(name);
-                    if (countedP.pv != null) {
-                      resolvePV(record, countedP);
-                    } else {
-                      record.add("N/A");
-                    }
-                  }
+                  resolvePvsForRecord(sortedTimeStamps.get(i), record);
                   csvPrinter.printRecord(record);
                 }
 
@@ -289,6 +272,21 @@ public class ExportCSVJob implements JobRunnable {
             });
     System.out.println("performExport#2");
     monitor.worked(10);
+  }
+
+  private void resolvePvsForRecord(Instant timeStamp, ArrayList<String> record) {
+    for (var p : this.parameters) {
+      var nameParts = p.split("/");
+      var name = nameParts[nameParts.length - 1];
+      var countedP = timeStampToParameters.get(timeStamp).get(name);
+      if (countedP.pv != null) {
+        resolvePV(record, countedP);
+        record.add(Integer.toString(countedP.count));
+      } else {
+          record.add(Integer.toString(0));
+        record.add("N/A");
+      }
+    }
   }
 
   private void resolvePV(ArrayList<String> record, CountedParameterValue countedP) {
