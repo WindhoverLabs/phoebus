@@ -242,10 +242,28 @@ public class ExportCSVJob implements JobRunnable {
                 resolvePvsForRecord(timeZero, recordZero, 0);
                 csvPrinter.printRecord(recordZero);
 
+                HashMap<Instant, HashMap<String, Integer>> paramToCountMap =
+                    new HashMap<Instant, HashMap<String, Integer>>();
                 for (int i = 1; i < sortedTimeStamps.size(); i++) {
                   ArrayList<String> record = new ArrayList<String>();
 
                   Duration zeroDelta = Duration.between(timeZero, sortedTimeStamps.get(i));
+                  var currentCountMap =
+                      paramToCountMap.put(sortedTimeStamps.get(i), new HashMap<String, Integer>());
+                  for (var p : this.parameters) {
+                    currentCountMap.put(p, 0);
+                    var nameParts = p.split("/");
+                    var name = nameParts[nameParts.length - 1];
+                    var prevParam =
+                        timeStampToParameters.get(sortedTimeStamps.get(i - 1)).get(name);
+                    if (prevParam != null) {
+                      int prevCount = paramToCountMap.get(sortedTimeStamps.get(i - 1)).get(p);
+                      currentCountMap.put(p, prevCount + 1);
+                    } else {
+                      int prevCount = paramToCountMap.get(sortedTimeStamps.get(i - 1)).get(p);
+                      currentCountMap.put(p, prevCount);
+                    }
+                  }
 
                   deltaCount = zeroDelta.toMillis();
                   record.add(sortedTimeStamps.get(i).toString());
@@ -366,4 +384,6 @@ public class ExportCSVJob implements JobRunnable {
     }
     timeStampToParameters.get(pvGenerationTime).put(pvNameKey, new CountedParameterValue(pv, 0));
   }
+
+  private void updateCountForPV() {}
 }
