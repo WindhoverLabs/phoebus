@@ -283,7 +283,7 @@ public class ExportCSVJob implements JobRunnable {
         resolvePV(record, countedP);
         record.add(Integer.toString(countedP.count));
       } else {
-          record.add(Integer.toString(0));
+        record.add(Integer.toString(0));
         record.add("N/A");
       }
     }
