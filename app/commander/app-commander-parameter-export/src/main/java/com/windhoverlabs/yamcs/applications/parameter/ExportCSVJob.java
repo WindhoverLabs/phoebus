@@ -239,7 +239,7 @@ public class ExportCSVJob implements JobRunnable {
                 ArrayList<String> recordZero = new ArrayList<String>();
                 recordZero.add(timeZero.toString());
                 recordZero.add(Long.toString(deltaCount));
-                resolvePvsForRecord(timeZero, recordZero);
+                resolvePvsForRecord(timeZero, recordZero, 0);
                 csvPrinter.printRecord(recordZero);
 
                 for (int i = 1; i < sortedTimeStamps.size(); i++) {
@@ -250,7 +250,7 @@ public class ExportCSVJob implements JobRunnable {
                   deltaCount = zeroDelta.toMillis();
                   record.add(sortedTimeStamps.get(i).toString());
                   record.add(Long.toString(deltaCount));
-                  resolvePvsForRecord(sortedTimeStamps.get(i), record);
+                  resolvePvsForRecord(sortedTimeStamps.get(i), record, i);
                   csvPrinter.printRecord(record);
                 }
 
@@ -274,17 +274,18 @@ public class ExportCSVJob implements JobRunnable {
     monitor.worked(10);
   }
 
-  private void resolvePvsForRecord(Instant timeStamp, ArrayList<String> record) {
+  private void resolvePvsForRecord(
+      Instant currentTimeStamp, ArrayList<String> record, int currentCount) {
     for (var p : this.parameters) {
       var nameParts = p.split("/");
       var name = nameParts[nameParts.length - 1];
-      var countedP = timeStampToParameters.get(timeStamp).get(name);
-      if (countedP.pv != null) {
-        resolvePV(record, countedP);
-        record.add(Integer.toString(countedP.count));
+      CountedParameterValue currentCountedP = timeStampToParameters.get(currentTimeStamp).get(name);
+      if (currentCountedP.pv != null) {
+        resolvePV(record, currentCountedP);
+        record.add(Integer.toString(currentCount));
       } else {
-        record.add(Integer.toString(0));
         record.add("N/A");
+        record.add(Integer.toString(currentCount));
       }
     }
   }
