@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -56,6 +57,8 @@ public class ExportCSVJob implements JobRunnable {
   public String filename;
   public Consumer<Exception> error_handler;
   public ArrayList<String> parameters = new ArrayList<String>();
+
+  public AtomicInteger jobBarrier = new AtomicInteger(0);
 
   public HashMap<Instant, HashMap<String, CountedParameterValue>> timeStampToParameters =
       new HashMap<Instant, HashMap<String, CountedParameterValue>>();
@@ -179,36 +182,46 @@ public class ExportCSVJob implements JobRunnable {
             start,
             end,
             (pages) -> {
-              for (var page : pages) {
-                page.iterator()
-                    .forEachRemaining(
-                        pv -> {
-                          constructTimeToParamsMap(pv);
-                        });
-                while (page.hasNextPage()) {
-                  try {
-                    try {
-                      page = page.getNextPage().get(1, TimeUnit.MINUTES);
-                    } catch (TimeoutException e) {
-                      // TODO Auto-generated catch block
-                      e.printStackTrace();
-                    }
+              pages.parallelStream()
+                  .forEach(
+                      page -> {
+                        page.iterator()
+                            .forEachRemaining(
+                                pv -> {
+                                  constructTimeToParamsMap(pv);
+                                });
+                        while (page.hasNextPage()) {
+                          try {
+                            try {
+                              page = page.getNextPage().get(1, TimeUnit.MINUTES);
+                            } catch (TimeoutException e) {
+                              // TODO Auto-generated catch block
+                              e.printStackTrace();
+                            }
 
-                  } catch (InterruptedException | ExecutionException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                  }
-                  page.iterator()
-                      .forEachRemaining(
-                          pv -> {
-                            constructTimeToParamsMap(pv);
-                          });
+                          } catch (InterruptedException | ExecutionException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                          }
+                          page.iterator()
+                              .forEachRemaining(
+                                  pv -> {
+                                    constructTimeToParamsMap(pv);
+                                  });
+                        }
+                      });
+
+              while (jobBarrier.get() < pages.size()) {
+                try {
+                  Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                  // TODO Auto-generated catch block
+                  e.printStackTrace();
                 }
               }
 
               CSVPrinter csvPrinter = null;
               ArrayList<String> columnHeaders = new ArrayList<String>();
-              HashMap<Integer, String> columnIndexToPName = new HashMap<Integer, String>();
               try {
                 columnHeaders.add("Time");
                 columnHeaders.add("RelativeTime_MS");
@@ -248,39 +261,64 @@ public class ExportCSVJob implements JobRunnable {
                       .computeIfAbsent(timeZero, (instant) -> new HashMap<String, Integer>())
                       .put(name, 0);
                 }
-                System.out.println("zeroParamToCountMap:" + zeroParamToCountMap);
-                resolvePvsForRecord(timeZero, recordZero, zeroParamToCountMap);
+                //                System.out.println("zeroParamToCountMap:" + zeroParamToCountMap);
+                resolvePvsForRecord(timeZero, recordZero, zeroParamToCountMap, null);
 
                 csvPrinter.printRecord(recordZero);
 
                 HashMap<Instant, HashMap<String, Integer>> paramToCountMap =
                     new HashMap<Instant, HashMap<String, Integer>>();
+
+                HashMap<Instant, HashMap<String, ParameterValue>> paramToLatestValMap =
+                    new HashMap<Instant, HashMap<String, ParameterValue>>();
+                paramToCountMap.put(
+                    timeZero, zeroParamToCountMap.entrySet().iterator().next().getValue());
+                var latestValueForParam = new HashMap<String, ParameterValue>();
+                for (int i = 1; i < sortedTimeStamps.size(); i++) {
+                  ArrayList<String> record = new ArrayList<String>();
+
+                  var currentCountMap =
+                      paramToCountMap.computeIfAbsent(
+                          sortedTimeStamps.get(i), (item) -> new HashMap<String, Integer>());
+                  var currentLatestValMap =
+                      paramToLatestValMap.computeIfAbsent(
+                          sortedTimeStamps.get(i), (item) -> new HashMap<String, ParameterValue>());
+                  for (var p : this.parameters) {
+                    var nameParts = p.split("/");
+                    var name = nameParts[nameParts.length - 1];
+                    currentCountMap.put(name, 0);
+                    var prevParam =
+                        timeStampToParameters.get(sortedTimeStamps.get(i - 1)).get(name);
+                    var currentParam =
+                        timeStampToParameters.get(sortedTimeStamps.get(i - 1)).get(name);
+                    if (currentParam.pv != null) {
+                      latestValueForParam.put(name, currentParam.pv);
+                    }
+                    if (prevParam.pv != null) {
+                      int prevCount = paramToCountMap.get(sortedTimeStamps.get(i - 1)).get(name);
+                      currentCountMap.put(name, prevCount + 1);
+                    } else {
+                      int prevCount = paramToCountMap.get(sortedTimeStamps.get(i - 1)).get(name);
+                      currentCountMap.put(name, prevCount);
+                    }
+
+                    if (latestValueForParam.containsKey(name))
+                      ;
+                    {
+                      currentLatestValMap.put(name, latestValueForParam.get(name));
+                    }
+                  }
+                }
+
                 for (int i = 1; i < sortedTimeStamps.size(); i++) {
                   ArrayList<String> record = new ArrayList<String>();
 
                   Duration zeroDelta = Duration.between(timeZero, sortedTimeStamps.get(i));
-                  var currentCountMap =
-                      paramToCountMap.computeIfAbsent(
-                          sortedTimeStamps.get(i), (item) -> new HashMap<String, Integer>());
-                  for (var p : this.parameters) {
-                    currentCountMap.put(p, 0);
-                    var nameParts = p.split("/");
-                    var name = nameParts[nameParts.length - 1];
-                    var prevParam =
-                        timeStampToParameters.get(sortedTimeStamps.get(i - 1)).get(name);
-                    if (prevParam != null) {
-                      int prevCount = paramToCountMap.get(sortedTimeStamps.get(i - 1)).get(p);
-                      currentCountMap.put(p, prevCount + 1);
-                    } else {
-                      int prevCount = paramToCountMap.get(sortedTimeStamps.get(i - 1)).get(p);
-                      currentCountMap.put(p, prevCount);
-                    }
-                  }
-
                   deltaCount = zeroDelta.toMillis();
                   record.add(sortedTimeStamps.get(i).toString());
                   record.add(Long.toString(deltaCount));
-                  resolvePvsForRecord(sortedTimeStamps.get(i), record, paramToCountMap);
+                  resolvePvsForRecord(
+                      sortedTimeStamps.get(i), record, paramToCountMap, paramToLatestValMap);
                   csvPrinter.printRecord(record);
                 }
 
@@ -307,7 +345,8 @@ public class ExportCSVJob implements JobRunnable {
   private void resolvePvsForRecord(
       Instant currentTimeStamp,
       ArrayList<String> record,
-      HashMap<Instant, HashMap<String, Integer>> currentCountMap) {
+      HashMap<Instant, HashMap<String, Integer>> currentCountMap,
+      HashMap<Instant, HashMap<String, ParameterValue>> latestValueMap) {
     for (var p : this.parameters) {
       var nameParts = p.split("/");
       var name = nameParts[nameParts.length - 1];
@@ -316,13 +355,20 @@ public class ExportCSVJob implements JobRunnable {
         resolvePV(record, currentCountedP);
         record.add(Integer.toString(currentCountMap.get(currentTimeStamp).get(name)));
       } else {
-        System.out.println("resolvePvsForRecord1:" + currentCountMap);
-        System.out.println("resolvePvsForRecord2:" + currentCountMap.get(currentTimeStamp));
-        System.out.println("resolvePvsForRecord3:" + name);
-        System.out.println(
-            "resolvePvsForRecord4:" + currentCountMap.get(currentTimeStamp).get(name));
+        //        System.out.println("resolvePvsForRecord1:" + currentCountMap);
+        //        System.out.println("resolvePvsForRecord2:" +
+        // currentCountMap.get(currentTimeStamp));
+        //        System.out.println("resolvePvsForRecord3:" + name);
+        //        System.out.println(
+        //            "resolvePvsForRecord4:" + currentCountMap.get(currentTimeStamp).get(name));
 
-        record.add("N/A");
+        if (latestValueMap == null || latestValueMap.get(currentTimeStamp).get(name) == null) {
+          record.add("N/A");
+        } else {
+          CountedParameterValue latestCountedP =
+              new CountedParameterValue(latestValueMap.get(currentTimeStamp).get(name), 0);
+          resolvePV(record, latestCountedP);
+        }
         record.add(Integer.toString(currentCountMap.get(currentTimeStamp).get(name)));
       }
     }
@@ -378,7 +424,7 @@ public class ExportCSVJob implements JobRunnable {
     }
   }
 
-  private void constructTimeToParamsMap(ParameterValue pv) {
+  private synchronized void constructTimeToParamsMap(ParameterValue pv) {
     Instant pvGenerationTime = Helpers.toInstant(pv.getGenerationTime());
 
     timeStampToParameters.computeIfAbsent(
@@ -403,6 +449,8 @@ public class ExportCSVJob implements JobRunnable {
                   });
     }
     timeStampToParameters.get(pvGenerationTime).put(pvNameKey, new CountedParameterValue(pv, 0));
+
+    jobBarrier.getAndAdd(1);
   }
 
   private void updateCountForPV() {}
