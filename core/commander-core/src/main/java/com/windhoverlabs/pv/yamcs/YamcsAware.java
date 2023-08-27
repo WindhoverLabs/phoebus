@@ -56,9 +56,6 @@ public interface YamcsAware {
   default void updateTime(Instant time) {}
 
   default void updateClearance(boolean enabled, SignificanceLevelType level) {}
-  
-  default void updateLink(String link) 
-  {
-	  
-  }
+
+  default void updateLink(String link) {}
 }
