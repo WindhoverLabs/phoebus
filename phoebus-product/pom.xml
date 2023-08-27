@@ -37,6 +37,11 @@
 			<artifactId>app-commander-events</artifactId>
 			<version>0.2.6-SNAPSHOT</version>
 		</dependency>
+				<dependency>
+			<groupId>com.windhoverlabs</groupId>
+			<artifactId>app-commander-links</artifactId>
+			<version>0.2.6-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>app-commander-command-options</artifactId>

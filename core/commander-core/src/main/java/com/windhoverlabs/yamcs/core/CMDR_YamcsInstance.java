@@ -2,6 +2,7 @@ package com.windhoverlabs.yamcs.core;
 
 import com.windhoverlabs.pv.yamcs.YamcsPV;
 import com.windhoverlabs.pv.yamcs.YamcsSubscriptionService;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.yamcs.client.EventSubscription;
+import org.yamcs.client.LinkSubscription;
 import org.yamcs.client.Page;
 import org.yamcs.client.YamcsClient;
 import org.yamcs.client.archive.ArchiveClient;
@@ -23,6 +25,8 @@ import org.yamcs.protobuf.GetServerInfoResponse.CommandOptionInfo;
 import org.yamcs.protobuf.Mdb.ParameterInfo;
 import org.yamcs.protobuf.Pvalue.ParameterValue;
 import org.yamcs.protobuf.SubscribeEventsRequest;
+import org.yamcs.protobuf.links.LinkInfo;
+import org.yamcs.protobuf.links.SubscribeLinksRequest;
 
 // import org.yamcs.protobuf.Event;
 
@@ -32,10 +36,37 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   private ProcessorClient yamcsProcessor = null;
   private YamcsSubscriptionService paramSubscriptionService;
   private EventSubscription eventSubscription;
+  private LinkSubscription linkSubscription;
   private MissionDatabase missionDatabase;
   //  private EventSubscription eventSubscription;
   private ArchiveClient yamcsArchiveClient;
   private CMDR_YamcsInstanceState instanceState;
+
+  // TODO:Not sure if we want to have this on every instance and their server...just want it to work
+  // for now.
+  // Useful for "special" command link arguments such as cop1Bypass
+  private HashMap<String, CommandOptionInfo> extraCommandArgs =
+      new HashMap<String, CommandOptionInfo>();
+
+  private ObservableList<CommandOption> optionsList = FXCollections.observableArrayList();
+  private ObservableList<CMDR_Event> events = FXCollections.observableArrayList();
+  private ObservableList<LinkInfo> links = FXCollections.observableArrayList();
+
+  private HashMap<String, LinkInfo> linksMap = new HashMap<String, LinkInfo>();
+
+  private HashMap<String, Boolean> activeInLinks = new HashMap<String, Boolean>();
+
+  private HashMap<String, Instant> LastUpdateLinks = new HashMap<String, Instant>();
+
+  public HashMap<String, Boolean> getActiveInLinks() {
+    return activeInLinks;
+  }
+
+  private HashMap<String, Boolean> activeOutLinks = new HashMap<String, Boolean>();
+
+  public ObservableList<LinkInfo> getLinks() {
+    return links;
+  }
 
   public CMDR_YamcsInstanceState getInstanceState() {
     return instanceState;
@@ -63,13 +94,6 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
       this.value = newValue;
     }
   }
-  // TODO:Not sure if we want to have this on every instance and their server...just want it to work
-  // for now.
-  // Useful for "special" command link arguments such as cop1Bypass
-  private HashMap<String, CommandOptionInfo> extraCommandArgs =
-      new HashMap<String, CommandOptionInfo>();
-
-  private ObservableList<CommandOption> optionsList = FXCollections.observableArrayList();
 
   public ObservableList<CommandOption> getOptionsList() {
     return optionsList;
@@ -82,8 +106,6 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   public ArchiveClient getYamcsArchiveClient() {
     return yamcsArchiveClient;
   }
-
-  private ObservableList<CMDR_Event> events = FXCollections.observableArrayList();
 
   public ObservableList<CMDR_Event> getEvents() {
     return events;
@@ -122,6 +144,43 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     paramSubscriptionService =
         new YamcsSubscriptionService(
             yamcsClient.createParameterSubscription(), serverName, this.getName(), procesor);
+  }
+
+  protected void initLinkSubscription(YamcsClient yamcsClient, String serverName) {
+    linkSubscription = yamcsClient.createLinkSubscription();
+    linkSubscription.addMessageListener(
+        linkEvent -> {
+          switch (linkEvent.getType()) {
+            case REGISTERED:
+            case UPDATED:
+              {
+                var link = linkEvent.getLinkInfo();
+                LinkInfo linkFromList = null;
+
+                LastUpdateLinks.put(link.getName(), Instant.now());
+
+                boolean linkExistsInlList = false;
+
+                for (var l : links) {
+                  if (l.getName().equals(link.getName())) {
+                    linkFromList = l;
+                    linkExistsInlList = true;
+                  }
+                }
+
+                if (linkExistsInlList) {
+                  links.remove(linkFromList);
+                }
+                links.add(linksMap.get(link.getName()));
+              }
+
+              break;
+            case UNREGISTERED:
+              //               TODO but not currently sent by Yamcs
+          }
+        });
+
+    linkSubscription.sendMessage(SubscribeLinksRequest.newBuilder().setInstance(getName()).build());
   }
 
   protected void initEventSubscription(YamcsClient yamcsClient, String serverName) {
@@ -225,6 +284,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     initProcessorClient(yamcsClient);
     initYamcsSubscriptionService(yamcsClient, serverName, "realtime");
     initEventSubscription(yamcsClient, serverName);
+    initLinkSubscription(yamcsClient, serverName);
     initMDBParameterRDequest(yamcsClient, serverName);
     missionDatabase = loadMissionDatabase(yamcsClient);
 
@@ -333,5 +393,9 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     }
 
     consumer.accept(pages);
+  }
+
+  public boolean isLinkActive(String linkName) {
+    return Duration.between(Instant.now(), LastUpdateLinks.get(linkName)).toMillis() < 1000;
   }
 }
