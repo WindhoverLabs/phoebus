@@ -9,7 +9,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -71,19 +70,21 @@ public class LinksViewerController {
   public void initialize() {
     tableView.setId("LinksTable");
 
-    scheduler.scheduleAtFixedRate(
-        () -> {
-          //          this.outOfSync = this.logEventCount != this.streamEventCount;
-          tableView.refresh();
-        },
-        30,
-        30,
-        TimeUnit.SECONDS);
+    //    scheduler.scheduleAtFixedRate(
+    //        () -> {
+    //          //          this.outOfSync = this.logEventCount != this.streamEventCount;
+    ////          tableView.refresh();
+    //        },
+    //        30,
+    //        30,
+    //        TimeUnit.SECONDS);
     //    tableView.getStylesheets().add(LinksViewerApp.getCSSPath());
     nameCol.setCellValueFactory(
         (link) -> {
           SimpleStyleableStringProperty s = new javafx.css.SimpleStyleableStringProperty(null);
-          s.set(link.getValue().getName());
+          if (link != null && link.getValue() != null) {
+            s.set(link.getValue().getName());
+          }
           return s;
         });
 
@@ -133,8 +134,7 @@ public class LinksViewerController {
                 circle.setRadius(10.0f);
                 var activeColor = Color.RED;
                 if (YamcsObjectManager.getDefaultInstance() != null
-                    && YamcsObjectManager.getDefaultInstance().getActiveInLinks().get(item)
-                        != null) {
+                    && YamcsObjectManager.getDefaultInstance().getLinksMap().get(item) != null) {
                   if (YamcsObjectManager.getDefaultInstance().isLinkActive(item)) {
                     activeColor = Color.LIGHTGREEN;
                   } else {
@@ -151,7 +151,11 @@ public class LinksViewerController {
         });
     inCount.setCellValueFactory(
         (link) -> {
-          return new SimpleStringProperty(Long.toString(link.getValue().getDataInCount()));
+          if (link != null && link.getValue() != null) {
+            return new SimpleStringProperty(Long.toString(link.getValue().getDataInCount()));
+          } else {
+            return new SimpleStringProperty("");
+          }
         });
     //    tableView
     //        .getColumns()
@@ -229,9 +233,9 @@ public class LinksViewerController {
             }
           }
 
-          public void updateLink(String link) {
-            tableView.refresh();
-          }
+          //          public void updateLink(String link) {
+          //            tableView.refresh();
+          //          }
         };
 
     YamcsObjectManager.addYamcsListener(yamcsListener);

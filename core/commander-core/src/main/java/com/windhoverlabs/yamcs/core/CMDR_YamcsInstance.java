@@ -54,6 +54,10 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
   private HashMap<String, LinkInfo> linksMap = new HashMap<String, LinkInfo>();
 
+  public HashMap<String, LinkInfo> getLinksMap() {
+    return linksMap;
+  }
+
   private HashMap<String, Boolean> activeInLinks = new HashMap<String, Boolean>();
 
   private HashMap<String, Instant> LastUpdateLinks = new HashMap<String, Instant>();
@@ -159,12 +163,16 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
                 LastUpdateLinks.put(link.getName(), Instant.now());
 
+                linksMap.put(link.getName(), link);
+
                 boolean linkExistsInlList = false;
 
                 for (var l : links) {
-                  if (l.getName().equals(link.getName())) {
-                    linkFromList = l;
-                    linkExistsInlList = true;
+                  if (l != null) {
+                    if (l.getName().equals(link.getName())) {
+                      linkFromList = l;
+                      linkExistsInlList = true;
+                    }
                   }
                 }
 
