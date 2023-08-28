@@ -46,7 +46,7 @@ public class LinksViewerController {
   TableColumn<CMDR_Event, String> typeCol = new TableColumn<CMDR_Event, String>("Type");
   TableColumn<CMDR_Event, String> sourceCol = new TableColumn<CMDR_Event, String>("Source");
   TableColumn<CMDR_Event, String> instanceCol = new TableColumn<CMDR_Event, String>("Instance");
-  
+
   private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
   private ObservableList<CMDR_Event> data =
@@ -70,12 +70,11 @@ public class LinksViewerController {
   @FXML
   public void initialize() {
     tableView.setId("LinksTable");
-    
 
     scheduler.scheduleAtFixedRate(
         () -> {
-//          this.outOfSync = this.logEventCount != this.streamEventCount;
-        	tableView.refresh();
+          //          this.outOfSync = this.logEventCount != this.streamEventCount;
+          tableView.refresh();
         },
         30,
         30,
@@ -229,10 +228,9 @@ public class LinksViewerController {
               tableView.refresh();
             }
           }
-          
-          public void updateLink(String link) 
-          {
-        	  tableView.refresh();
+
+          public void updateLink(String link) {
+            tableView.refresh();
           }
         };
 
