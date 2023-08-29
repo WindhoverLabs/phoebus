@@ -150,23 +150,7 @@ public class ExportCSVJob implements JobRunnable {
     } catch (final Exception ex) {
       error_handler.accept(ex);
     }
-    //    for (ArchiveReader reader : archive_readers) reader.close();
   }
-
-  //    /** Print file header, gets invoked before <code>performExport</code> */
-  //    public void printExportInfo(final PrintStream out)
-  //    {
-  //        out.println(comment + "Created by CS-Studio Data Browser");
-  //        out.println(comment);
-  //        out.println(comment + "Start Time : " + TimestampFormats.MILLI_FORMAT.format(start));
-  //        out.println(comment + "End Time   : " + TimestampFormats.MILLI_FORMAT.format(end));
-  //        out.println(comment + "Source     : " + source.toString());
-  //        if (source == Source.OPTIMIZED_ARCHIVE)
-  //            out.println(comment + "Desired Value Count: " + optimize_parameter);
-  //        else if (source == Source.LINEAR_INTERPOLATION)
-  //            out.println(comment + "Interpolation Interval: " +
-  // SecondsParser.formatSeconds(optimize_parameter));
-  //    }
 
   /**
    * Perform the data export
@@ -255,28 +239,19 @@ public class ExportCSVJob implements JobRunnable {
           var nameParts = p.split("/");
           var name = nameParts[nameParts.length - 1];
           currentCountMap.put(name, 0);
-          var prevParam = timeStampToParameters.get(sortedTimeStamps.get(i - 1)).get(name);
           var currentParam = timeStampToParameters.get(sortedTimeStamps.get(i)).get(name);
           if (currentParam.pv != null) {
             latestValueForParam.put(name, currentParam.pv);
+            int prevCount = paramToCountMap.get(sortedTimeStamps.get(i - 1)).get(name);
+            currentCountMap.put(name, prevCount + 1);
           }
-          if (prevParam.pv != null) {
-            int prevCount = paramToCountMap.get(sortedTimeStamps.get(i - 1)).get(name);
-            currentCountMap.put(name, prevCount + 1);
-          } else if (currentParam.pv != null) {
-            int prevCount = paramToCountMap.get(sortedTimeStamps.get(i - 1)).get(name);
-            currentCountMap.put(name, prevCount + 1);
-          } else {
-            int prevCount = paramToCountMap.get(sortedTimeStamps.get(i - 1)).get(name);
-            if (name.equals("PX4_VEHICLE_GLOBAL_POSITION_MID.Lat")) {
-              System.out.println("i:" + i);
-              System.out.println("prevCount:" + prevCount);
-            }
-            currentCountMap.put(name, prevCount);
+          else 
+          {
+              int prevCount = paramToCountMap.get(sortedTimeStamps.get(i - 1)).get(name);
+              currentCountMap.put(name, prevCount);
           }
 
-          if (latestValueForParam.containsKey(name))
-            ;
+          if (latestValueForParam.containsKey(name));
           {
             currentLatestValMap.put(name, latestValueForParam.get(name));
           }
