@@ -27,12 +27,13 @@ jobs:
           fail-if-no-assets: false
 
       - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@2.2.1
+        uses: svenstaro/upload-release-action@2.7.0
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: phoebus-product/target/product-4.6.10-SNAPSHOT.zip
           asset_name: Commander_${{github.sha}}-SNAPSHOT-nightly-mac-x86_64.zip
           tag: Commander-nightly-build
+          target_commit: ${{github.sha}}
           overwrite: true
           body: "Latest and greatest nightly build. This is NOT a stable version."
 

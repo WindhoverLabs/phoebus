@@ -83,6 +83,10 @@ public class ParameterExportController {
 
   private ExportView paramExportView = new ExportView();
 
+  public ExportView getParamExportView() {
+    return paramExportView;
+  }
+
   private Tab exportTab;
   @FXML private TabPane exportTabPane;
   @FXML private SplitPane mainSplit;
@@ -138,26 +142,11 @@ public class ParameterExportController {
           }
         });
     //    tableView.setColumnResizePolicy(null);
-    tableView.getColumns().addAll(exportColumn, pvColumn);
+    tableView.getColumns().addAll(pvColumn, exportColumn);
 
     yamcsListener =
         new YamcsAware() {
           public void changeDefaultInstance() {
-            //            YamcsObjectManager.getDefaultInstance()
-            //                .getEvents()
-            //                .addListener(
-            //                    new ListChangeListener<Object>() {
-            //                      @Override
-            //                      public void onChanged(Change<?> c) {
-            //                        Platform.runLater(
-            //                            () -> {
-            //                              if (!scrollLockButton.isSelected()) {
-            //                                tableView.scrollTo(tableView.getItems().size() - 1);
-            //                              }
-            //                            });
-            //                      }
-            //                    });
-            //            tableView.setItems(YamcsObjectManager.getDefaultInstance().getEvents());
             tableView.refresh();
           }
 
@@ -169,18 +158,9 @@ public class ParameterExportController {
                       new ListChangeListener<Object>() {
                         @Override
                         public void onChanged(Change<?> c) {
-                          Platform.runLater(
-                              () -> {
-                                //                                if
-                                // (!scrollLockButton.isSelected()) {
-                                //
-                                // tableView.scrollTo(tableView.getItems().size() - 1);
-                                //                                }
-                              });
+                          Platform.runLater(() -> {});
                         }
                       });
-              //
-              // tableView.setItems(YamcsObjectManager.getDefaultInstance().getEvents());
               tableView.refresh();
             }
           }
@@ -193,18 +173,9 @@ public class ParameterExportController {
                       new ListChangeListener<Object>() {
                         @Override
                         public void onChanged(Change<?> c) {
-                          Platform.runLater(
-                              () -> {
-                                //                                if
-                                // (!scrollLockButton.isSelected()) {
-                                //
-                                // tableView.scrollTo(tableView.getItems().size() - 1);
-                                //                                }
-                              });
+                          Platform.runLater(() -> {});
                         }
                       });
-              //
-              // tableView.setItems(YamcsObjectManager.getDefaultInstance().getEvents());
               tableView.refresh();
             }
           }

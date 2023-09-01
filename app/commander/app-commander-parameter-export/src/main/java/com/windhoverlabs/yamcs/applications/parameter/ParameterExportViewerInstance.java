@@ -1,6 +1,8 @@
 package com.windhoverlabs.yamcs.applications.parameter;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -13,28 +15,32 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import org.phoebus.framework.nls.NLS;
 import org.phoebus.framework.persistence.Memento;
+import org.phoebus.framework.persistence.MementoTree;
+import org.phoebus.framework.persistence.XMLMementoTree;
 import org.phoebus.framework.spi.AppDescriptor;
 import org.phoebus.framework.spi.AppInstance;
+import org.phoebus.framework.workbench.Locations;
 import org.phoebus.ui.docking.DockItem;
 import org.phoebus.ui.docking.DockPane;
 
 /** @author lgomez */
 @SuppressWarnings("nls")
 public class ParameterExportViewerInstance implements AppInstance {
-  private static final String YAMCS_EVENTS_MEMENTO_FILENAME = "yamcs_events_memento";
+  private static final String YAMCS_PARAMETER_EXPORT_MEMENTO_FILENAME =
+      "yamcs_parameter_export_memento";
 
   /** Logger for all file browser code */
   public static final Logger logger =
       Logger.getLogger(ParameterExportViewerInstance.class.getPackageName());
 
   /** Memento tags */
-  private static final String YAMCS_EVENTS = "yamcs_events", YAMCS_EVENT_MESSAGE = "message";
+  private static final String EXPORT_START = "yamcs_export_start", EXPORT_END = "yamcs_export_end";
 
   static ParameterExportViewerInstance INSTANCE;
 
   private FXMLLoader loader;
 
-  private ParameterExportController eventInstanceController = null;
+  private ParameterExportController parameterExportInstanceController = null;
 
   private final AppDescriptor app;
 
@@ -50,7 +56,7 @@ public class ParameterExportViewerInstance implements AppInstance {
 
     try {
       content = loader.load();
-      eventInstanceController = loader.getController();
+      parameterExportInstanceController = loader.getController();
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -60,7 +66,7 @@ public class ParameterExportViewerInstance implements AppInstance {
     tab.addCloseCheck(
         () -> {
           INSTANCE = null;
-          eventInstanceController.unInit();
+          parameterExportInstanceController.unInit();
           return CompletableFuture.completedFuture(true);
         });
   }
@@ -73,6 +79,10 @@ public class ParameterExportViewerInstance implements AppInstance {
   @Override
   public void restore(final Memento memento) {
     // TODO: Move "new Tree(restoreServers());" here.
+    parameterExportInstanceController
+        .getParamExportView()
+        .setStart(memento.getString(EXPORT_START).orElse(""));
+    memento.getString(EXPORT_END);
   }
 
   @Override
@@ -86,14 +96,42 @@ public class ParameterExportViewerInstance implements AppInstance {
 
     // Save yamcs connections
     try {
-      createEventsMemento();
+      createParameterExportMemento();
     } catch (Exception ex) {
       logger.log(Level.WARNING, "Error writing saved state to " + "", ex);
     }
   }
 
-  private void createEventsMemento() throws Exception, FileNotFoundException {
-    // TODO:Implement
+  private void createParameterExportMemento() throws Exception, FileNotFoundException {
+
+    logger.info("Saving CSV Exporter state...");
+    final XMLMementoTree csvExporterMemento = XMLMementoTree.create();
+    MementoTree exportData =
+        csvExporterMemento.createChild(YAMCS_PARAMETER_EXPORT_MEMENTO_FILENAME);
+
+    boolean saveMemento = true;
+
+    if (isViewerValid()) {
+      exportData.setString(
+          EXPORT_START, parameterExportInstanceController.getParamExportView().getStart());
+      exportData.setString(
+          EXPORT_END, parameterExportInstanceController.getParamExportView().getEnd());
+      saveMemento = false;
+    }
+    if (saveMemento) {
+      csvExporterMemento.write(
+          new FileOutputStream(
+              new File(Locations.user(), YAMCS_PARAMETER_EXPORT_MEMENTO_FILENAME)));
+    } else {
+      logger.info("Ignoring invalid fields. Only the last valid state will be saved.");
+    }
+  }
+
+  private boolean isViewerValid() {
+    return (!parameterExportInstanceController.getParamExportView().getStart().isBlank()
+            && !parameterExportInstanceController.getParamExportView().getStart().isEmpty())
+        && (!parameterExportInstanceController.getParamExportView().getEnd().isBlank()
+            && !parameterExportInstanceController.getParamExportView().getEnd().isEmpty());
   }
 
   public void raise() {
@@ -101,7 +139,7 @@ public class ParameterExportViewerInstance implements AppInstance {
   }
 
   public ParameterExportController getController() {
-    return eventInstanceController;
+    return parameterExportInstanceController;
   }
 
   private static ObservableList<String> restoreEvents() {

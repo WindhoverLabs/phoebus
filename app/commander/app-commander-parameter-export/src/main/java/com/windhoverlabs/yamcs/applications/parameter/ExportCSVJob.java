@@ -244,14 +244,13 @@ public class ExportCSVJob implements JobRunnable {
             latestValueForParam.put(name, currentParam.pv);
             int prevCount = paramToCountMap.get(sortedTimeStamps.get(i - 1)).get(name);
             currentCountMap.put(name, prevCount + 1);
-          }
-          else 
-          {
-              int prevCount = paramToCountMap.get(sortedTimeStamps.get(i - 1)).get(name);
-              currentCountMap.put(name, prevCount);
+          } else {
+            int prevCount = paramToCountMap.get(sortedTimeStamps.get(i - 1)).get(name);
+            currentCountMap.put(name, prevCount);
           }
 
-          if (latestValueForParam.containsKey(name));
+          if (latestValueForParam.containsKey(name))
+            ;
           {
             currentLatestValMap.put(name, latestValueForParam.get(name));
           }

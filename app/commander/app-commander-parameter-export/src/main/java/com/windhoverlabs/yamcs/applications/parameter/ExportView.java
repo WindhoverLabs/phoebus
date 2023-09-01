@@ -63,7 +63,25 @@ public class ExportView extends VBox {
       TAG_FILE = "file";
 
   private final TextField start = new TextField();
+
+  public String getStart() {
+    return start.getText();
+  }
+
   private final TextField end = new TextField();
+
+  public String getEnd() {
+    return end.getText();
+  }
+
+  void setEnd(String time) {
+    end.setText(time);
+  }
+
+  void setStart(String time) {
+    start.setText(time);
+  }
+
   private final ToggleGroup sources = new ToggleGroup(),
       table_types = new ToggleGroup(),
       formats = new ToggleGroup();
