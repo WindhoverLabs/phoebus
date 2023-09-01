@@ -21,7 +21,7 @@ jobs:
         uses: mknejp/delete-release-assets@v1
         with:
           token: ${{ github.token }}
-          tag: Commander-nightly-build # This may also be of the form 'refs/tags/staging'
+          tag: Commander-nightly-build-* # This may also be of the form 'refs/tags/staging'
           assets: '*nightly-mac-x86_64.zip'
           fail-if-no-release: false
           fail-if-no-assets: false
@@ -32,7 +32,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: phoebus-product/target/product-4.6.10-SNAPSHOT.zip
           asset_name: Commander_${{github.sha}}-SNAPSHOT-nightly-mac-x86_64.zip
-          tag: Commander-nightly-build
+          tag: Commander-nightly-build-${{github.sha}}
           target_commit: ${{github.sha}}
           overwrite: true
           body: "Latest and greatest nightly build. This is NOT a stable version."
