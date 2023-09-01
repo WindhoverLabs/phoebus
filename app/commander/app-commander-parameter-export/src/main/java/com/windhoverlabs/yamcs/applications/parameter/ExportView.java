@@ -122,7 +122,6 @@ public class ExportView extends VBox {
 
     grid.add(new Label(Messages.StartTimeLbl), 0, 0);
     start.setPromptText("2023-08-20T04:30:44.424Z");
-    //    start.setTooltip(new Tooltip(Messages.StartTimeTT));
     GridPane.setHgrow(start, Priority.ALWAYS);
     grid.add(start, 1, 0);
 

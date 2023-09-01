@@ -1,6 +1,7 @@
 package com.windhoverlabs.yamcs.applications.parameter;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -78,11 +79,24 @@ public class ParameterExportViewerInstance implements AppInstance {
 
   @Override
   public void restore(final Memento memento) {
-    // TODO: Move "new Tree(restoreServers());" here.
-    parameterExportInstanceController
-        .getParamExportView()
-        .setStart(memento.getString(EXPORT_START).orElse(""));
-    memento.getString(EXPORT_END);
+
+    try {
+      final XMLMementoTree csvExporterMementoTree =
+          XMLMementoTree.read(
+              new FileInputStream(
+                  new File(Locations.user(), YAMCS_PARAMETER_EXPORT_MEMENTO_FILENAME)));
+      Memento csvExporterMemento =
+          csvExporterMementoTree.getChild(YAMCS_PARAMETER_EXPORT_MEMENTO_FILENAME);
+      parameterExportInstanceController
+          .getParamExportView()
+          .setStart(csvExporterMemento.getString(EXPORT_START).orElse(""));
+      parameterExportInstanceController
+          .getParamExportView()
+          .setEnd(csvExporterMemento.getString(EXPORT_END).orElse(""));
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   @Override
@@ -109,14 +123,14 @@ public class ParameterExportViewerInstance implements AppInstance {
     MementoTree exportData =
         csvExporterMemento.createChild(YAMCS_PARAMETER_EXPORT_MEMENTO_FILENAME);
 
-    boolean saveMemento = true;
+    boolean saveMemento = false;
 
     if (isViewerValid()) {
       exportData.setString(
           EXPORT_START, parameterExportInstanceController.getParamExportView().getStart());
       exportData.setString(
           EXPORT_END, parameterExportInstanceController.getParamExportView().getEnd());
-      saveMemento = false;
+      saveMemento = true;
     }
     if (saveMemento) {
       csvExporterMemento.write(
