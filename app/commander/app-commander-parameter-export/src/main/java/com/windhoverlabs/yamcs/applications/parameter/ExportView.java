@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.function.BiConsumer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -64,6 +65,8 @@ public class ExportView extends VBox {
 
   private final TextField start = new TextField();
 
+  private final String utcRegex = "d{4}-d{2}-d{2}Td{2}:d{2}:d{2}.d{3}+d{2}:d{2}";
+
   public String getStart() {
     return start.getText();
   }
@@ -97,6 +100,19 @@ public class ExportView extends VBox {
 
   private Model model = new org.csstudio.trends.databrowser3.model.Model();
 
+  //  UnaryOperator<TextFormatter.Change> numberValidationFormatter = change -> {
+  //	    if(change.getText().matches("\\d+")){
+  //	        return change; //if change is a number
+  //	    } else {
+  //	        change.setText(""); //else make no change
+  //	        change.setRange(    //don't remove any selected text either.
+  //	                change.getRangeStart(),
+  //	                change.getRangeStart()
+  //	        );
+  //	        return change;
+  //	    }
+  //	};
+
   private ArrayList<String> parameters = new ArrayList<String>();
 
   public ArrayList<String> getParameters() {
@@ -115,6 +131,8 @@ public class ExportView extends VBox {
     // start/end time of Plot
     // Source: ( ) Plot  (*) Raw Archived Data  ( ) Averaged Archived Data  __time__   ( ) Linear
     // __linear__
+
+    configureValidators();
     GridPane grid = new GridPane();
     grid.setHgap(5);
     grid.setVgap(5);
@@ -122,6 +140,8 @@ public class ExportView extends VBox {
 
     grid.add(new Label(Messages.StartTimeLbl), 0, 0);
     start.setPromptText("2023-08-20T04:30:44.424Z");
+    //    start.va
+    //    \\d{4}-[0-1]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\+\\d{4}
     GridPane.setHgrow(start, Priority.ALWAYS);
     grid.add(start, 1, 0);
 
@@ -271,6 +291,19 @@ public class ExportView extends VBox {
     filename.setOnAction(event -> export.requestFocus());
 
     useUnixTimeStamp.selectedProperty().bindBidirectional(unixTimeStamp);
+  }
+
+  void configureValidators() {
+    start
+        .textProperty()
+        .addListener(
+            event -> {
+              System.out.println("Changed:" + !start.getText().matches(utcRegex));
+              ;
+              start.pseudoClassStateChanged(
+                  PseudoClass.getPseudoClass("error"),
+                  !start.getText().isEmpty() && !start.getText().matches(utcRegex));
+            });
   }
 
   /** @return <code>true</code> if the min/max (error) column option should be enabled */

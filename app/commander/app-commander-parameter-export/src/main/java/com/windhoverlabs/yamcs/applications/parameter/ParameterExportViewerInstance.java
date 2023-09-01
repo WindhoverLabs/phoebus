@@ -63,6 +63,15 @@ public class ParameterExportViewerInstance implements AppInstance {
       e.printStackTrace();
     }
     tab = new DockItem(this, content);
+
+    //    start
+    //    .getScene()
+    //    .getStylesheets()
+    //    .add(ExportView.class.getResource("/text-field-red-border.css").toExternalForm());
+    //
+
+    parameterExportInstanceController.getParamExportView().configureValidators();
+
     DockPane.getActiveDockPane().addTab(tab);
     tab.addCloseCheck(
         () -> {
