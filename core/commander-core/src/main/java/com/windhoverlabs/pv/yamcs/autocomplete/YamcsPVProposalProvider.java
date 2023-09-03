@@ -44,7 +44,8 @@ public class YamcsPVProposalProvider implements PVProposalProvider {
     //      }
 
     //      content = AutoCompleteHelper.trimWildcards(content);
-    //      content = content.replaceAll("\\[[0-9]+\\]", "[]"); // Ignore specific index into array
+    //          content = content.replaceAll("\\[[0-9]+\\]", "[]"); // Ignore specific index into
+    // array
     //      var namePattern = AutoCompleteHelper.convertToPattern(content);
     //      namePattern = Pattern.compile(namePattern.pattern(), Pattern.CASE_INSENSITIVE);
 
@@ -96,45 +97,15 @@ public class YamcsPVProposalProvider implements PVProposalProvider {
       }
     }
     if (type.hasArrayInfo()) {
-      var entryPvName = basePvName + "[]";
+      var entryPvName = new StringBuilder(basePvName + "[]");
       var entryType = type.getArrayInfo().getType();
-      scanTypeForPvCandidates(entryPvName, entryType, pvCandidates);
+      for (int i = 0; i < type.getArrayInfo().getDimensionsList().get(0).getFixedValue(); i++) {
+        //        System.out.println("arrayItem-->" + entryPvName);
+        entryPvName = new StringBuilder(basePvName + "[]");
+        entryPvName.insert(basePvName.length() + 1, i);
+        System.out.println("array info for " + entryPvName);
+        pvCandidates.add(entryPvName.toString());
+      }
     }
   }
-
-  //  {
-  //	    if (!text.startsWith("loc://")) return generic;
-  //
-  //	    final List<Proposal> result = new ArrayList<>();
-  //	    //        final List<String> split = LocProposal.splitNameTypeAndInitialValues(text);
-  //	    final List<String> split = new ArrayList<String>();
-  //
-  //	    // Use the entered name, but add "loc://".
-  //	    // Default to just "loc://name"
-  //	    String name = split.get(0).trim();
-  //	    if (name.isEmpty()) name = "loc://name";
-  //	    else if (!name.startsWith("loc://")) name = "loc://" + name;
-  //
-  //	    // Use the entered type, or default to "VType"
-  //	    String type = split.get(1);
-  //	    if (type != null) {
-  //	      result.add(new LocProposal(name, "VDouble", "number"));
-  //	      result.add(new LocProposal(name, "VLong", "number"));
-  //	      result.add(new LocProposal(name, "VString", "\"string\""));
-  //	      result.add(new LocProposal(name, "VEnum", "index", "\"Label 1\"", "\"Label 2\", ..."));
-  //	      result.add(new LocProposal(name, "VDoubleArray", "number", "number, ..."));
-  //	      result.add(new LocProposal(name, "VStringArray", "\"string\"", "\"string\", ..."));
-  //	      result.add(new LocProposal(name, "VTable"));
-  //	    } else {
-  //	      result.add(new LocProposal(name, "VType", "number"));
-  //	      result.add(new LocProposal(name, "VType", "\"string\""));
-  //	    }
-  //	    return result;
-  //  }
-
-  //  @Override
-  //  public AutoCompleteResult listResult(ContentDescriptor desc, int limit) {
-  //
-  //  }
-
 }

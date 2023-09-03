@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="gridPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="190.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.windhoverlabs.yamcs.applications.events.EventViewerController">
+<GridPane fx:id="gridPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="190.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.windhoverlabs.yamcs.applications.links.LinksViewerController">
    <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="60.0" />
    </columnConstraints>

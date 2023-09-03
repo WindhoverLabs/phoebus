@@ -126,6 +126,7 @@
         <configuration>
           <!-- Only document 'public' code -->
           <show>public</show>
+		      <detectJavaApiLink>false</detectJavaApiLink>
         </configuration>
       </plugin>
       <plugin>
@@ -375,7 +376,7 @@
 									<!-- add this to disable checking -->
 									<doclint>none</doclint>
 									<source>11</source>
-
+									<detectJavaApiLink>false</detectJavaApiLink>
 								</configuration>
 							</execution>
 						</executions>

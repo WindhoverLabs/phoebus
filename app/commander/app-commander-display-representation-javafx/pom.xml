@@ -3,13 +3,13 @@
   <parent>
     <groupId>com.windhoverlabs</groupId>
     <artifactId>app-commander</artifactId>
-    <version>0.2.4-SNAPSHOT</version>
+    <version>0.2.6-SNAPSHOT</version>
   </parent>
   <dependencies>
        <dependency>
       <groupId>com.windhoverlabs</groupId>
       <artifactId>app-commander-display-model</artifactId>
-      <version>0.2.4-SNAPSHOT</version>
+      <version>0.2.6-SNAPSHOT</version>
     </dependency>
     </dependencies>
   <artifactId>app-commander-display-representation-javafx</artifactId>

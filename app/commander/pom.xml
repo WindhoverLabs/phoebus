@@ -171,7 +171,9 @@
 		<module>app-commander-display-runtime</module>
 		<module>app-commander-mission-planner</module>
 		<module>app-commander-command-options</module>
+		<module>app-commander-parameter-export</module>
+		<module>app-commander-links</module>
 	</modules>
-	<version>0.2.4-SNAPSHOT</version>
+	<version>0.2.6-SNAPSHOT</version>
 	<groupId>com.windhoverlabs</groupId>
 </project>

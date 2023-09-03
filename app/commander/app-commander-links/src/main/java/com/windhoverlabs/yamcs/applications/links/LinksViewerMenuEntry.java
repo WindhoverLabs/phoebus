@@ -1,4 +1,4 @@
-package com.windhoverlabs.yamcs.applications.events;
+package com.windhoverlabs.yamcs.applications.links;
 
 import javafx.scene.image.Image;
 import org.phoebus.framework.workbench.ApplicationService;
@@ -6,10 +6,10 @@ import org.phoebus.ui.javafx.ImageCache;
 import org.phoebus.ui.spi.MenuEntry;
 
 @SuppressWarnings("nls")
-public class ParameterExportMenuEntry implements MenuEntry {
+public class LinksViewerMenuEntry implements MenuEntry {
   @Override
   public String getName() {
-    return ParameterExport.Name;
+    return LinksViewerApp.Name;
   }
 
   @Override
@@ -19,12 +19,12 @@ public class ParameterExportMenuEntry implements MenuEntry {
 
   @Override
   public Image getIcon() {
-    return ImageCache.getImage(ParameterExport.class, "/icons/filebrowser.png");
+    return ImageCache.getImage(LinksViewerApp.class, "/icons/filebrowser.png");
   }
 
   @Override
   public Void call() throws Exception {
-    ApplicationService.createInstance(ParameterExport.Name);
+    ApplicationService.createInstance(LinksViewerApp.Name);
     return null;
   }
 }

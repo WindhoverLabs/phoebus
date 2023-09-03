@@ -1,4 +1,4 @@
-package com.windhoverlabs.yamcs.applications.events;
+package com.windhoverlabs.yamcs.applications.links;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,32 +20,28 @@ import org.phoebus.ui.docking.DockPane;
 
 /** @author lgomez */
 @SuppressWarnings("nls")
-public class ParameterExportViewerInstance implements AppInstance {
-  private static final String YAMCS_EVENTS_MEMENTO_FILENAME = "yamcs_events_memento";
+public class LinksViewerInstance implements AppInstance {
 
   /** Logger for all file browser code */
-  public static final Logger logger = Logger.getLogger(ParameterExportViewerInstance.class.getPackageName());
+  public static final Logger logger = Logger.getLogger(LinksViewerInstance.class.getPackageName());
 
-  /** Memento tags */
-  private static final String YAMCS_EVENTS = "yamcs_events", YAMCS_EVENT_MESSAGE = "message";
-
-  static ParameterExportViewerInstance INSTANCE;
+  static LinksViewerInstance INSTANCE;
 
   private FXMLLoader loader;
 
-  private ParameterExportController eventInstanceController = null;
+  private LinksViewerController eventInstanceController = null;
 
   private final AppDescriptor app;
 
   private DockItem tab = null;
 
-  public ParameterExportViewerInstance(AppDescriptor app) {
+  public LinksViewerInstance(AppDescriptor app) {
     this.app = app;
     Node content = null;
     ResourceBundle resourceBundle = NLS.getMessages(Messages.class);
     FXMLLoader loader = new FXMLLoader();
     loader.setResources(resourceBundle);
-    loader.setLocation(this.getClass().getResource("EventView.fxml"));
+    loader.setLocation(this.getClass().getResource("LinksView.fxml"));
 
     try {
       content = loader.load();
@@ -99,7 +95,7 @@ public class ParameterExportViewerInstance implements AppInstance {
     tab.select();
   }
 
-  public ParameterExportController getController() {
+  public LinksViewerController getController() {
     return eventInstanceController;
   }
 
