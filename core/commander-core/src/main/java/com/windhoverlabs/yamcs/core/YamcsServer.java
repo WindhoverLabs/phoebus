@@ -118,6 +118,8 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
                   for (YamcsAware l : listeners) {
                     l.onInstancesReady(getObj());
+                    com.windhoverlabs.yamcs.core.YamcsObjectManager.triggreYamcsListeners(
+                        YamcsAwareMethod.changeDefaultInstance);
                   }
                 }
               } catch (InterruptedException e1) {
@@ -313,6 +315,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
   void setDefaultInstance(String instanceName) {
     defaultInstance = getInstance(instanceName);
+    YamcsObjectManager.triggreYamcsListeners(YamcsAwareMethod.changeDefaultInstance);
   }
 
   public CMDR_YamcsInstance getDefaultInstance() {

@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.csstudio.trends.databrowser3.Activator;
@@ -42,6 +43,8 @@ import org.yamcs.protobuf.Pvalue.ParameterValue;
  */
 @SuppressWarnings("nls")
 public class ExportCSVJob implements JobRunnable {
+
+  public static final Logger log = Logger.getLogger(ExportCSVJob.class.getPackageName());
 
   class CountedParameterValue {
     private ParameterValue pv;
@@ -170,6 +173,14 @@ public class ExportCSVJob implements JobRunnable {
               handlePages(pages);
               writeToCSV(writer);
               monitor.worked(100);
+              // Make sure we schedule this object for gc
+              //              timeStampToParameters = null;
+              for (java.util.Map.Entry<Instant, HashMap<String, CountedParameterValue>> entry :
+                  timeStampToParameters.entrySet()) {
+//                entry.getValue() = null;
+                //            	  Instant, HashMap<String, CountedParameterValue>>
+              }
+              timeStampToParameters = null;
               cancel_poll.exit = true;
             });
     monitor.worked(10);
@@ -421,6 +432,8 @@ public class ExportCSVJob implements JobRunnable {
                   });
     }
     timeStampToParameters.get(pvGenerationTime).put(pvNameKey, new CountedParameterValue(pv, 0));
+    log.info(
+        Long.toString((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())));
 
     jobBarrier.getAndAdd(1);
   }

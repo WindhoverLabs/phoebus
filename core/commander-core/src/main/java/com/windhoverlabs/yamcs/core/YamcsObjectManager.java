@@ -4,6 +4,8 @@ import com.windhoverlabs.pv.yamcs.YamcsAware;
 import com.windhoverlabs.pv.yamcs.YamcsAware.YamcsAwareMethod;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -20,6 +22,14 @@ public final class YamcsObjectManager {
 
   private static YamcsObject<YamcsServer> root;
   private static ObservableList<YamcsServer> servers = FXCollections.observableArrayList();
+  private YamcsAware listener;
+
+  private static SimpleStringProperty managerStatus =
+      new SimpleStringProperty("Connection Status: Disconnected");
+
+  public static SimpleStringProperty getManagerStatus() {
+    return managerStatus;
+  }
 
   // At the moment we do not support setting a default server directly by the outside
   private static YamcsServer defaultServer = null;
@@ -82,7 +92,10 @@ public final class YamcsObjectManager {
     }
   }
 
-  private YamcsObjectManager() {}
+  private YamcsObjectManager() {
+
+    //    addYamcsListener(listener);
+  }
 
   public static YamcsObject<YamcsServer> getRoot() {
     return root;
@@ -106,6 +119,38 @@ public final class YamcsObjectManager {
           public void createAndAddChild(String name) {
             YamcsServer newServer = new YamcsServer(name);
             try {
+              YamcsAware managerListener =
+                  new YamcsAware() {
+                    //    	TODO:At the moment onYamcsConnected is not being called.
+                    // changeDefaultInstance is
+                    // driving
+                    //    	the listeners for now.
+                    public void onYamcsConnected() {
+                      //            managerStatus.set("Connection Status: Connected");
+                      System.out.println(
+                          "************onYamcsConnected, managerStatus************************");
+                    }
+
+                    public void onYamcsDisconnected() {
+                      //            managerStatus.set("Connection Status: Disconnected");
+                      System.out.println(
+                          "************changeDefaultInstance, managerStatus************************");
+                    }
+
+                    public void changeDefaultInstance() {
+                      System.out.println(
+                          "************changeDefaultInstance, managerStatus************************");
+                      Platform.runLater(
+                          () -> {
+                            managerStatus.set(
+                                "Connection Status: Connected. Default set to"
+                                    + getDefaultInstanceName());
+                          });
+                      ;
+                    }
+                  };
+              //              newServer.addListener(managerListener);
+              listeners.add(managerListener);
               for (YamcsAware l : listeners) {
                 newServer.addListener(l);
               }
@@ -168,6 +213,15 @@ public final class YamcsObjectManager {
           {
             l.onYamcsDisconnected();
           }
+          break;
+        case changeDefaultInstance:
+          System.out.println(
+              "changeDefaultInstance$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4444");
+          l.changeDefaultInstance();
+          ;
+          break;
+        default:
+          break;
       }
     }
   }
