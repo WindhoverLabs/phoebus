@@ -99,7 +99,8 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
             @Override
             public void connected() {
-
+              com.windhoverlabs.yamcs.core.YamcsObjectManager.triggerYamcsListeners(
+                  YamcsAwareMethod.onYamcsConnected);
               try {
                 List<YamcsInstance> instances = yamcsClient.listInstances().get();
                 for (YamcsInstance instance : instances) {
@@ -118,8 +119,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
                   for (YamcsAware l : listeners) {
                     l.onInstancesReady(getObj());
-                    com.windhoverlabs.yamcs.core.YamcsObjectManager.triggreYamcsListeners(
-                        YamcsAwareMethod.changeDefaultInstance);
+                    ;
                   }
                 }
               } catch (InterruptedException e1) {
@@ -199,6 +199,8 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
               try {
                 List<YamcsInstance> instances = yamcsClient.listInstances().get();
+                com.windhoverlabs.yamcs.core.YamcsObjectManager.triggerYamcsListeners(
+                    YamcsAwareMethod.onYamcsConnected);
                 for (YamcsInstance instance : instances) {
                   createAndAddChild(instance.getName());
 
@@ -281,7 +283,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
       l.onYamcsDisconnected();
     }
 
-    YamcsObjectManager.triggreYamcsListeners(YamcsAwareMethod.onYamcsDisconnected);
+    YamcsObjectManager.triggerYamcsListeners(YamcsAwareMethod.onYamcsDisconnected);
     unInit();
     serverState = ConnectionState.DISCONNECTED;
     Platform.runLater(
@@ -315,7 +317,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
   void setDefaultInstance(String instanceName) {
     defaultInstance = getInstance(instanceName);
-    YamcsObjectManager.triggreYamcsListeners(YamcsAwareMethod.changeDefaultInstance);
+    YamcsObjectManager.triggerYamcsListeners(YamcsAwareMethod.changeDefaultInstance);
   }
 
   public CMDR_YamcsInstance getDefaultInstance() {

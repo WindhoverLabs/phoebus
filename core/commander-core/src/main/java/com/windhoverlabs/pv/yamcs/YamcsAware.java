@@ -12,7 +12,8 @@ import org.yamcs.protobuf.ProcessorInfo;
 public interface YamcsAware {
   public enum YamcsAwareMethod {
     onYamcsDisconnected,
-    changeDefaultInstance
+    changeDefaultInstance,
+    onYamcsConnected
   };
 
   default void onYamcsObjectManagerInit() {

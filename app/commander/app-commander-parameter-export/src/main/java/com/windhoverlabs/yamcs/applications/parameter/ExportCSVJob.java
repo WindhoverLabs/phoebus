@@ -432,8 +432,9 @@ public class ExportCSVJob implements JobRunnable {
                   });
     }
     timeStampToParameters.get(pvGenerationTime).put(pvNameKey, new CountedParameterValue(pv, 0));
-    log.info(
-        Long.toString((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())));
+    //    log.info(
+    //        Long.toString((Runtime.getRuntime().totalMemory() -
+    // Runtime.getRuntime().freeMemory())));
 
     jobBarrier.getAndAdd(1);
   }

@@ -251,10 +251,10 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     var it = paramsPage.iterator();
     it.forEachRemaining(
         p -> {
-          System.out.println("p-->" + p.getQualifiedName());
+          //          System.out.println("p-->" + p.getQualifiedName());
 
           for (var m : p.getType().getMemberList()) {
-            System.out.println("p member-->" + m.getName());
+            //            System.out.println("p member-->" + m.getName());
           }
         });
     while (paramsPage.hasNextPage()) {
@@ -268,10 +268,10 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
       it = paramsPage.iterator();
       it.forEachRemaining(
           p -> {
-            System.out.println("p-->" + p.getQualifiedName());
+            //            System.out.println("p-->" + p.getQualifiedName());
 
             for (var m : p.getType().getMemberList()) {
-              System.out.println("p member-->" + m.getName());
+              //              System.out.println("p member-->" + m.getName());
             }
           });
     }
