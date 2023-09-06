@@ -177,7 +177,7 @@ public class ExportCSVJob implements JobRunnable {
               //              timeStampToParameters = null;
               for (java.util.Map.Entry<Instant, HashMap<String, CountedParameterValue>> entry :
                   timeStampToParameters.entrySet()) {
-//                entry.getValue() = null;
+                //                entry.getValue() = null;
                 //            	  Instant, HashMap<String, CountedParameterValue>>
               }
               timeStampToParameters = null;
