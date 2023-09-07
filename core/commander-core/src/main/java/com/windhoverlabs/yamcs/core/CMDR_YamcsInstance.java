@@ -8,25 +8,34 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.yamcs.TmPacket;
+import org.yamcs.YamcsServer;
 import org.yamcs.client.EventSubscription;
 import org.yamcs.client.LinkSubscription;
+import org.yamcs.client.MessageListener;
+import org.yamcs.client.PacketSubscription;
 import org.yamcs.client.Page;
 import org.yamcs.client.YamcsClient;
 import org.yamcs.client.archive.ArchiveClient;
 import org.yamcs.client.mdb.MissionDatabaseClient.ListOptions;
 import org.yamcs.client.processor.ProcessorClient;
+import org.yamcs.mdb.ProcessingStatistics;
 import org.yamcs.protobuf.CreateEventRequest;
 import org.yamcs.protobuf.GetServerInfoResponse;
 import org.yamcs.protobuf.GetServerInfoResponse.CommandOptionInfo;
 import org.yamcs.protobuf.Mdb.ParameterInfo;
 import org.yamcs.protobuf.Pvalue.ParameterValue;
 import org.yamcs.protobuf.SubscribeEventsRequest;
+import org.yamcs.protobuf.TmPacketData;
 import org.yamcs.protobuf.links.LinkInfo;
 import org.yamcs.protobuf.links.SubscribeLinksRequest;
+import org.yamcs.utils.TimeEncoding;
 
 // import org.yamcs.protobuf.Event;
 
@@ -67,6 +76,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   }
 
   private HashMap<String, Boolean> activeOutLinks = new HashMap<String, Boolean>();
+  private ScheduledThreadPoolExecutor timer;
 
   public ObservableList<LinkInfo> getLinks() {
     return links;
@@ -140,7 +150,6 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
   protected void initProcessorClient(YamcsClient yamcsClient) {
     yamcsProcessor = yamcsClient.createProcessorClient(getName(), "realtime");
-    //    yamcsClient.listProcessors(OBJECT_TYPE)
   }
 
   protected void initYamcsSubscriptionService(
@@ -218,6 +227,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     var missionDatabase = new MissionDatabase();
 
     var mdbClient = client.createMissionDatabaseClient(getName());
+
     try {
       var page = mdbClient.listParameters(ListOptions.limit(500)).get();
       page.iterator().forEachRemaining(missionDatabase::addParameter);
@@ -294,6 +304,66 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     initEventSubscription(yamcsClient, serverName);
     initLinkSubscription(yamcsClient, serverName);
     initMDBParameterRDequest(yamcsClient, serverName);
+    //    Processor ysi =
+    // YamcsServer.getServer().getInstance(getName()).getProcessor("rf_replay").getTmProcessor().getStatistics();
+
+    //    TODO:Don't use the YAMCS thread pool. Use the Java one.
+    timer = YamcsServer.getServer().getThreadPoolExecutor();
+
+    //    Make "rf_replay configurable"
+
+    timer.scheduleAtFixedRate(
+        () -> {
+          ProcessingStatistics ps =
+              YamcsServer.getServer()
+                  .getInstance(getName())
+                  .getProcessor("rf_replay")
+                  .getTmProcessor()
+                  .getStatistics();
+        },
+        1,
+        1,
+        TimeUnit.SECONDS);
+    YamcsServer.getServer()
+        .getInstance(getName())
+        .getProcessor("rf_replay")
+        .getTmProcessor()
+        .getStatistics();
+    var ps = yamcsClient.listProcessors(getName());
+    //    var processors =  ps.get();
+
+    //    for(var p: processors)
+    //    {
+    //    	p.get
+    //    }
+    //
+    // yamcsClient.createProcessorSubscription().sendMessage(SubscribeTMStatisticsRequest.newBuilder().build());
+    //    yamcsClient.create
+    PacketSubscription subscription = yamcsClient.createPacketSubscription();
+    subscription.addMessageListener(
+        new MessageListener<TmPacketData>() {
+
+          @Override
+          public void onMessage(TmPacketData message) {
+            TmPacket pwt =
+                new TmPacket(
+                    TimeEncoding.fromProtobufTimestamp(message.getReceptionTime()),
+                    TimeEncoding.fromProtobufTimestamp(message.getGenerationTime()),
+                    message.getSequenceNumber(),
+                    message.getPacket().toByteArray());
+            //            packetsTable.packetReceived(pwt);
+          }
+
+          @Override
+          public void onError(Throwable t) {
+            //            showError("Error subscribing: " + t.getMessage());
+          }
+        });
+
+    //    subscription.sendMessage(SubscribeTMStatisticsRequest.newBuilder()
+    //            .setInstance(getName())
+    ////            .setStream(connectData.streamName)
+    //            .build());
     missionDatabase = loadMissionDatabase(yamcsClient);
 
     try {
