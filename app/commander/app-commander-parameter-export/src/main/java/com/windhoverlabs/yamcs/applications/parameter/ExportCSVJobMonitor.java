@@ -42,9 +42,9 @@ import org.yamcs.protobuf.Pvalue.ParameterValue;
  * @author Kay Kasemir
  */
 @SuppressWarnings("nls")
-public class ExportCSVJob implements JobRunnable {
+public class ExportCSVJobMonitor implements JobRunnable {
 
-  public static final Logger log = Logger.getLogger(ExportCSVJob.class.getPackageName());
+  public static final Logger log = Logger.getLogger(ExportCSVJobMonitor.class.getPackageName());
   private boolean isDone = false;
 
   public boolean isDone() {
@@ -120,7 +120,7 @@ public class ExportCSVJob implements JobRunnable {
    * @param unixTimeStamp If <code>true</code>, time stamps are UNIX style, i.e. ms since EPOCH.
    *     Defaults to false.
    */
-  public ExportCSVJob(
+  public ExportCSVJobMonitor(
       final Instant start,
       final Instant end,
       final String filename,
@@ -139,7 +139,7 @@ public class ExportCSVJob implements JobRunnable {
   /** Job's main routine {@inheritDoc} */
   @Override
   public final void run(final JobMonitor monitor) {
-    //    monitor.beginTask("Data Export", 100);
+    monitor.beginTask("Data Export", 100);
 
     try {
       BufferedWriter writer;
@@ -151,18 +151,16 @@ public class ExportCSVJob implements JobRunnable {
       // user tries to abort the export job
       cancel_poll = new CancellationPoll(monitor);
       final Future<?> done = Activator.thread_pool.submit(cancel_poll);
-      log.info("Waiting for job...");
       performExport(monitor, writer);
       // ask thread to exit
       //      cancel_poll.exit = true;
       //      if (writer != null) writer.close();
       // Wait for poller to quit
-
-      cancel_poll.exit = true;
+      log.info("Waiting for job...");
       //      done.
       done.get();
       isDone = true;
-      log.info("Job count:" + jobBarrier.get());
+      log.info("Page count:" + jobBarrier.get());
     } catch (final Exception ex) {
       error_handler.accept(ex);
     }
@@ -214,7 +212,6 @@ public class ExportCSVJob implements JobRunnable {
                       end,
                       (pages) -> {
                         handlePages(pages);
-                        pages = null;
                       });
 
               jobBarrier.getAndAdd(1);
@@ -225,17 +222,13 @@ public class ExportCSVJob implements JobRunnable {
       ;
     writeToCSV(writer);
 
-    //    System.gc();
-
     monitor.done();
+
+    //    cancel_poll.exit = true;
   }
 
   private void writeToCSV(BufferedWriter writer) {
     CSVPrinter csvPrinter = null;
-    List<Instant> sortedTimeStamps = null;
-    HashMap<Instant, HashMap<String, Integer>> zeroParamToCountMap = null;
-    HashMap<Instant, HashMap<String, Integer>> paramToCountMap = null;
-    HashMap<Instant, HashMap<String, ParameterValue>> paramToLatestValMap = null;
     ArrayList<String> columnHeaders = new ArrayList<String>();
     try {
       columnHeaders.add("Time");
@@ -259,7 +252,7 @@ public class ExportCSVJob implements JobRunnable {
     try {
       csvPrinter.printRecord(columnHeaders);
 
-      sortedTimeStamps = new ArrayList<Instant>(timeStampToParameters.keySet());
+      List<Instant> sortedTimeStamps = new ArrayList<Instant>(timeStampToParameters.keySet());
       Collections.sort(sortedTimeStamps);
 
       long deltaCount = 0;
@@ -267,7 +260,8 @@ public class ExportCSVJob implements JobRunnable {
       ArrayList<String> recordZero = new ArrayList<String>();
       recordZero.add(timeZero.toString());
       recordZero.add(Long.toString(deltaCount));
-      zeroParamToCountMap = new HashMap<Instant, HashMap<String, Integer>>();
+      HashMap<Instant, HashMap<String, Integer>> zeroParamToCountMap =
+          new HashMap<Instant, HashMap<String, Integer>>();
       for (var p : this.parameters) {
         var nameParts = p.split("/");
         var name = nameParts[nameParts.length - 1];
@@ -279,9 +273,11 @@ public class ExportCSVJob implements JobRunnable {
 
       csvPrinter.printRecord(recordZero);
 
-      paramToCountMap = new HashMap<Instant, HashMap<String, Integer>>();
+      HashMap<Instant, HashMap<String, Integer>> paramToCountMap =
+          new HashMap<Instant, HashMap<String, Integer>>();
 
-      paramToLatestValMap = new HashMap<Instant, HashMap<String, ParameterValue>>();
+      HashMap<Instant, HashMap<String, ParameterValue>> paramToLatestValMap =
+          new HashMap<Instant, HashMap<String, ParameterValue>>();
       paramToCountMap.put(timeZero, zeroParamToCountMap.entrySet().iterator().next().getValue());
       var latestValueForParam = new HashMap<String, ParameterValue>();
       for (int i = 1; i < sortedTimeStamps.size(); i++) {
@@ -330,23 +326,8 @@ public class ExportCSVJob implements JobRunnable {
 
     try {
       csvPrinter.flush();
-      ArrayList<Instant> list1 = new ArrayList<Instant>(timeStampToParameters.keySet());
-      for (Instant key : list1) {
-        ArrayList<String> list2 = new ArrayList<String>(timeStampToParameters.get(key).keySet());
-        for (var key1 : list2) {
-          timeStampToParameters.get(key).put(key1, null);
-        }
-        timeStampToParameters.put(key, null);
-      }
       timeStampToParameters = null;
-      sortedTimeStamps = null;
       columnHeaders = null;
-
-      csvPrinter = null;
-      sortedTimeStamps = null;
-      zeroParamToCountMap = null;
-      paramToCountMap = null;
-      paramToLatestValMap = null;
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -423,7 +404,7 @@ public class ExportCSVJob implements JobRunnable {
   }
 
   private synchronized void reportProgress(final JobMonitor monitor) {
-    monitor.worked(1);
+    monitor.worked(jobBarrier.get());
   }
 
   private void resolvePvsForRecord(
@@ -513,13 +494,14 @@ public class ExportCSVJob implements JobRunnable {
 
     for (String parameterName : this.parameters) {
       var nameParts = parameterName.split("/");
-      timeStampToParameters
-          .get(pvGenerationTime)
-          .computeIfAbsent(
-              nameParts[nameParts.length - 1],
-              p -> {
-                return new CountedParameterValue(null, 0);
-              });
+      var countedParams =
+          timeStampToParameters
+              .get(pvGenerationTime)
+              .computeIfAbsent(
+                  nameParts[nameParts.length - 1],
+                  p -> {
+                    return new CountedParameterValue(null, 0);
+                  });
     }
     timeStampToParameters.get(pvGenerationTime).put(pvNameKey, new CountedParameterValue(pv, 0));
   }

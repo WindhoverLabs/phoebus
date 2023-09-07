@@ -79,6 +79,12 @@ public class ParameterExportViewerInstance implements AppInstance {
           parameterExportInstanceController.unInit();
           return CompletableFuture.completedFuture(true);
         });
+
+    //    tab.addClosedNotification(
+    //        () -> {
+    //          INSTANCE = null;
+    //          parameterExportInstanceController.unInit();
+    //        });
   }
 
   @Override

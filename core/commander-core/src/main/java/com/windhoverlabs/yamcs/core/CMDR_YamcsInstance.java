@@ -403,6 +403,25 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     consumer.accept(pages);
   }
 
+  public void getParameter(
+      YamcsClient yamcsClient,
+      String parameter,
+      Instant start,
+      Instant end,
+      Consumer<ArrayList<Page<ParameterValue>>> consumer) {
+
+    //    this.getYamcsArchiveClient().streamValues(parameters, consumer, start, end);
+    ArrayList<Page<ParameterValue>> pages = new ArrayList<Page<ParameterValue>>();
+    try {
+      pages.add(this.getYamcsArchiveClient().listValues(parameter, start, end).get());
+    } catch (InterruptedException | ExecutionException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    consumer.accept(pages);
+  }
+
   public boolean isLinkActive(String linkName) {
     return Duration.between(Instant.now(), LastUpdateLinks.get(linkName)).toMillis() < 1000;
   }
