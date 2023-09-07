@@ -103,7 +103,7 @@ public class YamcsPVProposalProvider implements PVProposalProvider {
         //        System.out.println("arrayItem-->" + entryPvName);
         entryPvName = new StringBuilder(basePvName + "[]");
         entryPvName.insert(basePvName.length() + 1, i);
-        System.out.println("array info for " + entryPvName);
+        //        System.out.println("array info for " + entryPvName);
         pvCandidates.add(entryPvName.toString());
       }
     }

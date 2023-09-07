@@ -173,22 +173,24 @@ public class LinksViewerController {
     yamcsListener =
         new YamcsAware() {
           public void changeDefaultInstance() {
-            YamcsObjectManager.getDefaultInstance()
-                .getEvents()
-                .addListener(
-                    new ListChangeListener<Object>() {
-                      @Override
-                      public void onChanged(Change<?> c) {
-                        Platform.runLater(
-                            () -> {
-                              if (!scrollLockButton.isSelected()) {
-                                tableView.scrollTo(tableView.getItems().size() - 1);
-                              }
-                            });
-                      }
-                    });
-            tableView.setItems(YamcsObjectManager.getDefaultInstance().getLinks());
-            tableView.refresh();
+            if (YamcsObjectManager.getDefaultInstance() != null) {
+              YamcsObjectManager.getDefaultInstance()
+                  .getEvents()
+                  .addListener(
+                      new ListChangeListener<Object>() {
+                        @Override
+                        public void onChanged(Change<?> c) {
+                          Platform.runLater(
+                              () -> {
+                                if (!scrollLockButton.isSelected()) {
+                                  tableView.scrollTo(tableView.getItems().size() - 1);
+                                }
+                              });
+                        }
+                      });
+              tableView.setItems(YamcsObjectManager.getDefaultInstance().getLinks());
+              tableView.refresh();
+            }
           }
 
           public void onYamcsConnected() {
