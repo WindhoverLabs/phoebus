@@ -304,10 +304,26 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     initEventSubscription(yamcsClient, serverName);
     initLinkSubscription(yamcsClient, serverName);
     initMDBParameterRDequest(yamcsClient, serverName);
-    //    Processor ysi =
-    // YamcsServer.getServer().getInstance(getName()).getProcessor("rf_replay").getTmProcessor().getStatistics();
 
-    //    TODO:Don't use the YAMCS thread pool. Use the Java one.
+    getTMStats(yamcsClient);
+    missionDatabase = loadMissionDatabase(yamcsClient);
+
+    try {
+      initCommandOptions(yamcsClient);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      return;
+    } catch (ExecutionException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      return;
+    }
+    instanceState = CMDR_YamcsInstanceState.ACTIVATED;
+  }
+
+public void subscribeTMStats(YamcsClient yamcsClient, Consumer<ProcessingStatistics> consumer) {
+	//    TODO:Don't use the YAMCS thread pool. Use the Java one.
     timer = YamcsServer.getServer().getThreadPoolExecutor();
 
     //    Make "rf_replay configurable"
@@ -320,26 +336,15 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
                   .getProcessor("rf_replay")
                   .getTmProcessor()
                   .getStatistics();
+          consumer.accept(ps);
         },
         1,
         1,
         TimeUnit.SECONDS);
-    YamcsServer.getServer()
-        .getInstance(getName())
-        .getProcessor("rf_replay")
-        .getTmProcessor()
-        .getStatistics();
-    var ps = yamcsClient.listProcessors(getName());
-    //    var processors =  ps.get();
+}
 
-    //    for(var p: processors)
-    //    {
-    //    	p.get
-    //    }
-    //
-    // yamcsClient.createProcessorSubscription().sendMessage(SubscribeTMStatisticsRequest.newBuilder().build());
-    //    yamcsClient.create
-    PacketSubscription subscription = yamcsClient.createPacketSubscription();
+private void initPacketSubscription(YamcsClient yamcsClient) {
+	PacketSubscription subscription = yamcsClient.createPacketSubscription();
     subscription.addMessageListener(
         new MessageListener<TmPacketData>() {
 
@@ -364,21 +369,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     //            .setInstance(getName())
     ////            .setStream(connectData.streamName)
     //            .build());
-    missionDatabase = loadMissionDatabase(yamcsClient);
-
-    try {
-      initCommandOptions(yamcsClient);
-    } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      return;
-    } catch (ExecutionException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      return;
-    }
-    instanceState = CMDR_YamcsInstanceState.ACTIVATED;
-  }
+}
 
   public MissionDatabase getMissionDatabase() {
     return missionDatabase;
