@@ -35,6 +35,8 @@ public class LinksViewerController {
 
   TableColumn<org.yamcs.protobuf.links.LinkInfo, String> inCount =
       new TableColumn<org.yamcs.protobuf.links.LinkInfo, String>("In");
+  TableColumn<org.yamcs.protobuf.links.LinkInfo, String> outCount =
+      new TableColumn<org.yamcs.protobuf.links.LinkInfo, String>("Out");
   TableColumn<CMDR_Event, String> annotationCol = new TableColumn<CMDR_Event, String>();
   TableColumn<CMDR_Event, String> generationTimeCol =
       new TableColumn<CMDR_Event, String>("Generation Time");
@@ -157,6 +159,14 @@ public class LinksViewerController {
             return new SimpleStringProperty("");
           }
         });
+    outCount.setCellValueFactory(
+        (link) -> {
+          if (link != null && link.getValue() != null) {
+            return new SimpleStringProperty(Long.toString(link.getValue().getDataOutCount()));
+          } else {
+            return new SimpleStringProperty("");
+          }
+        });
     //    tableView
     //        .getColumns()
     //        .addAll(
@@ -168,7 +178,7 @@ public class LinksViewerController {
     //            sourceCol,
     //            instanceCol);
 
-    tableView.getColumns().addAll(nameCol, inCount);
+    tableView.getColumns().addAll(nameCol, inCount, outCount);
 
     yamcsListener =
         new YamcsAware() {
