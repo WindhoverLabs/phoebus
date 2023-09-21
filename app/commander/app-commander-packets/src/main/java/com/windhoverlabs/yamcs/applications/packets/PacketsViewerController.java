@@ -5,7 +5,6 @@ import com.windhoverlabs.yamcs.core.YamcsObjectManager;
 import com.windhoverlabs.yamcs.core.YamcsServer;
 import com.windhoverlabs.yamcs.core.YamcsWebSocketClient.TmStatistics;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.css.SimpleStyleableStringProperty;
@@ -13,7 +12,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 
 public class PacketsViewerController {
@@ -33,8 +31,6 @@ public class PacketsViewerController {
   YamcsAware yamcsListener = null;
 
   @FXML private GridPane gridPane;
-
-  @FXML private ToggleButton scrollLockButton;
 
   public Node getRootPane() {
     return gridPane;
@@ -114,12 +110,13 @@ public class PacketsViewerController {
                       new ListChangeListener<Object>() {
                         @Override
                         public void onChanged(Change<?> c) {
-                          Platform.runLater(
-                              () -> {
-                                if (!scrollLockButton.isSelected()) {
-                                  tableView.scrollTo(tableView.getItems().size() - 1);
-                                }
-                              });
+                          //                          Platform.runLater(
+                          //                              () -> {
+                          //                                if (!scrollLockButton.isSelected()) {
+                          //
+                          // tableView.scrollTo(tableView.getItems().size() - 1);
+                          //                                }
+                          //                              });
                         }
                       });
               tableView.setItems(YamcsObjectManager.getDefaultInstance().getPackets());
@@ -135,12 +132,13 @@ public class PacketsViewerController {
                       new ListChangeListener<Object>() {
                         @Override
                         public void onChanged(Change<?> c) {
-                          Platform.runLater(
-                              () -> {
-                                if (!scrollLockButton.isSelected()) {
-                                  tableView.scrollTo(tableView.getItems().size() - 1);
-                                }
-                              });
+                          //                          Platform.runLater(
+                          //                              () -> {
+                          //                                if (!scrollLockButton.isSelected()) {
+                          //
+                          // tableView.scrollTo(tableView.getItems().size() - 1);
+                          //                                }
+                          //                              });
                         }
                       });
               tableView.setItems(YamcsObjectManager.getDefaultInstance().getPackets());
@@ -156,12 +154,13 @@ public class PacketsViewerController {
                       new ListChangeListener<Object>() {
                         @Override
                         public void onChanged(Change<?> c) {
-                          Platform.runLater(
-                              () -> {
-                                if (!scrollLockButton.isSelected()) {
-                                  tableView.scrollTo(tableView.getItems().size() - 1);
-                                }
-                              });
+                          //                          Platform.runLater(
+                          //                              () -> {
+                          //                                if (!scrollLockButton.isSelected()) {
+                          //
+                          // tableView.scrollTo(tableView.getItems().size() - 1);
+                          //                                }
+                          //                              });
                         }
                       });
               tableView.setItems(YamcsObjectManager.getDefaultInstance().getPackets());
