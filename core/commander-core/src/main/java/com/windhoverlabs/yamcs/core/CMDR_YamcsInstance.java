@@ -33,6 +33,7 @@ import org.yamcs.protobuf.Mdb.ParameterInfo;
 import org.yamcs.protobuf.Pvalue.ParameterValue;
 import org.yamcs.protobuf.SubscribeEventsRequest;
 import org.yamcs.protobuf.TmPacketData;
+import org.yamcs.protobuf.TmStatistics;
 import org.yamcs.protobuf.links.LinkInfo;
 import org.yamcs.protobuf.links.SubscribeLinksRequest;
 import org.yamcs.utils.TimeEncoding;
@@ -60,6 +61,11 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   private ObservableList<CommandOption> optionsList = FXCollections.observableArrayList();
   private ObservableList<CMDR_Event> events = FXCollections.observableArrayList();
   private ObservableList<LinkInfo> links = FXCollections.observableArrayList();
+  private ObservableList<TmStatistics> packets = FXCollections.observableArrayList();
+
+  public ObservableList<TmStatistics> getPackets() {
+    return packets;
+  }
 
   private HashMap<String, LinkInfo> linksMap = new HashMap<String, LinkInfo>();
 
@@ -304,6 +310,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     initEventSubscription(yamcsClient, serverName);
     initLinkSubscription(yamcsClient, serverName);
     initMDBParameterRDequest(yamcsClient, serverName);
+    initTMStats(yamcsClient);
 
     missionDatabase = loadMissionDatabase(yamcsClient);
 
@@ -325,16 +332,33 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     //    TODO:Don't use the YAMCS thread pool. Use the Java one.
     timer = YamcsServer.getServer().getThreadPoolExecutor();
 
-    //    Make "rf_replay configurable"
+    //    Make "realtime configurable"
 
     timer.scheduleAtFixedRate(
         () -> {
+          System.out.println("scheduleAtFixedRate1");
+          YamcsServer.getServer();
+          System.out.println("scheduleAtFixedRate2:" + YamcsServer.getServer());
+          System.out.println("Instance:" + getName());
+          var instance = YamcsServer.getServer().getInstance(getName());
+
+          System.out.println("scheduleAtFixedRate3:" + instance);
+          YamcsServer.getServer().getInstance(getName()).getProcessor("realtime");
+
+          System.out.println("scheduleAtFixedRate4");
           ProcessingStatistics ps =
               YamcsServer.getServer()
                   .getInstance(getName())
-                  .getProcessor("rf_replay")
+                  .getProcessor("realtime")
                   .getTmProcessor()
                   .getStatistics();
+          //           ps =
+          //              YamcsServer.getServer()
+          //                  .getInstance(getName())
+          //                  .getProcessor("realtime")
+          //                  .getTmProcessor()
+          //                  .getStatistics();
+          System.out.println("scheduleAtFixedRate5:" + ps);
           consumer.accept(ps);
         },
         1,
@@ -342,8 +366,36 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
         TimeUnit.SECONDS);
   }
 
+  public void initTMStats(YamcsClient yamcsClient) {
+    System.out.println("initTMStats**************88");
+    //
+    //    ManagementListener listener = new ManagementListener() {
+    //        @Override
+    //        public void statisticsUpdated(Processor statsProcessor, Statistics stats) {
+    //            if (statsProcessor.getName().equals()) {
+    //                observer.next(stats);
+    //            }
+    //        }
+    //    };
+    //    observer.setCancelHandler(() ->
+    // ManagementService.getInstance().removeManagementListener(listener));
+    //    ManagementService.getInstance().addManagementListener(listener);
+
+    //
+    subscribeTMStats(
+        yamcsClient,
+        stats -> {
+          packets.clear();
+          System.out.println("stats...");
+          for (var s : stats.snapshot()) {
+            packets.add(s);
+          }
+        });
+  }
+
   private void initPacketSubscription(YamcsClient yamcsClient) {
     PacketSubscription subscription = yamcsClient.createPacketSubscription();
+    //    yamcsClient.createProcessorClient(OBJECT_TYPE, OBJECT_TYPE)
     subscription.addMessageListener(
         new MessageListener<TmPacketData>() {
 
