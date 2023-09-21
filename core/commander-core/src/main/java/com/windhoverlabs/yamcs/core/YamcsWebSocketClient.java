@@ -134,7 +134,8 @@ public class YamcsWebSocketClient {
             }
           };
 
-      //     Disable timeout
+      //     Disable timeout:
+      // https://github.com/TooTallNate/Java-WebSocket/wiki/Lost-connection-detection
       mWs.setConnectionLostTimeout(0);
 
       mWs.connect();
