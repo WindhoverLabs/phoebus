@@ -10,13 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.yamcs.TmPacket;
-import org.yamcs.YamcsServer;
 import org.yamcs.client.EventSubscription;
 import org.yamcs.client.LinkSubscription;
 import org.yamcs.client.MessageListener;
@@ -331,50 +329,52 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
   public void subscribeTMStats(YamcsClient yamcsClient, Consumer<ProcessingStatistics> consumer) {
     //    TODO:Don't use the YAMCS thread pool. Use the Java one.
-    timer = YamcsServer.getServer().getThreadPoolExecutor();
-
-    //    Make "realtime configurable"
-
-    timer.scheduleAtFixedRate(
-        () -> {
-          System.out.println("scheduleAtFixedRate1");
-          YamcsServer.getServer();
-          System.out.println("scheduleAtFixedRate2:" + YamcsServer.getServer());
-          System.out.println("Instance:" + getName());
-          var instance = YamcsServer.getServer().getInstance(getName());
-
-          System.out.println("scheduleAtFixedRate3:" + instance);
-          YamcsServer.getServer().getInstance(getName()).getProcessor("realtime");
-
-          System.out.println("scheduleAtFixedRate4");
-          ProcessingStatistics ps =
-              YamcsServer.getServer()
-                  .getInstance(getName())
-                  .getProcessor("realtime")
-                  .getTmProcessor()
-                  .getStatistics();
-          //           ps =
-          //              YamcsServer.getServer()
-          //                  .getInstance(getName())
-          //                  .getProcessor("realtime")
-          //                  .getTmProcessor()
-          //                  .getStatistics();
-          System.out.println("scheduleAtFixedRate5:" + ps);
-          consumer.accept(ps);
-        },
-        1,
-        1,
-        TimeUnit.SECONDS);
+    //    timer = YamcsServer.getServer().getThreadPoolExecutor();
+    //
+    //    //    Make "realtime configurable"
+    //
+    //    timer.scheduleAtFixedRate(
+    //        () -> {
+    //          System.out.println("scheduleAtFixedRate1");
+    //          YamcsServer.getServer();
+    //          System.out.println("scheduleAtFixedRate2:" + YamcsServer.getServer());
+    //          System.out.println("Instance:" + getName());
+    //          var instance = YamcsServer.getServer().getInstance(getName());
+    //
+    //          System.out.println("scheduleAtFixedRate3:" + instance);
+    //          YamcsServer.getServer().getInstance(getName()).getProcessor("realtime");
+    //
+    //          System.out.println("scheduleAtFixedRate4");
+    //          ProcessingStatistics ps =
+    //              YamcsServer.getServer()
+    //                  .getInstance(getName())
+    //                  .getProcessor("realtime")
+    //                  .getTmProcessor()
+    //                  .getStatistics();
+    //          //           ps =
+    //          //              YamcsServer.getServer()
+    //          //                  .getInstance(getName())
+    //          //                  .getProcessor("realtime")
+    //          //                  .getTmProcessor()
+    //          //                  .getStatistics();
+    //          System.out.println("scheduleAtFixedRate5:" + ps);
+    //          consumer.accept(ps);
+    //        },
+    //        1,
+    //        1,
+    //        TimeUnit.SECONDS);
+    //	  TODO:Add the API call to YMACS server side
   }
 
   public void initTMStats(YamcsClient yamcsClient) {
-    System.out.println("initTMStats**************88");
     try {
       new YamcsWebSocketClient(
           stats -> {
-            packets.clear();
-            for (TmStatistics s : stats) {
-              packets.add(s);
+            if (stats != null) {
+              packets.clear();
+              for (TmStatistics s : stats) {
+                packets.add(s);
+              }
             }
           },
           yamcsClient.getHost(),
@@ -388,18 +388,6 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    //
-    //    ManagementListener listener = new ManagementListener() {
-    //        @Override
-    //        public void statisticsUpdated(Processor statsProcessor, Statistics stats) {
-    //            if (statsProcessor.getName().equals()) {
-    //                observer.next(stats);
-    //            }
-    //        }
-    //    };
-    //    observer.setCancelHandler(() ->
-    // ManagementService.getInstance().removeManagementListener(listener));
-    //    ManagementService.getInstance().addManagementListener(listener);
 
     //
     //    subscribeTMStats(

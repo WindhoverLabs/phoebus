@@ -116,17 +116,16 @@ public class YamcsWebSocketClient {
             public void onOpen(ServerHandshake handshake) {
               System.out.println("opened connection");
               Gson obj = new Gson();
-              String message =
-                  obj.toJson(
-                      new YamcsMessage(
-                          "tmstats", new SubscribeTMStatisticsRequest(instance, processor)));
-              // send message
-              mWs.send(message);
+              subscribeTMStatistics(instance, processor, obj);
             }
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
-              System.out.println("closed connection");
+              System.out.println("closed connection:" + reason);
+              System.out.println("closed connection:" + code);
+              System.out.println("closed connection:" + remote);
+              //              mWs.reconnect();
+
             }
 
             @Override
@@ -134,11 +133,30 @@ public class YamcsWebSocketClient {
               ex.printStackTrace();
             }
           };
+
+      //     Disable timeout
+      mWs.setConnectionLostTimeout(0);
+
       mWs.connect();
     } catch (URISyntaxException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
     // open websocket
+  }
+
+  private void subscribeTMStatistics(String instance, String processor, Gson obj) {
+    //  		TODO:Create a map that maps the instance to the specific call id. This way we don't open a
+    // connection for each instance...
+    //  		This would be irrelevant if there was a stats subscription in the YamcsClient Java API.
+    String message =
+        obj.toJson(
+            new YamcsMessage("tmstats", new SubscribeTMStatisticsRequest(instance, processor)));
+    // send message
+    mWs.send(message);
+  }
+
+  public void close() {
+    mWs.close();
   }
 }

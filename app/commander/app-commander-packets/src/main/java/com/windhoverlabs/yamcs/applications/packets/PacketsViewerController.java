@@ -7,9 +7,6 @@ import com.windhoverlabs.yamcs.core.YamcsServer;
 import com.windhoverlabs.yamcs.core.YamcsWebSocketClient.TmStatistics;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -40,16 +37,6 @@ public class PacketsViewerController {
   TableColumn<TmStatistics, String> packetNameCol = new TableColumn<TmStatistics, String>("Packet");
   TableColumn<TmStatistics, String> packetTimeCol =
       new TableColumn<TmStatistics, String>("Packet  Time");
-
-  private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-  private ObservableList<CMDR_Event> data =
-      FXCollections.observableArrayList(new ArrayList<CMDR_Event>());
-  private static final int dataSize = 10_023;
-
-  // TODO:Eventually these will be in spinner nodes. These are the event filters.
-  private String currentServer = "sitl";
-  private String currentInstance = "yamcs-cfs";
 
   YamcsAware yamcsListener = null;
 
@@ -156,18 +143,9 @@ public class PacketsViewerController {
               tableView.refresh();
             }
           }
-
-          //          public void updateLink(String link) {
-          //            tableView.refresh();
-          //          }
         };
 
     YamcsObjectManager.addYamcsListener(yamcsListener);
-
-    System.out.println("items part of root-->" + YamcsObjectManager.getRoot().getItems());
-    //    for (YamcsServer s : YamcsObjectManager.getRoot().getItems()) {
-    //      s.addListener(yamcsListener);
-    //    }
 
     gridPane.add(tableView, 0, 1);
   }

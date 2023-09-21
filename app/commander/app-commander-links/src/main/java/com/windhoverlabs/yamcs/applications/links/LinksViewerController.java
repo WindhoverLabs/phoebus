@@ -167,16 +167,6 @@ public class LinksViewerController {
             return new SimpleStringProperty("");
           }
         });
-    //    tableView
-    //        .getColumns()
-    //        .addAll(
-    //            nameCol,
-    //            generationTimeCol,
-    //            receptionTimeCol,
-    //            severityCol,
-    //            typeCol,
-    //            sourceCol,
-    //            instanceCol);
 
     tableView.getColumns().addAll(nameCol, inCount, outCount);
 
