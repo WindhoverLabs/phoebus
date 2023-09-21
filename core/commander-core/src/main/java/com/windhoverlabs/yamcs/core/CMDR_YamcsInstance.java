@@ -2,6 +2,7 @@ package com.windhoverlabs.yamcs.core;
 
 import com.windhoverlabs.pv.yamcs.YamcsPV;
 import com.windhoverlabs.pv.yamcs.YamcsSubscriptionService;
+import com.windhoverlabs.yamcs.core.YamcsWebSocketClient.TmStatistics;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ import org.yamcs.protobuf.Mdb.ParameterInfo;
 import org.yamcs.protobuf.Pvalue.ParameterValue;
 import org.yamcs.protobuf.SubscribeEventsRequest;
 import org.yamcs.protobuf.TmPacketData;
-import org.yamcs.protobuf.TmStatistics;
+// import org.yamcs.protobuf.TmStatistics;
 import org.yamcs.protobuf.links.LinkInfo;
 import org.yamcs.protobuf.links.SubscribeLinksRequest;
 import org.yamcs.utils.TimeEncoding;
@@ -368,6 +369,25 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
   public void initTMStats(YamcsClient yamcsClient) {
     System.out.println("initTMStats**************88");
+    try {
+      new YamcsWebSocketClient(
+          stats -> {
+            packets.clear();
+            for (TmStatistics s : stats) {
+              packets.add(s);
+            }
+          },
+          yamcsClient.getHost(),
+          yamcsClient.getPort(),
+          getName(),
+          yamcsClient.listProcessors(getName()).get().get(0).getName());
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (ExecutionException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     //
     //    ManagementListener listener = new ManagementListener() {
     //        @Override
@@ -382,15 +402,15 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     //    ManagementService.getInstance().addManagementListener(listener);
 
     //
-    subscribeTMStats(
-        yamcsClient,
-        stats -> {
-          packets.clear();
-          System.out.println("stats...");
-          for (var s : stats.snapshot()) {
-            packets.add(s);
-          }
-        });
+    //    subscribeTMStats(
+    //        yamcsClient,
+    //        stats -> {
+    //          packets.clear();
+    //          System.out.println("stats...");
+    //          for (var s : stats.snapshot()) {
+    //            packets.add(s);
+    //          }
+    //        });
   }
 
   private void initPacketSubscription(YamcsClient yamcsClient) {
