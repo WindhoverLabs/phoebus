@@ -2,6 +2,7 @@ package com.windhoverlabs.yamcs.applications.events;
 
 import com.windhoverlabs.pv.yamcs.YamcsAware;
 import com.windhoverlabs.yamcs.core.CMDR_Event;
+import com.windhoverlabs.yamcs.core.CMDR_YamcsInstance;
 import com.windhoverlabs.yamcs.core.YamcsObjectManager;
 import com.windhoverlabs.yamcs.core.YamcsServer;
 import java.text.DecimalFormat;
@@ -222,7 +223,23 @@ public class EventViewerController {
     createEventButton.setOnAction(
         e -> {
           var dialog = new NewEventDialog(callback, "");
-          dialog.showAndWait();
+          CMDR_Event newEvent = dialog.showAndWait().orElse(null);
+
+          if (newEvent == null) {
+            log.warning("Failed to send event.");
+          }
+
+          YamcsServer s = YamcsObjectManager.getDefaultServer();
+          if (s == null) {
+            log.warning("Failed to find default server");
+            return;
+          }
+          CMDR_YamcsInstance instance = YamcsObjectManager.getDefaultInstance();
+          if (instance == null) {
+            log.warning("Failed to find default instance");
+            return;
+          }
+          instance.publishEvent(newEvent, s.getYamcsClient());
         });
 
     gridPane.add(tableView, 0, 1);

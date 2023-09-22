@@ -1,6 +1,11 @@
 package com.windhoverlabs.yamcs.applications.events;
 
 import com.windhoverlabs.yamcs.core.CMDR_Event;
+import com.windhoverlabs.yamcs.core.CMDR_YamcsInstance;
+import com.windhoverlabs.yamcs.core.YamcsObjectManager;
+import com.windhoverlabs.yamcs.core.YamcsServer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
@@ -24,6 +29,8 @@ public class NewEventDialog extends Dialog<CMDR_Event> {
   protected String pathToCSS = "";
   private ObservableList<String> severityOptions = FXCollections.observableArrayList();
 
+  public static final Logger log = Logger.getLogger(NewEventDialog.class.getPackageName());
+
   //  Callback<ListView<String>, ListCell<String>> cellFactory = new Callback<ListView<String>,
   // ListCell<String>>();
 
@@ -43,6 +50,7 @@ public class NewEventDialog extends Dialog<CMDR_Event> {
     severityOptions.add(EventSeverity.CRITICAL.toString());
     severityOptions.add(EventSeverity.SEVERE.toString());
     severity.setItems(severityOptions);
+    severity.setValue(EventSeverity.INFO.toString());
 
     saveButtonType = new ButtonType("Save", ButtonData.OK_DONE);
     this.setTitle("Create Event");
@@ -73,12 +81,75 @@ public class NewEventDialog extends Dialog<CMDR_Event> {
     //            event.consume();
     //          }
     //        });
+
+    setResultConverter(
+        button -> {
+          CMDR_Event newEvent = null;
+          if (button.getText().equals("Save")) {
+            try {
+              YamcsServer s = YamcsObjectManager.getDefaultServer();
+              if (s == null) {
+                log.warning("Failed to find default server");
+                return null;
+              }
+              CMDR_YamcsInstance instance = YamcsObjectManager.getDefaultInstance();
+              if (instance == null) {
+                log.warning("Failed to find default instance");
+                return null;
+              }
+              EventSeverity eventSeverity = null;
+              if (severity.getSelectionModel().selectedItemProperty().get().equals("INFO")) {
+                eventSeverity = EventSeverity.INFO;
+              }
+
+              if (severity.getSelectionModel().selectedItemProperty().get().equals("WARNING")) {
+                eventSeverity = EventSeverity.WARNING;
+              }
+
+              if (severity.getSelectionModel().selectedItemProperty().get().equals("ERROR")) {
+                eventSeverity = EventSeverity.ERROR;
+              }
+
+              if (severity.getSelectionModel().selectedItemProperty().get().equals("WATCH")) {
+                eventSeverity = EventSeverity.WATCH;
+              }
+
+              if (severity.getSelectionModel().selectedItemProperty().get().equals("DISTRESS")) {
+                eventSeverity = EventSeverity.DISTRESS;
+              }
+
+              if (severity.getSelectionModel().selectedItemProperty().get().equals("CRITICAL")) {
+                eventSeverity = EventSeverity.CRITICAL;
+              }
+
+              if (severity.getSelectionModel().selectedItemProperty().get().equals("SEVERE")) {
+                eventSeverity = EventSeverity.SEVERE;
+              }
+              newEvent =
+                  new CMDR_Event(
+                      message.getText(),
+                      java.time.Instant.now(),
+                      eventSeverity,
+                      "Commander",
+                      java.time.Instant.now(),
+                      "User",
+                      instance.getName());
+
+            } catch (Exception e) {
+              Logger // Initial focus on name
+                  .getLogger(getClass().getName())
+                  .log(Level.WARNING, "Cannot format string to integer", e);
+            }
+          }
+
+          return newEvent;
+        });
   }
 
   protected void addServerUrlField() {
-    message.setPromptText("168.2.5.100");
-    layout.add(new Label("Address:"), 0, 1);
-    message.setTooltip(new Tooltip("Name of the server url to connect to."));
+    message.setPromptText("Houston, we have a problem.");
+    layout.add(new Label("Message:"), 0, 1);
+    message.setTooltip(new Tooltip("Event message."));
     GridPane.setHgrow(message, Priority.ALWAYS);
     layout.add(message, 1, 1);
   }
@@ -86,7 +157,7 @@ public class NewEventDialog extends Dialog<CMDR_Event> {
   protected void addSeverityField() {
     severity.setPromptText(EventSeverity.INFO.toString());
     layout.add(new Label("Severity:"), 0, 2);
-    severity.setTooltip(new Tooltip("Port number to connect to."));
+    severity.setTooltip(new Tooltip("Event severity."));
     GridPane.setHgrow(severity, Priority.ALWAYS);
     layout.add(severity, 1, 2);
   }

@@ -481,6 +481,17 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
             .build());
   }
 
+  /** Creates and publishes an event to YAMCS instance. */
+  public void publishEvent(CMDR_Event e, YamcsClient yamcsClient) {
+    yamcsClient.createEvent(
+        CreateEventRequest.newBuilder()
+            .setInstance(getName())
+            .setMessage(e.getMessage())
+            .setSource(e.getSource())
+            .setSeverity(e.getSeverity().toString())
+            .build());
+  }
+
   public ArrayList<String> getProcessors(YamcsClient yamcsClient) {
 
     ArrayList<String> processors = new ArrayList<String>();
