@@ -6,7 +6,6 @@ import com.windhoverlabs.yamcs.core.YamcsObjectManager;
 import com.windhoverlabs.yamcs.core.YamcsServer;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -15,12 +14,14 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.util.Callback;
 import org.yamcs.protobuf.Event.EventSeverity;
 
 public class EventViewerController {
@@ -39,10 +40,6 @@ public class EventViewerController {
   TableColumn<CMDR_Event, String> sourceCol = new TableColumn<CMDR_Event, String>("Source");
   TableColumn<CMDR_Event, String> instanceCol = new TableColumn<CMDR_Event, String>("Instance");
 
-  private ObservableList<CMDR_Event> data =
-      FXCollections.observableArrayList(new ArrayList<CMDR_Event>());
-  private static final int dataSize = 10_023;
-
   // TODO:Eventually these will be in spinner nodes. These are the event filters.
   private String currentServer = "sitl";
   private String currentInstance = "yamcs-cfs";
@@ -52,6 +49,7 @@ public class EventViewerController {
   @FXML private GridPane gridPane;
 
   @FXML private ToggleButton scrollLockButton;
+  @FXML private Button createEventButton;
 
   public Node getRootPane() {
     return gridPane;
@@ -213,18 +211,24 @@ public class EventViewerController {
         };
 
     YamcsObjectManager.addYamcsListener(yamcsListener);
-
-    System.out.println("items part of root-->" + YamcsObjectManager.getRoot().getItems());
-    //    for (YamcsServer s : YamcsObjectManager.getRoot().getItems()) {
-    //      s.addListener(yamcsListener);
-    //    }
+    Callback<CMDR_Event, Boolean> callback =
+        new Callback<CMDR_Event, Boolean>() {
+          @Override
+          public Boolean call(CMDR_Event param) {
+            // TODO Auto-generated method stub
+            return true;
+          }
+        };
+    createEventButton.setOnAction(
+        e -> {
+          var dialog = new NewEventDialog(callback, "");
+          dialog.showAndWait();
+        });
 
     gridPane.add(tableView, 0, 1);
   }
 
-  public EventViewerController() {
-    System.out.println("EventViewerController constructor$$$$$$$$$$$$$$");
-  }
+  public EventViewerController() {}
 
   private ObservableList<CMDR_Event> generateEvents(int numberOfEvents) {
     ObservableList<CMDR_Event> events = FXCollections.observableArrayList();
