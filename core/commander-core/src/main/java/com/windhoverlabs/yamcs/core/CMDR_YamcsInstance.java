@@ -82,6 +82,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
   private HashMap<String, Boolean> activeOutLinks = new HashMap<String, Boolean>();
   private ScheduledThreadPoolExecutor timer;
+  private YamcsWebSocketClient statsWS;
 
   public ObservableList<LinkInfo> getLinks() {
     return links;
@@ -368,19 +369,20 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
   public void initTMStats(YamcsClient yamcsClient) {
     try {
-      new YamcsWebSocketClient(
-          stats -> {
-            if (stats != null) {
-              packets.clear();
-              for (TmStatistics s : stats) {
-                packets.add(s);
-              }
-            }
-          },
-          yamcsClient.getHost(),
-          yamcsClient.getPort(),
-          getName(),
-          yamcsClient.listProcessors(getName()).get().get(0).getName());
+      statsWS =
+          new YamcsWebSocketClient(
+              stats -> {
+                if (stats != null) {
+                  packets.clear();
+                  for (TmStatistics s : stats) {
+                    packets.add(s);
+                  }
+                }
+              },
+              yamcsClient.getHost(),
+              yamcsClient.getPort(),
+              getName(),
+              yamcsClient.listProcessors(getName()).get().get(0).getName());
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -455,6 +457,8 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
       eventSubscription.cancel(true);
       paramSubscriptionService.destroy();
     }
+
+    statsWS.close();
   }
 
   public EventSubscription getEventSubscription() {
