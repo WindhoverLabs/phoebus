@@ -320,3 +320,12 @@ The following table has all the yamcs versions that have been _tested_, along wi
 
 
 ![Switch Processor](images/current_processor_phoebus.png "Switch Processor")
+
+## Pacakge for platform
+
+```
+
+
+
+mvn gluonfx:package
+```
