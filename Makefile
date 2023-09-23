@@ -1,2 +1,2 @@
 build:
-	 mvn -DskipTests   install -T6
+	 mvn -DskipTests  -Dmaven.javadoc.skip=true   install -T6

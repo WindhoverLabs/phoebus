@@ -77,6 +77,14 @@
   </properties>
   <build>
     <plugins>
+<plugin>
+<groupId>com.gluonhq</groupId>
+<artifactId>gluonfx-maven-plugin</artifactId>
+<version>1.0.21</version>
+<configuration>
+<mainClass>yorg.phoebus.product.Launcher</mainClass>
+</configuration>
+</plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.6.2</version>
