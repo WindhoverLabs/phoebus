@@ -47,6 +47,11 @@
 			<artifactId>app-commander-packets</artifactId>
 			<version>0.2.6-SNAPSHOT</version>
 		</dependency>
+	    <dependency>
+			<groupId>com.windhoverlabs</groupId>
+			<artifactId>app-commander-command-history</artifactId>
+			<version>0.2.6-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>app-commander-command-options</artifactId>
@@ -203,6 +208,8 @@
 					</execution>
 				</executions>
 			</plugin>
+
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>

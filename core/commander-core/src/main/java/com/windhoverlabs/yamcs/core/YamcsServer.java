@@ -279,11 +279,6 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   }
 
   public void disconnect() {
-    for (YamcsAware l : listeners) {
-      l.onYamcsDisconnected();
-    }
-
-    YamcsObjectManager.triggerYamcsListeners(YamcsAwareMethod.onYamcsDisconnected);
     unInit();
     serverState = ConnectionState.DISCONNECTED;
     Platform.runLater(
@@ -294,6 +289,12 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
     if (yamcsClient != null) {
       yamcsClient.close();
     }
+
+    //    The following lines should really be inside one function
+    for (YamcsAware l : listeners) {
+      l.onYamcsDisconnected();
+    }
+    YamcsObjectManager.triggerYamcsListeners(YamcsAwareMethod.onYamcsDisconnected);
   }
 
   public YamcsServerConnection getConnection() {

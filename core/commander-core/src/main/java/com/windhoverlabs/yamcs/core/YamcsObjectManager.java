@@ -127,14 +127,17 @@ public final class YamcsObjectManager {
 
           public void changeDefaultInstance() {
             if (anyServerConnected()) {
-              managerStatus.set(
-                  "Connection Status: Connected. Default Server: \""
-                      + getDefaultServerName()
-                      + "\""
-                      + ". Default set to "
-                      + "\""
-                      + getDefaultInstanceName()
-                      + "\"");
+              managerStatus.set("Connection Status: Connected");
+              //            	TODO:Keep this simple for now, need to think about this logic a bit
+              // more.
+              //              managerStatus.set(
+              //                  "Connection Status: Connected. Default Server: \""
+              //                      + getDefaultServerName()
+              //                      + "\""
+              //                      + ". Default set to "
+              //                      + "\""
+              //                      + getDefaultInstanceName()
+              //                      + "\"");
             }
           }
 
