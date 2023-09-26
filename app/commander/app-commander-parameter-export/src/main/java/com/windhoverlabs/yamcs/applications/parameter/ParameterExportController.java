@@ -5,7 +5,7 @@ import com.windhoverlabs.yamcs.core.CMDR_Event;
 import com.windhoverlabs.yamcs.core.YamcsObjectManager;
 import com.windhoverlabs.yamcs.core.YamcsServer;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -52,6 +52,14 @@ public class ParameterExportController {
     public final SimpleBooleanProperty exportProperty() {
       return export;
     }
+
+    public void toggleExport() {
+      if (export.get()) {
+        export.set(false);
+      } else {
+        export.set(true);
+      }
+    }
   }
 
   public static final Logger log =
@@ -79,7 +87,7 @@ public class ParameterExportController {
   @FXML private TextField pvTextField;
 
   private ObservableList<ExportPV> proposalList = FXCollections.observableArrayList();
-  private HashSet<String> exportSet = new HashSet<String>();
+  private LinkedHashSet<String> exportSet = new LinkedHashSet<String>();
 
   private ExportView paramExportView = new ExportView();
 
@@ -195,6 +203,16 @@ public class ParameterExportController {
           }
         });
     tableView.setItems(proposalList);
+    //    tableView.getSelectionModel().selected
+    tableView.setOnKeyPressed(
+        e -> {
+          if (e.getCode() == KeyCode.ENTER) {
+            var selection = tableView.getSelectionModel().getSelectedItem();
+            if (selection != null) {
+              selection.toggleExport();
+            }
+          }
+        });
     tableView.setEditable(true);
     gridPane.add(tableView, 0, 1);
     createExportTab();
