@@ -42,6 +42,12 @@
 			<artifactId>app-commander-packets</artifactId>
 			<version>0.2.6-SNAPSHOT</version>
 		</dependency>
+           <dependency>
+                        <groupId>com.windhoverlabs</groupId>
+                        <artifactId>app-commander-parameter-viewer</artifactId>
+                        <version>0.2.6-SNAPSHOT</version>
+                </dependency>
+
 	    <dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>app-commander-command-history</artifactId>

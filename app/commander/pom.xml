@@ -172,6 +172,7 @@
 		<module>app-commander-mission-planner</module>
 		<module>app-commander-command-options</module>
 		<module>app-commander-parameter-export</module>
+		<module>app-commander-parameter-viewer</module>
 		<module>app-commander-links</module>
 		<module>app-commander-packets</module>
 		<module>app-commander-command-history</module>	
