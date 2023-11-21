@@ -8,18 +8,18 @@ import org.phoebus.framework.spi.AppDescriptor;
 import org.phoebus.framework.spi.AppInstance;
 
 @SuppressWarnings("nls")
-public class ParameterExport implements AppDescriptor {
+public class ParameterViewer implements AppDescriptor {
 
-  public static final String Name = "ParameterExport";
+  public static final String Name = "ParameterViewer";
 
   public static final String DisplayName = Messages.DisplayName;
 
-  public static final Logger log = Logger.getLogger(ParameterExport.class.getPackageName());
+  public static final Logger log = Logger.getLogger(ParameterViewer.class.getPackageName());
 
   @Preference public static String css_path;
 
   static {
-    AnnotatedPreferences.initialize(ParameterExport.class, "/eventviewer_preferences.properties");
+    AnnotatedPreferences.initialize(ParameterViewer.class, "/eventviewer_preferences.properties");
   }
 
   @Override
@@ -30,17 +30,17 @@ public class ParameterExport implements AppDescriptor {
   @Override
   public AppInstance create() {
 
-    if (ParameterExportViewerInstance.INSTANCE == null) {
+    if (ParameterViewerInstance.INSTANCE == null) {
       try {
-        ParameterExportViewerInstance.INSTANCE = new ParameterExportViewerInstance(this);
+        ParameterViewerInstance.INSTANCE = new ParameterViewerInstance(this);
       } catch (Exception ex) {
-        Logger.getLogger(ParameterExport.class.getPackageName())
+        Logger.getLogger(ParameterViewer.class.getPackageName())
             .log(Level.WARNING, "Cannot create Error Log", ex);
         return null;
       }
     } else {
-      ParameterExportViewerInstance.INSTANCE.raise();
+      ParameterViewerInstance.INSTANCE.raise();
     }
-    return ParameterExportViewerInstance.INSTANCE;
+    return ParameterViewerInstance.INSTANCE;
   }
 }

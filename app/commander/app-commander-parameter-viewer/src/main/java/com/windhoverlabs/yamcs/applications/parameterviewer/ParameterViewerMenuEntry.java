@@ -6,10 +6,10 @@ import org.phoebus.ui.javafx.ImageCache;
 import org.phoebus.ui.spi.MenuEntry;
 
 @SuppressWarnings("nls")
-public class ParameterExportMenuEntry implements MenuEntry {
+public class ParameterViewerMenuEntry implements MenuEntry {
   @Override
   public String getName() {
-    return ParameterExport.Name;
+    return ParameterViewer.Name;
   }
 
   @Override
@@ -19,12 +19,12 @@ public class ParameterExportMenuEntry implements MenuEntry {
 
   @Override
   public Image getIcon() {
-    return ImageCache.getImage(ParameterExport.class, "/icons/filebrowser.png");
+    return ImageCache.getImage(ParameterViewer.class, "/icons/filebrowser.png");
   }
 
   @Override
   public Void call() throws Exception {
-    ApplicationService.createInstance(ParameterExport.Name);
+    ApplicationService.createInstance(ParameterViewer.Name);
     return null;
   }
 }

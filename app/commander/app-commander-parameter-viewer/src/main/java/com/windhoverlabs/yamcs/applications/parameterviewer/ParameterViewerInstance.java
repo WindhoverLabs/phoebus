@@ -26,28 +26,28 @@ import org.phoebus.ui.docking.DockPane;
 
 /** @author lgomez */
 @SuppressWarnings("nls")
-public class ParameterExportViewerInstance implements AppInstance {
+public class ParameterViewerInstance implements AppInstance {
   private static final String YAMCS_PARAMETER_EXPORT_MEMENTO_FILENAME =
       "yamcs_parameter_export_memento";
 
   /** Logger for all file browser code */
   public static final Logger logger =
-      Logger.getLogger(ParameterExportViewerInstance.class.getPackageName());
+      Logger.getLogger(ParameterViewerInstance.class.getPackageName());
 
   /** Memento tags */
   private static final String EXPORT_START = "yamcs_export_start", EXPORT_END = "yamcs_export_end";
 
-  static ParameterExportViewerInstance INSTANCE;
+  static ParameterViewerInstance INSTANCE;
 
   private FXMLLoader loader;
 
-  private ParameterExportController parameterExportInstanceController = null;
+  private ParameterViewerController parameterExportInstanceController = null;
 
   private final AppDescriptor app;
 
   private DockItem tab = null;
 
-  public ParameterExportViewerInstance(AppDescriptor app) {
+  public ParameterViewerInstance(AppDescriptor app) {
     this.app = app;
     Node content = null;
     ResourceBundle resourceBundle = NLS.getMessages(Messages.class);
@@ -167,7 +167,7 @@ public class ParameterExportViewerInstance implements AppInstance {
     tab.select();
   }
 
-  public ParameterExportController getController() {
+  public ParameterViewerController getController() {
     return parameterExportInstanceController;
   }
 

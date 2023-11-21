@@ -35,7 +35,7 @@ import org.phoebus.framework.autocomplete.PVProposalService;
 import org.phoebus.framework.autocomplete.Proposal;
 import org.phoebus.framework.autocomplete.ProposalService;
 
-public class ParameterExportController {
+public class ParameterViewerController {
   class ExportPV {
     private final SimpleBooleanProperty export = new SimpleBooleanProperty();
     private final SimpleStringProperty pv = new SimpleStringProperty();
@@ -63,7 +63,7 @@ public class ParameterExportController {
   }
 
   public static final Logger log =
-      Logger.getLogger(ParameterExportController.class.getPackageName());
+      Logger.getLogger(ParameterViewerController.class.getPackageName());
 
   private final TableView<ExportPV> tableView = new TableView<ExportPV>();
 
@@ -89,9 +89,9 @@ public class ParameterExportController {
   private ObservableList<ExportPV> proposalList = FXCollections.observableArrayList();
   private LinkedHashSet<String> exportSet = new LinkedHashSet<String>();
 
-  private ExportView paramExportView = new ExportView();
+  private ParameterViewerView paramExportView = new ParameterViewerView();
 
-  public ExportView getParamExportView() {
+  public ParameterViewerView getParamExportView() {
     return paramExportView;
   }
 
@@ -238,7 +238,7 @@ public class ParameterExportController {
     }
   }
 
-  public ParameterExportController() {}
+  public ParameterViewerController() {}
 
   public void unInit() {
     YamcsObjectManager.removeListener(yamcsListener);

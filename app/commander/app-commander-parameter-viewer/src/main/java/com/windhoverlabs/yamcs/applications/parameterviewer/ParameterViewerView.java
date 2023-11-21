@@ -8,20 +8,14 @@
 package com.windhoverlabs.yamcs.applications.parameterviewer;
 
 import java.io.File;
-import java.text.MessageFormat;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -39,15 +33,11 @@ import org.csstudio.trends.databrowser3.Messages;
 import org.csstudio.trends.databrowser3.export.Source;
 import org.csstudio.trends.databrowser3.model.Model;
 import org.csstudio.trends.databrowser3.ui.TimeRangePopover;
-import org.phoebus.archive.vtype.Style;
-import org.phoebus.framework.jobs.JobManager;
 import org.phoebus.framework.persistence.Memento;
-import org.phoebus.ui.dialog.DialogHelper;
 import org.phoebus.ui.dialog.ExceptionDetailsErrorDialog;
 import org.phoebus.ui.dialog.PopOver;
 import org.phoebus.ui.dialog.SaveAsDialog;
 import org.phoebus.ui.time.TimeRelativeIntervalPane;
-import org.phoebus.util.time.TimeRelativeInterval;
 
 /**
  * Panel for exporting data into files
@@ -55,7 +45,7 @@ import org.phoebus.util.time.TimeRelativeInterval;
  * @author Kay Kasemir
  */
 @SuppressWarnings("nls")
-public class ExportView extends VBox {
+public class ParameterViewerView extends VBox {
   private static final String TAG_SOURCE = "source",
       TAG_OPTCOUNT = "optcount",
       TAG_LININT = "linint",
@@ -100,7 +90,7 @@ public class ExportView extends VBox {
   private SimpleBooleanProperty unixTimeStamp = new SimpleBooleanProperty(false);
 
   private Model model = new org.csstudio.trends.databrowser3.model.Model();
-  public static final Logger log = Logger.getLogger(ExportView.class.getPackageName());
+  public static final Logger log = Logger.getLogger(ParameterViewerView.class.getPackageName());
 
   //  UnaryOperator<TextFormatter.Change> numberValidationFormatter = change -> {
   //	    if(change.getText().matches("\\d+")){
@@ -126,7 +116,7 @@ public class ExportView extends VBox {
   }
 
   /** @param model Model from which to export */
-  public ExportView() {
+  public ParameterViewerView() {
     // * Samples To Export *
     // Start:  ___start_______________________________________________________________ [select]
     // End  :  ___end_________________________________________________________________ [x] Use
@@ -277,7 +267,7 @@ public class ExportView extends VBox {
     sel_filename.setOnAction(event -> selectFilename());
 
     final Button export = new Button(Messages.ExportStartExport, Activator.getIcon("export"));
-    export.setOnAction(event -> startExportJob());
+    //    export.setOnAction(event -> startExportJob());
 
     final HBox outputs =
         new HBox(5, new Label(Messages.ExportFilename), filename, sel_filename, export);
@@ -317,191 +307,6 @@ public class ExportView extends VBox {
     File file = new File(filename.getText().trim());
     file = new SaveAsDialog().promptForFile(getScene().getWindow(), Messages.Export, file, null);
     if (file != null) filename.setText(file.getAbsolutePath());
-  }
-
-  private void startExportJob() {
-    try {
-      // Determine start/end time
-      TimeRelativeInterval range = null;
-      //      final Object s = TimeParser.parseInstantOrTemporalAmount(start.getText());
-      //      final Object e = TimeParser.parseInstantOrTemporalAmount(end.getText());
-      //      if (s instanceof Instant) {
-      //        if (e instanceof Instant) range = TimeRelativeInterval.of((Instant) s, (Instant) e);
-      //        else if (e instanceof TemporalAmount)
-      //          range = TimeRelativeInterval.of((Instant) s, (TemporalAmount) e);
-      //      } else if (s instanceof TemporalAmount) {
-      //        if (e instanceof Instant) range = TimeRelativeInterval.of((TemporalAmount) s,
-      // (Instant) e);
-      //        else if (e instanceof TemporalAmount)
-      //          range = TimeRelativeInterval.of((TemporalAmount) s, (TemporalAmount) e);
-      //      }
-      //
-      //      if (range == null) throw new Exception("Invalid start..end time range");
-      //
-      //      // Determine source: Plot, archive, ...
-      //      final int src_index = sources.getToggles().indexOf(sources.getSelectedToggle());
-      //      if (src_index < 0 || src_index >= Source.values().length)
-      //        throw new Exception("Invalid sample source");
-      //      final Source source = Source.values()[src_index];
-      //      int optimize_parameter = -1;
-      //      if (source == Source.OPTIMIZED_ARCHIVE) {
-      //        try {
-      //          optimize_parameter = Integer.parseInt(optimize.getText().trim());
-      //        } catch (Exception ex) {
-      //          ExceptionDetailsErrorDialog.openError(
-      //              optimize,
-      //              Messages.Error,
-      //              Messages.ExportOptimizeCountError,
-      //              new Exception(optimize.getText()));
-      //          Platform.runLater(optimize::requestFocus);
-      //          return;
-      //        }
-      //      } else if (source == Source.LINEAR_INTERPOLATION) {
-      //        try {
-      //          optimize_parameter = (int) (SecondsParser.parseSeconds(linear.getText().trim()) +
-      // 0.5);
-      //          if (optimize_parameter < 1) optimize_parameter = 1;
-      //        } catch (Exception ex) {
-      //          ExceptionDetailsErrorDialog.openError(
-      //              linear,
-      //              Messages.Error,
-      //              Messages.ExportLinearIntervalError,
-      //              new Exception(linear.getText()));
-      //          Platform.runLater(linear::requestFocus);
-      //          return;
-      //        }
-      //      }
-
-      // Get remaining export parameters
-      final String filename = this.filename.getText().trim();
-      if (filename.isEmpty()) {
-        ExceptionDetailsErrorDialog.openError(
-            this.filename,
-            Messages.Error,
-            Messages.ExportEnterFilenameError,
-            new Exception(filename));
-        Platform.runLater(this.filename::requestFocus);
-        return;
-      }
-      if (new File(filename).exists()) {
-        final Alert dialog = new Alert(AlertType.CONFIRMATION);
-        dialog.setTitle(Messages.ExportFileExists);
-        dialog.setHeaderText(MessageFormat.format(Messages.ExportFileExistsFmt, filename));
-        DialogHelper.positionDialog(dialog, this.filename, -200, -200);
-        if (dialog.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
-          Platform.runLater(this.filename::requestFocus);
-          return;
-        }
-      }
-
-      // Construct appropriate export job
-      final ExportCSVJob export;
-      //      TimeInterval start_end = range.toAbsoluteInterval();
-      //      if (type_matlab.isSelected()) { // Matlab file export
-      //        if (filename.endsWith(".m"))
-      //          export =
-      //              new MatlabScriptExportJob(
-      //                  model,
-      //                  start_end.getStart(),
-      //                  start_end.getEnd(),
-      //                  source,
-      //                  optimize_parameter,
-      //                  filename,
-      //                  this::handleError,
-      //                  unixTimeStamp.get());
-      //        else if (filename.endsWith(".mat"))
-      //          export =
-      //              new MatlabFileExportJob(
-      //                  model,
-      //                  start_end.getStart(),
-      //                  start_end.getEnd(),
-      //                  source,
-      //                  optimize_parameter,
-      //                  filename,
-      //                  this::handleError,
-      //                  unixTimeStamp.get());
-      //        else {
-      //          ExceptionDetailsErrorDialog.openError(
-      //              this.filename,
-      //              Messages.Error,
-      //              Messages.ExportMatlabFilenameError,
-      //              new Exception(filename));
-      //          Platform.runLater(this.filename::requestFocus);
-      //          return;
-      //        }
-      //      } else
-      { // Spreadsheet file export
-        Style style = Style.Default;
-
-        // Default, decimal, exponential
-        final int fmt = formats.getToggles().indexOf(formats.getSelectedToggle());
-        if (fmt == 1) style = Style.Decimal;
-        else if (fmt == 2) style = Style.Exponential;
-        int precision = 0;
-        if (style != Style.Default) {
-          try {
-            precision = Integer.parseInt(format_digits.getText().trim());
-          } catch (Exception ex) {
-            ExceptionDetailsErrorDialog.openError(
-                format_digits,
-                Messages.Error,
-                Messages.ExportDigitsError,
-                new Exception(format_digits.getText()));
-            Platform.runLater(format_digits::requestFocus);
-            return;
-          }
-        }
-        //                ValueFormatter formatter = new ValueWithInfoFormatter(style,
-        //                      precision);
-
-        export =
-            new ExportCSVJob(
-                Instant.parse(start.getText()),
-                Instant.parse(end.getText()),
-                filename,
-                this::handleError,
-                unixTimeStamp.get(),
-                parameters,
-                () -> {});
-
-        log.info("Export view1");
-
-        //                final ValueFormatter formatter;
-        //                if (sev_stat.isSelected()) formatter = new ValueWithInfoFormatter(style,
-        //         precision);
-        //                else formatter = new ValueFormatter(style, precision);
-        //                formatter.useMinMaxColumn(minMaxAllowed() && min_max_col.isSelected());
-        //                if (tabular.isSelected())
-        //                  export =
-        //                      new SpreadsheetExportJob(
-        //                          model,
-        //                          start_end.getStart(),
-        //                          start_end.getEnd(),
-        //                          source,
-        //                          optimize_parameter,
-        //                          formatter,
-        //                          filename,
-        //                          this::handleError,
-        //                          unixTimeStamp.get());
-        //                else
-        //                  export =
-        //                      new PlainExportJob(
-        //                          model,
-        //                          start_end.getStart(),
-        //                          start_end.getEnd(),
-        //                          source,
-        //                          optimize_parameter,
-        //                          formatter,
-        //                          filename,
-        //                          this::handleError,
-        //                          unixTimeStamp.get());
-      }
-
-      JobManager.schedule(filename, export);
-      //      export.
-    } catch (Exception ex) {
-      handleError(ex);
-    }
   }
 
   private void handleError(final Exception ex) {
