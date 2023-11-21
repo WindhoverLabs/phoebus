@@ -173,6 +173,8 @@
 		<module>app-commander-command-options</module>
 		<module>app-commander-parameter-export</module>
 		<module>app-commander-links</module>
+		<module>app-commander-packets</module>
+		<module>app-commander-command-history</module>	
 	</modules>
 	<version>0.2.6-SNAPSHOT</version>
 	<groupId>com.windhoverlabs</groupId>

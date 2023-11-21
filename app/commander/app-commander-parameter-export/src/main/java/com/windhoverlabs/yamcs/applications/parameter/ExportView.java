@@ -12,6 +12,7 @@ import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.PseudoClass;
@@ -99,6 +100,7 @@ public class ExportView extends VBox {
   private SimpleBooleanProperty unixTimeStamp = new SimpleBooleanProperty(false);
 
   private Model model = new org.csstudio.trends.databrowser3.model.Model();
+  public static final Logger log = Logger.getLogger(ExportView.class.getPackageName());
 
   //  UnaryOperator<TextFormatter.Change> numberValidationFormatter = change -> {
   //	    if(change.getText().matches("\\d+")){
@@ -393,7 +395,7 @@ public class ExportView extends VBox {
       }
 
       // Construct appropriate export job
-      ExportCSVJob export;
+      final ExportCSVJob export;
       //      TimeInterval start_end = range.toAbsoluteInterval();
       //      if (type_matlab.isSelected()) { // Matlab file export
       //        if (filename.endsWith(".m"))
@@ -459,7 +461,10 @@ public class ExportView extends VBox {
                 filename,
                 this::handleError,
                 unixTimeStamp.get(),
-                parameters);
+                parameters,
+                () -> {});
+
+        log.info("Export view1");
 
         //                final ValueFormatter formatter;
         //                if (sev_stat.isSelected()) formatter = new ValueWithInfoFormatter(style,
@@ -493,6 +498,7 @@ public class ExportView extends VBox {
       }
 
       JobManager.schedule(filename, export);
+      //      export.
     } catch (Exception ex) {
       handleError(ex);
     }

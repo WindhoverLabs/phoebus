@@ -2,33 +2,46 @@ package com.windhoverlabs.yamcs.core;
 
 import com.windhoverlabs.pv.yamcs.YamcsPV;
 import com.windhoverlabs.pv.yamcs.YamcsSubscriptionService;
+import com.windhoverlabs.yamcs.core.YamcsWebSocketClient.TmStatistics;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.yamcs.TmPacket;
+import org.yamcs.client.CommandSubscription;
 import org.yamcs.client.EventSubscription;
 import org.yamcs.client.LinkSubscription;
+import org.yamcs.client.MessageListener;
+import org.yamcs.client.PacketSubscription;
 import org.yamcs.client.Page;
 import org.yamcs.client.YamcsClient;
 import org.yamcs.client.archive.ArchiveClient;
 import org.yamcs.client.mdb.MissionDatabaseClient.ListOptions;
 import org.yamcs.client.processor.ProcessorClient;
+import org.yamcs.mdb.ProcessingStatistics;
+import org.yamcs.protobuf.Commanding.CommandHistoryEntry;
+// import org.yamcs.protobuf.Event;
 import org.yamcs.protobuf.CreateEventRequest;
 import org.yamcs.protobuf.GetServerInfoResponse;
 import org.yamcs.protobuf.GetServerInfoResponse.CommandOptionInfo;
 import org.yamcs.protobuf.Mdb.ParameterInfo;
+import org.yamcs.protobuf.ProcessorInfo;
 import org.yamcs.protobuf.Pvalue.ParameterValue;
+import org.yamcs.protobuf.SubscribeCommandsRequest;
 import org.yamcs.protobuf.SubscribeEventsRequest;
+import org.yamcs.protobuf.TmPacketData;
+// import org.yamcs.protobuf.TmStatistics;
 import org.yamcs.protobuf.links.LinkInfo;
 import org.yamcs.protobuf.links.SubscribeLinksRequest;
-
-// import org.yamcs.protobuf.Event;
+import org.yamcs.utils.TimeEncoding;
 
 public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   public static final Logger logger = Logger.getLogger(CMDR_YamcsInstance.class.getPackageName());
@@ -36,6 +49,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   private ProcessorClient yamcsProcessor = null;
   private YamcsSubscriptionService paramSubscriptionService;
   private EventSubscription eventSubscription;
+  private CommandSubscription commandsSubscription;
   private LinkSubscription linkSubscription;
   private MissionDatabase missionDatabase;
   //  private EventSubscription eventSubscription;
@@ -50,7 +64,21 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
   private ObservableList<CommandOption> optionsList = FXCollections.observableArrayList();
   private ObservableList<CMDR_Event> events = FXCollections.observableArrayList();
+  private ObservableList<CommandHistoryEntry> commands = FXCollections.observableArrayList();
+  private HashSet<String> commandsSet = new HashSet<String>();
+
+  public ObservableList<CommandHistoryEntry> getCommands() {
+    return commands;
+  }
+
   private ObservableList<LinkInfo> links = FXCollections.observableArrayList();
+  private ObservableList<TmStatistics> packets = FXCollections.observableArrayList();
+
+  public static final Logger log = Logger.getLogger(CMDR_YamcsInstance.class.getPackageName());
+
+  public ObservableList<TmStatistics> getPackets() {
+    return packets;
+  }
 
   private HashMap<String, LinkInfo> linksMap = new HashMap<String, LinkInfo>();
 
@@ -67,6 +95,8 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
   }
 
   private HashMap<String, Boolean> activeOutLinks = new HashMap<String, Boolean>();
+  private ScheduledThreadPoolExecutor timer;
+  private YamcsWebSocketClient statsWS;
 
   public ObservableList<LinkInfo> getLinks() {
     return links;
@@ -140,7 +170,6 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
   protected void initProcessorClient(YamcsClient yamcsClient) {
     yamcsProcessor = yamcsClient.createProcessorClient(getName(), "realtime");
-    //    yamcsClient.listProcessors(OBJECT_TYPE)
   }
 
   protected void initYamcsSubscriptionService(
@@ -214,10 +243,34 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
         SubscribeEventsRequest.newBuilder().setInstance(getName()).build());
   }
 
+  protected void initCommandSubscription(YamcsClient yamcsClient) {
+    commandsSubscription = yamcsClient.createCommandSubscription();
+    commandsSubscription.addMessageListener(
+        command -> {
+          var commandId = command.getId();
+          if (!commandsSet.contains(commandId)) {
+            commandsSet.add(commandId);
+            commands.add(command);
+          }
+        });
+    var p = getRealtimeProcessor(yamcsClient);
+    if (p == null) {
+      log.info("Failed to initialize Commands subscription. No realtime processor found.");
+      return;
+    }
+    commandsSubscription.sendMessage(
+        SubscribeCommandsRequest.newBuilder()
+            .setInstance(getName())
+            .setProcessor(p.getName())
+            .setIgnorePastCommands(false)
+            .build());
+  }
+
   private MissionDatabase loadMissionDatabase(YamcsClient client) {
     var missionDatabase = new MissionDatabase();
 
     var mdbClient = client.createMissionDatabaseClient(getName());
+
     try {
       var page = mdbClient.listParameters(ListOptions.limit(500)).get();
       page.iterator().forEachRemaining(missionDatabase::addParameter);
@@ -251,10 +304,10 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     var it = paramsPage.iterator();
     it.forEachRemaining(
         p -> {
-          System.out.println("p-->" + p.getQualifiedName());
+          //          System.out.println("p-->" + p.getQualifiedName());
 
           for (var m : p.getType().getMemberList()) {
-            System.out.println("p member-->" + m.getName());
+            //            System.out.println("p member-->" + m.getName());
           }
         });
     while (paramsPage.hasNextPage()) {
@@ -268,10 +321,10 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
       it = paramsPage.iterator();
       it.forEachRemaining(
           p -> {
-            System.out.println("p-->" + p.getQualifiedName());
+            //            System.out.println("p-->" + p.getQualifiedName());
 
             for (var m : p.getType().getMemberList()) {
-              System.out.println("p member-->" + m.getName());
+              //              System.out.println("p member-->" + m.getName());
             }
           });
     }
@@ -294,6 +347,9 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     initEventSubscription(yamcsClient, serverName);
     initLinkSubscription(yamcsClient, serverName);
     initMDBParameterRDequest(yamcsClient, serverName);
+    initTMStats(yamcsClient);
+    initCommandSubscription(yamcsClient);
+
     missionDatabase = loadMissionDatabase(yamcsClient);
 
     try {
@@ -308,6 +364,127 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
       return;
     }
     instanceState = CMDR_YamcsInstanceState.ACTIVATED;
+  }
+
+  public void subscribeTMStats(YamcsClient yamcsClient, Consumer<ProcessingStatistics> consumer) {
+    //    TODO:Don't use the YAMCS thread pool. Use the Java one.
+    //    timer = YamcsServer.getServer().getThreadPoolExecutor();
+    //
+    //    //    Make "realtime configurable"
+    //
+    //    timer.scheduleAtFixedRate(
+    //        () -> {
+    //          System.out.println("scheduleAtFixedRate1");
+    //          YamcsServer.getServer();
+    //          System.out.println("scheduleAtFixedRate2:" + YamcsServer.getServer());
+    //          System.out.println("Instance:" + getName());
+    //          var instance = YamcsServer.getServer().getInstance(getName());
+    //
+    //          System.out.println("scheduleAtFixedRate3:" + instance);
+    //          YamcsServer.getServer().getInstance(getName()).getProcessor("realtime");
+    //
+    //          System.out.println("scheduleAtFixedRate4");
+    //          ProcessingStatistics ps =
+    //              YamcsServer.getServer()
+    //                  .getInstance(getName())
+    //                  .getProcessor("realtime")
+    //                  .getTmProcessor()
+    //                  .getStatistics();
+    //          //           ps =
+    //          //              YamcsServer.getServer()
+    //          //                  .getInstance(getName())
+    //          //                  .getProcessor("realtime")
+    //          //                  .getTmProcessor()
+    //          //                  .getStatistics();
+    //          System.out.println("scheduleAtFixedRate5:" + ps);
+    //          consumer.accept(ps);
+    //        },
+    //        1,
+    //        1,
+    //        TimeUnit.SECONDS);
+    //	  TODO:Add the API call to YMACS server side
+  }
+
+  public void initTMStats(YamcsClient yamcsClient) {
+    var p = getRealtimeProcessor(yamcsClient);
+    if (p == null) {
+      log.info("Failed to initialize Stats subscription. No realtime processor found.");
+      return;
+    }
+    statsWS =
+        new YamcsWebSocketClient(
+            stats -> {
+              if (stats != null) {
+                packets.clear();
+                for (TmStatistics s : stats) {
+                  packets.add(s);
+                }
+              }
+            },
+            yamcsClient.getHost(),
+            yamcsClient.getPort(),
+            getName(),
+            p.getName());
+    //
+    //    subscribeTMStats(
+    //        yamcsClient,
+    //        stats -> {
+    //          packets.clear();
+    //          System.out.println("stats...");
+    //          for (var s : stats.snapshot()) {
+    //            packets.add(s);
+    //          }
+    //        });
+  }
+
+  private ProcessorInfo getRealtimeProcessor(YamcsClient yamcsClient) {
+    List<ProcessorInfo> processors = null;
+    ProcessorInfo realtimeP = null;
+
+    try {
+      processors = yamcsClient.listProcessors(getName()).get();
+    } catch (InterruptedException | ExecutionException e) {
+      // TODO Auto-generated catch block
+      log.info(e.toString());
+      return realtimeP;
+    }
+
+    for (var p : processors) {
+      if (p.getName().equals("realtime")) {
+        realtimeP = p;
+        break;
+      }
+    }
+    return realtimeP;
+  }
+
+  private void initPacketSubscription(YamcsClient yamcsClient) {
+    PacketSubscription subscription = yamcsClient.createPacketSubscription();
+    //    yamcsClient.createProcessorClient(OBJECT_TYPE, OBJECT_TYPE)
+    subscription.addMessageListener(
+        new MessageListener<TmPacketData>() {
+
+          @Override
+          public void onMessage(TmPacketData message) {
+            TmPacket pwt =
+                new TmPacket(
+                    TimeEncoding.fromProtobufTimestamp(message.getReceptionTime()),
+                    TimeEncoding.fromProtobufTimestamp(message.getGenerationTime()),
+                    message.getSequenceNumber(),
+                    message.getPacket().toByteArray());
+            //            packetsTable.packetReceived(pwt);
+          }
+
+          @Override
+          public void onError(Throwable t) {
+            //            showError("Error subscribing: " + t.getMessage());
+          }
+        });
+
+    //    subscription.sendMessage(SubscribeTMStatisticsRequest.newBuilder()
+    //            .setInstance(getName())
+    ////            .setStream(connectData.streamName)
+    //            .build());
   }
 
   public MissionDatabase getMissionDatabase() {
@@ -335,6 +512,8 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
       eventSubscription.cancel(true);
       paramSubscriptionService.destroy();
     }
+
+    statsWS.close();
   }
 
   public EventSubscription getEventSubscription() {
@@ -354,6 +533,17 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
             .setInstance(getName())
             .setMessage(message)
             .setSource("Commander")
+            .build());
+  }
+
+  /** Creates and publishes an event to YAMCS instance. */
+  public void publishEvent(CMDR_Event e, YamcsClient yamcsClient) {
+    yamcsClient.createEvent(
+        CreateEventRequest.newBuilder()
+            .setInstance(getName())
+            .setMessage(e.getMessage())
+            .setSource(e.getSource())
+            .setSeverity(e.getSeverity().toString())
             .build());
   }
 
@@ -398,6 +588,25 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
+    }
+
+    consumer.accept(pages);
+  }
+
+  public void getParameter(
+      YamcsClient yamcsClient,
+      String parameter,
+      Instant start,
+      Instant end,
+      Consumer<ArrayList<Page<ParameterValue>>> consumer) {
+
+    //    this.getYamcsArchiveClient().streamValues(parameters, consumer, start, end);
+    ArrayList<Page<ParameterValue>> pages = new ArrayList<Page<ParameterValue>>();
+    try {
+      pages.add(this.getYamcsArchiveClient().listValues(parameter, start, end).get());
+    } catch (InterruptedException | ExecutionException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
 
     consumer.accept(pages);

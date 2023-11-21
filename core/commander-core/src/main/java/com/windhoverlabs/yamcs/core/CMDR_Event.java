@@ -32,6 +32,7 @@ public class CMDR_Event {
   }
 
   public Instant getReceptionTime() {
+
     return receptionTime;
   }
 

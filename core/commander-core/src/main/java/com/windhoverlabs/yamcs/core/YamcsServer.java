@@ -99,7 +99,8 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
             @Override
             public void connected() {
-
+              com.windhoverlabs.yamcs.core.YamcsObjectManager.triggerYamcsListeners(
+                  YamcsAwareMethod.onYamcsConnected);
               try {
                 List<YamcsInstance> instances = yamcsClient.listInstances().get();
                 for (YamcsInstance instance : instances) {
@@ -118,6 +119,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
                   for (YamcsAware l : listeners) {
                     l.onInstancesReady(getObj());
+                    ;
                   }
                 }
               } catch (InterruptedException e1) {
@@ -197,6 +199,8 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
               try {
                 List<YamcsInstance> instances = yamcsClient.listInstances().get();
+                com.windhoverlabs.yamcs.core.YamcsObjectManager.triggerYamcsListeners(
+                    YamcsAwareMethod.onYamcsConnected);
                 for (YamcsInstance instance : instances) {
                   createAndAddChild(instance.getName());
 
@@ -275,11 +279,6 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
   }
 
   public void disconnect() {
-    for (YamcsAware l : listeners) {
-      l.onYamcsDisconnected();
-    }
-
-    YamcsObjectManager.triggreYamcsListeners(YamcsAwareMethod.onYamcsDisconnected);
     unInit();
     serverState = ConnectionState.DISCONNECTED;
     Platform.runLater(
@@ -290,6 +289,12 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
     if (yamcsClient != null) {
       yamcsClient.close();
     }
+
+    //    The following lines should really be inside one function
+    for (YamcsAware l : listeners) {
+      l.onYamcsDisconnected();
+    }
+    YamcsObjectManager.triggerYamcsListeners(YamcsAwareMethod.onYamcsDisconnected);
   }
 
   public YamcsServerConnection getConnection() {
@@ -313,6 +318,7 @@ public class YamcsServer extends YamcsObject<CMDR_YamcsInstance> {
 
   void setDefaultInstance(String instanceName) {
     defaultInstance = getInstance(instanceName);
+    YamcsObjectManager.triggerYamcsListeners(YamcsAwareMethod.changeDefaultInstance);
   }
 
   public CMDR_YamcsInstance getDefaultInstance() {

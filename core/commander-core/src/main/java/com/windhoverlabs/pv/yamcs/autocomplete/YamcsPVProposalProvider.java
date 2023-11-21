@@ -35,7 +35,7 @@ public class YamcsPVProposalProvider implements PVProposalProvider {
 
     var content = text;
     //      TODO:Make this an argument
-    int limit = 100;
+    int limit = 512;
     //      TODO:Don't worry about prefixes like "param", "ops" for now..
     //      if (content.startsWith(getPrefix())) {
     //          content = content.substring(getPrefix().length());
@@ -103,7 +103,7 @@ public class YamcsPVProposalProvider implements PVProposalProvider {
         //        System.out.println("arrayItem-->" + entryPvName);
         entryPvName = new StringBuilder(basePvName + "[]");
         entryPvName.insert(basePvName.length() + 1, i);
-        System.out.println("array info for " + entryPvName);
+        //        System.out.println("array info for " + entryPvName);
         pvCandidates.add(entryPvName.toString());
       }
     }

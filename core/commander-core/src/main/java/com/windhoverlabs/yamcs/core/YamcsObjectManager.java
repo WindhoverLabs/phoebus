@@ -4,6 +4,7 @@ import com.windhoverlabs.pv.yamcs.YamcsAware;
 import com.windhoverlabs.pv.yamcs.YamcsAware.YamcsAwareMethod;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -20,12 +21,26 @@ public final class YamcsObjectManager {
 
   private static YamcsObject<YamcsServer> root;
   private static ObservableList<YamcsServer> servers = FXCollections.observableArrayList();
+  private YamcsAware listener;
 
-  // At the moment we do not support setting a default server directly by the outside
-  private static YamcsServer defaultServer = null;
+  private static SimpleStringProperty managerStatus =
+      new SimpleStringProperty("Connection Status: Disconnected");
+
+  public static SimpleStringProperty getManagerStatus() {
+    return managerStatus;
+  }
 
   private static ArrayList<YamcsAware> listeners = new ArrayList<YamcsAware>();
 
+  //  TODO: Really don't like this static block pattern. The proper way to do it is to add listeners
+  // to the "servers" observable list.
+  //  This will do, for now.
+
+  static {
+  }
+
+  // At the moment we do not support setting a default server directly by the outside
+  private static YamcsServer defaultServer = null;
   // TODO:When doing integration testing(specifically Connections App), refactor this
   // such that third parameter is removed.
   public static void setConnectionObjForServer(
@@ -82,13 +97,55 @@ public final class YamcsObjectManager {
     }
   }
 
-  private YamcsObjectManager() {}
+  private YamcsObjectManager() {
+
+    //    addYamcsListener(listener);
+  }
 
   public static YamcsObject<YamcsServer> getRoot() {
     return root;
   }
 
   static {
+    YamcsAware managerListener =
+        new YamcsAware() {
+          /**
+           * TODO:At the moment onYamcsConnected is not being called changeDefaultInstance is
+           * driving the listeners for now.
+           */
+          public void onYamcsConnected() {
+            if (!anyServerConnected()) {
+              managerStatus.set("Connection Status: Connected");
+            }
+          }
+
+          public void onYamcsDisconnected() {
+            if (!anyServerConnected()) {
+              managerStatus.set("Connection Status: Disconnected");
+            }
+          }
+
+          public void changeDefaultInstance() {
+            if (anyServerConnected()) {
+              managerStatus.set("Connection Status: Connected");
+              //            	TODO:Keep this simple for now, need to think about this logic a bit
+              // more.
+              //              managerStatus.set(
+              //                  "Connection Status: Connected. Default Server: \""
+              //                      + getDefaultServerName()
+              //                      + "\""
+              //                      + ". Default set to "
+              //                      + "\""
+              //                      + getDefaultInstanceName()
+              //                      + "\"");
+            }
+          }
+
+          public void onInstancesReady(YamcsServer s) {
+            managerStatus.set("Connection Status: Connected to \"" + s.getName() + "\"");
+          }
+        };
+    listeners.add(managerListener);
     root =
         new YamcsObject<YamcsServer>("") {
 
@@ -160,14 +217,28 @@ public final class YamcsObjectManager {
     }
     return outServer;
   }
-
-  static void triggreYamcsListeners(YamcsAwareMethod m) {
+  //  TODO:Right now there are several ways to "trigger" these events. I think this function should
+  // become the only and default way
+  //  to avoid redundant code paths that maintenance more difficult and makes code harder to follow.
+  static void triggerYamcsListeners(YamcsAwareMethod m) {
     for (YamcsAware l : listeners) {
       switch (m) {
         case onYamcsDisconnected:
           {
             l.onYamcsDisconnected();
           }
+          break;
+        case changeDefaultInstance:
+          l.changeDefaultInstance();
+          ;
+          break;
+        case onYamcsConnected:
+          {
+            l.onYamcsConnected();
+          }
+          break;
+        default:
+          break;
       }
     }
   }
@@ -185,5 +256,16 @@ public final class YamcsObjectManager {
         listener.changeProcessor(getDefaultInstance().getName(), processorName);
       }
     }
+  }
+
+  private static boolean anyServerConnected() {
+    boolean isConnected = false;
+    for (var s : servers) {
+      if (s.getServerState() == ConnectionState.CONNECTED) {
+        isConnected = true;
+      }
+    }
+
+    return isConnected;
   }
 }

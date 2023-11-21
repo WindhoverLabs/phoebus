@@ -35,6 +35,8 @@ public class LinksViewerController {
 
   TableColumn<org.yamcs.protobuf.links.LinkInfo, String> inCount =
       new TableColumn<org.yamcs.protobuf.links.LinkInfo, String>("In");
+  TableColumn<org.yamcs.protobuf.links.LinkInfo, String> outCount =
+      new TableColumn<org.yamcs.protobuf.links.LinkInfo, String>("Out");
   TableColumn<CMDR_Event, String> annotationCol = new TableColumn<CMDR_Event, String>();
   TableColumn<CMDR_Event, String> generationTimeCol =
       new TableColumn<CMDR_Event, String>("Generation Time");
@@ -157,38 +159,38 @@ public class LinksViewerController {
             return new SimpleStringProperty("");
           }
         });
-    //    tableView
-    //        .getColumns()
-    //        .addAll(
-    //            nameCol,
-    //            generationTimeCol,
-    //            receptionTimeCol,
-    //            severityCol,
-    //            typeCol,
-    //            sourceCol,
-    //            instanceCol);
+    outCount.setCellValueFactory(
+        (link) -> {
+          if (link != null && link.getValue() != null) {
+            return new SimpleStringProperty(Long.toString(link.getValue().getDataOutCount()));
+          } else {
+            return new SimpleStringProperty("");
+          }
+        });
 
-    tableView.getColumns().addAll(nameCol, inCount);
+    tableView.getColumns().addAll(nameCol, inCount, outCount);
 
     yamcsListener =
         new YamcsAware() {
           public void changeDefaultInstance() {
-            YamcsObjectManager.getDefaultInstance()
-                .getEvents()
-                .addListener(
-                    new ListChangeListener<Object>() {
-                      @Override
-                      public void onChanged(Change<?> c) {
-                        Platform.runLater(
-                            () -> {
-                              if (!scrollLockButton.isSelected()) {
-                                tableView.scrollTo(tableView.getItems().size() - 1);
-                              }
-                            });
-                      }
-                    });
-            tableView.setItems(YamcsObjectManager.getDefaultInstance().getLinks());
-            tableView.refresh();
+            if (YamcsObjectManager.getDefaultInstance() != null) {
+              YamcsObjectManager.getDefaultInstance()
+                  .getEvents()
+                  .addListener(
+                      new ListChangeListener<Object>() {
+                        @Override
+                        public void onChanged(Change<?> c) {
+                          Platform.runLater(
+                              () -> {
+                                if (!scrollLockButton.isSelected()) {
+                                  tableView.scrollTo(tableView.getItems().size() - 1);
+                                }
+                              });
+                        }
+                      });
+              tableView.setItems(YamcsObjectManager.getDefaultInstance().getLinks());
+              tableView.refresh();
+            }
           }
 
           public void onYamcsConnected() {
