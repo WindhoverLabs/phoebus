@@ -42,7 +42,7 @@ import org.phoebus.ui.time.TimeRelativeIntervalPane;
 /**
  * Panel for exporting data into files
  *
- * @author Kay Kasemir
+ * @author lgomez
  */
 @SuppressWarnings("nls")
 public class ParameterViewerView extends VBox {

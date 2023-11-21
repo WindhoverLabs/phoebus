@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<SplitPane fx:id="mainSplit" dividerPositions="0.5" orientation="VERTICAL" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.windhoverlabs.yamcs.applications.parameter.ParameterExportController">
+<SplitPane fx:id="mainSplit" dividerPositions="0.5" orientation="VERTICAL" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.windhoverlabs.yamcs.applications.parameterviewer.ParameterViewerController">
    <items>
       <GridPane fx:id="gridPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="190.0">
          <columnConstraints>
