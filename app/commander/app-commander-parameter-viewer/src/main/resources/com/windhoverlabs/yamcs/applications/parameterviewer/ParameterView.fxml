@@ -31,7 +31,7 @@
                         <Insets right="5.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="pvTextField" maxWidth="1.7976931348623157E308" promptText="Enter PV To Export" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="pvTextField" maxWidth="1.7976931348623157E308" promptText="Enter PV To View" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
          </children>

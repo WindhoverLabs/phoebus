@@ -51,6 +51,7 @@ public class Messages {
   public static String OpenAlert1;
   public static String OpenAlert2;
   public static String OpenWith;
+  public static String ParameterTabTitle;
   public static String Paste;
   public static String PropDlgBytes;
   public static String PropDlgDate;

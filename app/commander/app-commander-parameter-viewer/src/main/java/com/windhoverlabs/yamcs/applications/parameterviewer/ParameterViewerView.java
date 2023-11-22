@@ -7,37 +7,16 @@
  ******************************************************************************/
 package com.windhoverlabs.yamcs.applications.parameterviewer;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
 import java.util.logging.Logger;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import org.csstudio.trends.databrowser3.Activator;
-import org.csstudio.trends.databrowser3.Messages;
-import org.csstudio.trends.databrowser3.export.Source;
-import org.csstudio.trends.databrowser3.model.Model;
-import org.csstudio.trends.databrowser3.ui.TimeRangePopover;
 import org.phoebus.framework.persistence.Memento;
-import org.phoebus.ui.dialog.ExceptionDetailsErrorDialog;
-import org.phoebus.ui.dialog.PopOver;
-import org.phoebus.ui.dialog.SaveAsDialog;
-import org.phoebus.ui.time.TimeRelativeIntervalPane;
 
 /**
  * Panel for exporting data into files
@@ -46,17 +25,21 @@ import org.phoebus.ui.time.TimeRelativeIntervalPane;
  */
 @SuppressWarnings("nls")
 public class ParameterViewerView extends VBox {
-  private static final String TAG_SOURCE = "source",
-      TAG_OPTCOUNT = "optcount",
-      TAG_LININT = "linint",
-      TAG_TYPE = "type",
-      TAG_FORMAT = "format",
-      TAG_DIGITS = "digits",
-      TAG_FILE = "file";
-
   private final TextField start = new TextField();
 
   private final String utcRegex = "d{4}-d{2}-d{2}Td{2}:d{2}:d{2}.d{3}+d{2}:d{2}";
+
+  //
+
+  private SimpleStringProperty currentParam = new SimpleStringProperty("Param Value:");
+
+  public SimpleStringProperty getCurrentParam() {
+    return currentParam;
+  }
+
+  public void setCurrentParam(SimpleStringProperty currentParam) {
+    this.currentParam = currentParam;
+  }
 
   public String getStart() {
     return start.getText();
@@ -76,34 +59,7 @@ public class ParameterViewerView extends VBox {
     start.setText(time);
   }
 
-  private final ToggleGroup sources = new ToggleGroup(),
-      table_types = new ToggleGroup(),
-      formats = new ToggleGroup();
-  private final TextField optimize = new TextField(Messages.ExportDefaultOptimization),
-      linear = new TextField(Messages.ExportDefaultLinearInterpolation),
-      format_digits = new TextField(Messages.ExportDefaultDigits),
-      filename = new TextField();
-  private final RadioButton source_raw = new RadioButton(Source.RAW_ARCHIVE.toString()),
-      type_matlab = new RadioButton(Messages.ExportTypeMatlab);
-
-  private final CheckBox useUnixTimeStamp = new CheckBox(Messages.UseUnixTimeStamp);
-  private SimpleBooleanProperty unixTimeStamp = new SimpleBooleanProperty(false);
-
-  private Model model = new org.csstudio.trends.databrowser3.model.Model();
   public static final Logger log = Logger.getLogger(ParameterViewerView.class.getPackageName());
-
-  //  UnaryOperator<TextFormatter.Change> numberValidationFormatter = change -> {
-  //	    if(change.getText().matches("\\d+")){
-  //	        return change; //if change is a number
-  //	    } else {
-  //	        change.setText(""); //else make no change
-  //	        change.setRange(    //don't remove any selected text either.
-  //	                change.getRangeStart(),
-  //	                change.getRangeStart()
-  //	        );
-  //	        return change;
-  //	    }
-  //	};
 
   private ArrayList<String> parameters = new ArrayList<String>();
 
@@ -126,163 +82,21 @@ public class ParameterViewerView extends VBox {
 
     configureValidators();
     GridPane grid = new GridPane();
-    grid.setHgap(5);
-    grid.setVgap(5);
-    grid.setPadding(new Insets(5));
+    //    grid.setHgap(5);
+    //    grid.setVgap(5);
+    //    grid.setPadding(new Insets(5));
 
-    grid.add(new Label(Messages.StartTimeLbl), 0, 0);
-    start.setPromptText("2023-08-20T04:30:44.424Z");
+    var l = new Label();
+    l.textProperty().bind(currentParam);
+
+    grid.add(l, 0, 0);
     //    start.va
     //    \\d{4}-[0-1]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\+\\d{4}
-    GridPane.setHgrow(start, Priority.ALWAYS);
-    grid.add(start, 1, 0);
-
-    final Button sel_times = new Button(Messages.StartEndDialogBtn);
-    sel_times.setTooltip(new Tooltip(Messages.StartEndDialogTT));
-    grid.add(sel_times, 2, 0);
-
-    grid.add(new Label(Messages.EndTimeLbl), 0, 1);
-    //    end.setTooltip(new Tooltip(Messages.EndTimeTT));
-    end.setPromptText("2023-08-20T04:35:44.424Z");
-    GridPane.setHgrow(end, Priority.ALWAYS);
-    grid.add(end, 1, 1);
-
-    BiConsumer<TimeRelativeIntervalPane, PopOver> closeCallback =
-        (timePane, popOver) -> {
-          popOver.hide();
-        };
-    BiConsumer<TimeRelativeIntervalPane, PopOver> applyCallback =
-        (timePane, popOver) -> {
-          final String[] range = Model.getTimerangeText(timePane.getInterval());
-          start.setText(range[0]);
-          end.setText(range[1]);
-          popOver.hide();
-        };
-    final TimeRangePopover popover =
-        TimeRangePopover.withDefaultTimePane(model, closeCallback, applyCallback);
-    sel_times.setOnAction(
-        event -> {
-          popover.show((Region) event.getSource());
-        });
-
-    grid.add(new Label(Messages.ExportGroupSource), 0, 2);
-
-    // Order of source_* radio buttons must match the corresponding Source.* ordinal
-    final RadioButton source_plot = new RadioButton(Source.PLOT.toString());
-    source_plot.setTooltip(new Tooltip(Messages.ExportSource_PlotTT));
-    source_plot.setToggleGroup(sources);
-
-    source_raw.setTooltip(new Tooltip(Messages.ExportSource_RawArchiveTT));
-    source_raw.setToggleGroup(sources);
-
-    final RadioButton source_opt = new RadioButton(Source.OPTIMIZED_ARCHIVE.toString());
-    source_opt.setTooltip(new Tooltip(Messages.ExportSource_OptimizedArchiveTT));
-    source_opt.setToggleGroup(sources);
-
-    optimize.setPrefColumnCount(6);
-    optimize.setTooltip(new Tooltip(Messages.ExportOptimizationTT));
-    optimize.disableProperty().bind(source_opt.selectedProperty().not());
-
-    final RadioButton source_lin = new RadioButton(Source.LINEAR_INTERPOLATION.toString());
-    source_lin.setTooltip(new Tooltip(Messages.ExportSource_LinearTT));
-    source_lin.setToggleGroup(sources);
-
-    linear.setPrefColumnCount(8);
-    linear.setTooltip(new Tooltip(Messages.ExportDefaultLinearInterpolationTT));
-    linear.disableProperty().bind(source_lin.selectedProperty().not());
-
-    final HBox source_options =
-        new HBox(
-            5, source_plot, source_raw, source_opt, optimize, source_lin, linear, useUnixTimeStamp);
-    source_options.setAlignment(Pos.CENTER_LEFT);
-    grid.add(source_options, 1, 2, 2, 1);
-
-    source_raw.setSelected(true);
-    source_options.setDisable(true);
-
-    final TitledPane source = new TitledPane(Messages.ExportGroupSource, grid);
+    //    GridPane.setHgrow(start, Priority.ALWAYS);
+    final TitledPane source = new TitledPane(Messages.ParameterTabTitle, grid);
     source.setCollapsible(false);
 
-    // * Format *
-    // (*) Spreadsheet ( ) Matlab
-    // [x] Tabular [x] ... with min/max column [x] ... with Severity/Status
-    // (*) Default format  ( ) decimal notation  ( ) exponential notation _digits_ fractional digits
-    grid = new GridPane();
-    grid.setHgap(5);
-    grid.setVgap(5);
-    grid.setPadding(new Insets(5));
-
-    final RadioButton type_spreadsheet = new RadioButton(Messages.ExportTypeSpreadsheet);
-    type_spreadsheet.setTooltip(new Tooltip(Messages.ExportTypeSpreadsheetTT));
-    type_spreadsheet.setToggleGroup(table_types);
-    grid.add(type_spreadsheet, 0, 0);
-
-    type_matlab.setTooltip(new Tooltip(Messages.ExportTypeMatlabTT));
-    type_matlab.setToggleGroup(table_types);
-    grid.add(type_matlab, 1, 0);
-
-    type_spreadsheet.setSelected(true);
-
-    final RadioButton format_default = new RadioButton(Messages.Format_Default);
-    format_default.setTooltip(new Tooltip(Messages.ExportFormat_DefaultTT));
-    format_default.setToggleGroup(formats);
-    grid.add(format_default, 0, 2);
-
-    final RadioButton format_decimal = new RadioButton(Messages.Format_Decimal);
-    format_decimal.setTooltip(new Tooltip(Messages.ExportFormat_DecimalTT));
-    format_decimal.setToggleGroup(formats);
-    grid.add(format_decimal, 1, 2);
-
-    final RadioButton format_expo = new RadioButton(Messages.Format_Exponential);
-    format_expo.setTooltip(new Tooltip(Messages.ExportFormat_ExponentialTT));
-    format_expo.setToggleGroup(formats);
-    grid.add(format_expo, 2, 2);
-
-    format_digits.setPrefColumnCount(3);
-    format_digits.setTooltip(new Tooltip(Messages.ExportDigitsTT));
-    format_digits.disableProperty().bind(format_default.selectedProperty());
-    grid.add(format_digits, 3, 2);
-
-    // Formatting only applies to spreadsheet
-    format_default.disableProperty().bind(type_matlab.selectedProperty());
-    format_decimal.disableProperty().bind(type_matlab.selectedProperty());
-    format_expo.disableProperty().bind(type_matlab.selectedProperty());
-    format_digits.disableProperty().bind(type_matlab.selectedProperty());
-
-    grid.add(new Label(Messages.ExportDigits), 4, 2);
-
-    format_default.setSelected(true);
-
-    final TitledPane format = new TitledPane(Messages.ExportGroupFormat, grid);
-    format.setCollapsible(false);
-    format.setDisable(true);
-
-    // * Output *
-    // Filename: ______________ [Browse] [Export]
-    filename.setPromptText(Messages.ExportDefaultFilename);
-    filename.setTooltip(new Tooltip(Messages.ExportFilenameTT));
-
-    final Button sel_filename = new Button(Messages.ExportBrowse);
-    sel_filename.setTooltip(new Tooltip(Messages.ExportBrowseTT));
-    sel_filename.setOnAction(event -> selectFilename());
-
-    final Button export = new Button(Messages.ExportStartExport, Activator.getIcon("export"));
-    //    export.setOnAction(event -> startExportJob());
-
-    final HBox outputs =
-        new HBox(5, new Label(Messages.ExportFilename), filename, sel_filename, export);
-    outputs.setAlignment(Pos.CENTER_LEFT);
-    HBox.setHgrow(filename, Priority.ALWAYS);
-
-    final TitledPane output = new TitledPane(Messages.ExportGroupOutput, outputs);
-    output.setCollapsible(false);
-
-    getChildren().setAll(source, format, output);
-
-    // Enter in filename suggests to next start export
-    filename.setOnAction(event -> export.requestFocus());
-
-    useUnixTimeStamp.selectedProperty().bindBidirectional(unixTimeStamp);
+    getChildren().setAll(source);
   }
 
   void configureValidators() {
@@ -298,47 +112,9 @@ public class ParameterViewerView extends VBox {
             });
   }
 
-  /** @return <code>true</code> if the min/max (error) column option should be enabled */
-  private boolean minMaxAllowed() {
-    return !type_matlab.isSelected() && !source_raw.isSelected();
-  }
-
-  private void selectFilename() {
-    File file = new File(filename.getText().trim());
-    file = new SaveAsDialog().promptForFile(getScene().getWindow(), Messages.Export, file, null);
-    if (file != null) filename.setText(file.getAbsolutePath());
-  }
-
-  private void handleError(final Exception ex) {
-    ExceptionDetailsErrorDialog.openError(this, Messages.Error, "Export error", ex);
-  }
-
   /** @param memento Where to save current state */
-  public void save(final Memento memento) {
-    memento.setNumber(TAG_SOURCE, sources.getToggles().indexOf(sources.getSelectedToggle()));
-    memento.setString(TAG_OPTCOUNT, optimize.getText());
-    memento.setString(TAG_LININT, linear.getText());
-    memento.setNumber(TAG_TYPE, table_types.getToggles().indexOf(table_types.getSelectedToggle()));
-    memento.setNumber(TAG_FORMAT, formats.getToggles().indexOf(formats.getSelectedToggle()));
-    memento.setString(TAG_DIGITS, format_digits.getText());
-    memento.setString(TAG_FILE, filename.getText());
-  }
+  public void save(final Memento memento) {}
 
   /** @param memento From where to restore saved state */
-  public void restore(final Memento memento) {
-    memento
-        .getNumber(TAG_SOURCE)
-        .ifPresent(index -> sources.selectToggle(sources.getToggles().get(index.intValue())));
-    memento.getString(TAG_OPTCOUNT).ifPresent(optimize::setText);
-    memento.getString(TAG_LININT).ifPresent(linear::setText);
-    memento
-        .getNumber(TAG_TYPE)
-        .ifPresent(
-            index -> table_types.selectToggle(table_types.getToggles().get(index.intValue())));
-    memento
-        .getNumber(TAG_FORMAT)
-        .ifPresent(index -> formats.selectToggle(formats.getToggles().get(index.intValue())));
-    memento.getString(TAG_DIGITS).ifPresent(format_digits::setText);
-    memento.getString(TAG_FILE).ifPresent(filename::setText);
-  }
+  public void restore(final Memento memento) {}
 }

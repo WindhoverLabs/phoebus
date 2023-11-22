@@ -53,7 +53,7 @@ public class ParameterViewerInstance implements AppInstance {
     ResourceBundle resourceBundle = NLS.getMessages(Messages.class);
     FXMLLoader loader = new FXMLLoader();
     loader.setResources(resourceBundle);
-    loader.setLocation(this.getClass().getResource("ExportView.fxml"));
+    loader.setLocation(this.getClass().getResource("ParameterView.fxml"));
 
     try {
       content = loader.load();
