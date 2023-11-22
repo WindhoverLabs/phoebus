@@ -4,12 +4,13 @@ import com.windhoverlabs.pv.yamcs.YamcsAware;
 import com.windhoverlabs.yamcs.core.CMDR_Event;
 import com.windhoverlabs.yamcs.core.YamcsObjectManager;
 import com.windhoverlabs.yamcs.core.YamcsServer;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.disposables.Disposable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -25,6 +26,18 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import org.epics.vtype.VBoolean;
+import org.epics.vtype.VNumber;
+import org.epics.vtype.VString;
+// import org.epics.vtype.VDouble;
+// import org.epics.vtype.VEnum;
+// import org.epics.vtype.VFloat;
+// import org.epics.vtype.VInt;
+// import org.epics.vtype.VLong;
+// import org.epics.vtype.VString;
+// import org.epics.vtype.VType;
+// import org.epics.vtype.VUInt;
+// import org.epics.vtype.VULong;
 import org.phoebus.framework.autocomplete.PVProposalService;
 import org.phoebus.framework.autocomplete.Proposal;
 import org.phoebus.framework.autocomplete.ProposalService;
@@ -32,32 +45,6 @@ import org.phoebus.pv.PV;
 import org.phoebus.pv.PVPool;
 
 public class ParameterViewerController {
-  class ExportPV {
-    private final SimpleBooleanProperty export = new SimpleBooleanProperty();
-    private final SimpleStringProperty pv = new SimpleStringProperty();
-
-    ExportPV(String pv, boolean export) {
-      this.pv.set(pv);
-      this.export.set(export);
-    }
-
-    public final SimpleStringProperty pvProperty() {
-      return pv;
-    }
-
-    public final SimpleBooleanProperty exportProperty() {
-      return export;
-    }
-
-    public void toggleExport() {
-      if (export.get()) {
-        export.set(false);
-      } else {
-        export.set(true);
-      }
-    }
-  }
-
   public static final Logger log =
       Logger.getLogger(ParameterViewerController.class.getPackageName());
 
@@ -70,10 +57,6 @@ public class ParameterViewerController {
   private static final int dataSize = 10_023;
 
   private ProposalService proposalService = PVProposalService.INSTANCE;
-
-  // TODO:Eventually these will be in spinner nodes. These are the event filters.
-  private String currentServer = "sitl";
-  private String currentInstance = "yamcs-cfs";
 
   YamcsAware yamcsListener = null;
 
@@ -93,6 +76,12 @@ public class ParameterViewerController {
   private Tab exportTab;
   @FXML private TabPane exportTabPane;
   @FXML private SplitPane mainSplit;
+
+  private String oldPVName = null;
+
+  private @NonNull Disposable oldSub;
+
+  private String currentPVName;
 
   public Node getRootPane() {
     return mainSplit;
@@ -171,48 +160,135 @@ public class ParameterViewerController {
         .selectedIndexProperty()
         .addListener(
             (obs, oldSelection, newSelection) -> {
-              System.out.println("Clicked on PV:" + proposalList.get((int) newSelection));
               PV pv = null;
               PV oldPV = null;
+
               try {
+                currentPVName = proposalList.get((int) newSelection);
                 pv = PVPool.getPV(proposalList.get((int) newSelection));
-                if (oldSelection != null) {
-                  //                	TODO: Have to think about this one....
-                  //                  oldPV = PVPool.getPV(proposalList.get((int) oldSelection));
-                  //                  //                	oldPV.
-                  //                  PVPool.releasePV(oldPV);
+                if (oldPVName != null) {
+                  // TODO: Have to think about this one....
+                  oldSub.dispose();
+                  oldPV = PVPool.getPV(oldPVName);
+                  PVPool.releasePV(oldPV);
+                  oldPVName = proposalList.get((int) newSelection);
                 }
               } catch (Exception e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
               }
-              pv.onValueEvent()
-                  .subscribe(
-                      param -> {
-                        //                        System.out.println("Current val:" +
-                        // param.toString());
-                        Platform.runLater(
-                            new Runnable() {
+              oldSub =
+                  pv.onValueEvent()
+                      .subscribe(
+                          param -> {
+                            Platform.runLater(
+                                new Runnable() {
 
-                              @Override
-                              public void run() {
-                                String paramStr = "";
-                                //                            	  paramStr += "PV Name:";
-                                //                            	  paramStr += "PV Name:" +
-                                // VType.class;
-                                //                            	  switch(param.getClass())
-                                //                            	  {
-                                //
-                                //                            	  }
-                                paramExportView.getCurrentParam().set(param.toString());
-                              }
-                            });
-                      });
+                                  @Override
+                                  public void run() {
+                                    String paramStr = "PV name:" + currentPVName;
+                                    paramStr +=
+                                        "\nValue:"
+                                            + org.phoebus.ui.vtype.FormatOptionHandler.format(
+                                                param,
+                                                org.phoebus.ui.vtype.FormatOption.DEFAULT,
+                                                -1,
+                                                true);
+
+                                    //                                    System.out.println(
+                                    //                                        "VType Format:"
+                                    //                                            +
+                                    // org.phoebus.ui.vtype.FormatOptionHandler.format(
+                                    //                                                param,
+                                    //
+                                    // org.phoebus.ui.vtype.FormatOption.DEFAULT,
+                                    //                                                -1,
+                                    //                                                true));
+                                    //                            	  paramStr += "PV Name:";
+                                    //                            	  paramStr += "PV Name:" +
+                                    // VType.class;
+                                    //                            	  switch(param.getClass())
+                                    //                            	  {
+                                    //
+                                    //                            	  }
+                                    //                                Object pType =
+
+                                    // VType.typeOf(param);
+                                    //                                    System.out.println("class
+                                    // name:" + param.getClass());
+                                    if (param instanceof VNumber) {
+                                      paramStr += "\nType:VNumber";
+                                    } else if (param instanceof VString) {
+                                      paramStr += "\nType:VString";
+                                    } else if (param instanceof VBoolean) {
+                                      paramStr += "\nType:VBoolean";
+                                    }
+                                    if (param instanceof com.windhoverlabs.data.yamcs.YamcsVType) {
+                                      paramStr += "\nType:VNumber";
+                                      System.out.println("YamcsVType***");
+                                    }
+
+                                    if (param instanceof com.windhoverlabs.data.yamcs.YamcsVType) {
+                                      System.out.println("com.windhoverlabs.data.yamcs.YamcsVType");
+                                    }
+
+                                    //                                TODO:Would be nice to get mdb
+                                    // data
+                                    // from YAMCS and display it(offsets, xtce type, etc)
+                                    //                                if(param instanceof
+                                    // com.windhoverlabs.pv.yamcs.YamcsPV)
+                                    //                                {
+                                    //
+                                    //                                }
+                                    //                        else if (param instanceof
+                                    // VFloat) {
+                                    //                                  paramStr += "Type: VFloat";
+                                    //                                } else if (param instanceof
+                                    // VULong) {
+                                    //                                  paramStr += "Type: VULong";
+                                    //                                } else if (param instanceof
+                                    // VLong)
+                                    // {
+                                    //                                  paramStr += "\nType: VLong";
+                                    //                                } else if (param instanceof
+                                    // VUInt)
+                                    // {
+                                    //                                  paramStr += "Type: VUInt";
+                                    //                                } else if (param instanceof
+                                    // VInt)
+                                    // {
+                                    //                                  paramStr += "Type: VInt";
+                                    //                                } else if (param instanceof
+                                    // VEnum)
+                                    // {
+                                    //                                  paramStr += "Type: VEnum";
+                                    //                                } else if (param instanceof
+                                    // VBoolean) {
+                                    //                                  paramStr += "Type:
+                                    // VBoolean";
+                                    //                                } else if (param instanceof
+                                    // VString) {
+                                    //                                  paramStr += "Type: VString";
+                                    //                                } else {
+                                    //                                  paramStr += "Type: Unknown";
+                                    //                                }
+                                    //                                if (pType instanceof VDouble )
+                                    //                                {
+                                    //                                    paramStr += "\nType:
+                                    // VDouble";
+                                    //                                }
+                                    paramExportView.getCurrentParam().set(paramStr);
+                                    //                                param.toVType(obs);
+                                    //                                VType.typeOf(obs);
+                                  }
+                                });
+                          });
               //              value_flow = pv.onValueEvent()
               //                      .throttleLatest(Preferences.update_throttle_ms,
               // TimeUnit.MILLISECONDS)
               //                      .subscribe(this::valueChanged);
               //              pv.onValueEvent().
+              oldPVName = proposalList.get((int) newSelection);
             });
     tableView.setEditable(true);
     gridPane.add(tableView, 0, 1);
