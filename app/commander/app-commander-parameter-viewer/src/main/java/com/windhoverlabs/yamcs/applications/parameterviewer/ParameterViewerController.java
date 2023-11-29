@@ -27,6 +27,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import org.epics.vtype.VBoolean;
+import org.epics.vtype.VInt;
 import org.epics.vtype.VNumber;
 import org.epics.vtype.VString;
 // import org.epics.vtype.VDouble;
@@ -170,119 +171,19 @@ public class ParameterViewerController {
                   // TODO: Have to think about this one....
                   oldSub.dispose();
                   oldPV = PVPool.getPV(oldPVName);
-                  PVPool.releasePV(oldPV);
+                  if (oldPV != null) {
+                    PVPool.releasePV(oldPV);
+                  }
                   oldPVName = proposalList.get((int) newSelection);
                 }
               } catch (Exception e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
               }
-              oldSub =
-                  pv.onValueEvent()
-                      .subscribe(
-                          param -> {
-                            Platform.runLater(
-                                new Runnable() {
 
-                                  @Override
-                                  public void run() {
-                                    String paramStr = "PV name:" + currentPVName;
-                                    paramStr +=
-                                        "\nValue:"
-                                            + org.phoebus.ui.vtype.FormatOptionHandler.format(
-                                                param,
-                                                org.phoebus.ui.vtype.FormatOption.DEFAULT,
-                                                -1,
-                                                true);
-
-                                    //                                    System.out.println(
-                                    //                                        "VType Format:"
-                                    //                                            +
-                                    // org.phoebus.ui.vtype.FormatOptionHandler.format(
-                                    //                                                param,
-                                    //
-                                    // org.phoebus.ui.vtype.FormatOption.DEFAULT,
-                                    //                                                -1,
-                                    //                                                true));
-                                    //                            	  paramStr += "PV Name:";
-                                    //                            	  paramStr += "PV Name:" +
-                                    // VType.class;
-                                    //                            	  switch(param.getClass())
-                                    //                            	  {
-                                    //
-                                    //                            	  }
-                                    //                                Object pType =
-
-                                    // VType.typeOf(param);
-                                    //                                    System.out.println("class
-                                    // name:" + param.getClass());
-                                    if (param instanceof VNumber) {
-                                      paramStr += "\nType:VNumber";
-                                    } else if (param instanceof VString) {
-                                      paramStr += "\nType:VString";
-                                    } else if (param instanceof VBoolean) {
-                                      paramStr += "\nType:VBoolean";
-                                    }
-                                    if (param instanceof com.windhoverlabs.data.yamcs.YamcsVType) {
-                                      paramStr += "\nType:VNumber";
-                                      System.out.println("YamcsVType***");
-                                    }
-
-                                    if (param instanceof com.windhoverlabs.data.yamcs.YamcsVType) {
-                                      System.out.println("com.windhoverlabs.data.yamcs.YamcsVType");
-                                    }
-
-                                    //                                TODO:Would be nice to get mdb
-                                    // data
-                                    // from YAMCS and display it(offsets, xtce type, etc)
-                                    //                                if(param instanceof
-                                    // com.windhoverlabs.pv.yamcs.YamcsPV)
-                                    //                                {
-                                    //
-                                    //                                }
-                                    //                        else if (param instanceof
-                                    // VFloat) {
-                                    //                                  paramStr += "Type: VFloat";
-                                    //                                } else if (param instanceof
-                                    // VULong) {
-                                    //                                  paramStr += "Type: VULong";
-                                    //                                } else if (param instanceof
-                                    // VLong)
-                                    // {
-                                    //                                  paramStr += "\nType: VLong";
-                                    //                                } else if (param instanceof
-                                    // VUInt)
-                                    // {
-                                    //                                  paramStr += "Type: VUInt";
-                                    //                                } else if (param instanceof
-                                    // VInt)
-                                    // {
-                                    //                                  paramStr += "Type: VInt";
-                                    //                                } else if (param instanceof
-                                    // VEnum)
-                                    // {
-                                    //                                  paramStr += "Type: VEnum";
-                                    //                                } else if (param instanceof
-                                    // VBoolean) {
-                                    //                                  paramStr += "Type:
-                                    // VBoolean";
-                                    //                                } else if (param instanceof
-                                    // VString) {
-                                    //                                  paramStr += "Type: VString";
-                                    //                                } else {
-                                    //                                  paramStr += "Type: Unknown";
-                                    //                                }
-                                    //                                if (pType instanceof VDouble )
-                                    //                                {
-                                    //                                    paramStr += "\nType:
-                                    // VDouble";
-                                    //                                }
-                                    paramExportView.getCurrentParam().set(paramStr);
-                                    //                                param.toVType(obs);
-                                    //                                VType.typeOf(obs);
-                                  }
-                                });
-                          });
+              if (pv != null) {
+                oldSub = pvSubscription(pv);
+              }
               //              value_flow = pv.onValueEvent()
               //                      .throttleLatest(Preferences.update_throttle_ms,
               // TimeUnit.MILLISECONDS)
@@ -295,6 +196,113 @@ public class ParameterViewerController {
     createParamTab();
     mainSplit.setOrientation(Orientation.VERTICAL);
     mainSplit.setDividerPositions(0.8);
+  }
+
+  private @NonNull Disposable pvSubscription(PV pv) {
+    return pv.onValueEvent()
+        .subscribe(
+            param -> {
+              Platform.runLater(
+                  new Runnable() {
+
+                    @Override
+                    public void run() {
+                      String paramStr = "PV name:" + currentPVName;
+                      paramStr +=
+                          "\nValue:"
+                              + org.phoebus.ui.vtype.FormatOptionHandler.format(
+                                  param, org.phoebus.ui.vtype.FormatOption.DEFAULT, -1, true);
+
+                      //                                    System.out.println(
+                      //                                        "VType Format:"
+                      //                                            +
+                      // org.phoebus.ui.vtype.FormatOptionHandler.format(
+                      //                                                param,
+                      //
+                      // org.phoebus.ui.vtype.FormatOption.DEFAULT,
+                      //                                                -1,
+                      //                                                true));
+                      //                            	  paramStr += "PV Name:";
+                      //                            	  paramStr += "PV Name:" +
+                      // VType.class;
+                      //                            	  switch(param.getClass())
+                      //                            	  {
+                      //
+                      //                            	  }
+                      //                                Object pType =
+
+                      // VType.typeOf(param);
+                      //                                    System.out.println("class
+                      // name:" + param.getClass());
+                      if (param instanceof VInt) {
+                        paramStr += "\nType:VInt";
+                      } else if (param instanceof VNumber) {
+                        paramStr += "\nType:VNumber";
+                      } else if (param instanceof VString) {
+                        paramStr += "\nType:VString";
+                      } else if (param instanceof VBoolean) {
+                        paramStr += "\nType:VBoolean";
+                      }
+                      if (param instanceof com.windhoverlabs.data.yamcs.YamcsVType) {
+                        paramStr += "\nType:VNumber";
+                        System.out.println("YamcsVType***");
+                      }
+
+                      if (param instanceof com.windhoverlabs.data.yamcs.YamcsVType) {
+                        System.out.println("com.windhoverlabs.data.yamcs.YamcsVType");
+                      }
+
+                      //                                TODO:Would be nice to get mdb
+                      // data
+                      // from YAMCS and display it(offsets, xtce type, etc)
+                      //                                if(param instanceof
+                      // com.windhoverlabs.pv.yamcs.YamcsPV)
+                      //                                {
+                      //
+                      //                                }
+                      //                        else if (param instanceof
+                      // VFloat) {
+                      //                                  paramStr += "Type: VFloat";
+                      //                                } else if (param instanceof
+                      // VULong) {
+                      //                                  paramStr += "Type: VULong";
+                      //                                } else if (param instanceof
+                      // VLong)
+                      // {
+                      //                                  paramStr += "\nType: VLong";
+                      //                                } else if (param instanceof
+                      // VUInt)
+                      // {
+                      //                                  paramStr += "Type: VUInt";
+                      //                                } else if (param instanceof
+                      // VInt)
+                      // {
+                      //                                  paramStr += "Type: VInt";
+                      //                                } else if (param instanceof
+                      // VEnum)
+                      // {
+                      //                                  paramStr += "Type: VEnum";
+                      //                                } else if (param instanceof
+                      // VBoolean) {
+                      //                                  paramStr += "Type:
+                      // VBoolean";
+                      //                                } else if (param instanceof
+                      // VString) {
+                      //                                  paramStr += "Type: VString";
+                      //                                } else {
+                      //                                  paramStr += "Type: Unknown";
+                      //                                }
+                      //                                if (pType instanceof VDouble )
+                      //                                {
+                      //                                    paramStr += "\nType:
+                      // VDouble";
+                      //                                }
+                      paramExportView.getCurrentParam().set(paramStr);
+                      //                                param.toVType(obs);
+                      //                                VType.typeOf(obs);
+                    }
+                  });
+            });
   }
 
   private void handleLookupResult(
