@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
-import javafx.scene.control.Label;
+import javafx.scene.Cursor;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
@@ -86,7 +86,11 @@ public class ParameterViewerView extends VBox {
     //    grid.setVgap(5);
     //    grid.setPadding(new Insets(5));
 
-    var l = new Label();
+    var l = new CopiableLabel();
+    //    TODO:Would be nice to make copyable somehow
+    //    l.setEditable(false);
+    l.setCursor(Cursor.TEXT);
+
     l.textProperty().bind(currentParam);
 
     grid.add(l, 0, 0);
