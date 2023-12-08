@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
-import javafx.scene.Cursor;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
@@ -89,18 +88,18 @@ public class ParameterViewerView extends VBox {
     var l = new Copyable();
     //    TODO:Would be nice to make copyable somehow
     //    l.setEditable(false);
-    l.setCursor(Cursor.TEXT);
+
+    //   TODO:Add Border Between Labels
 
     l.textProperty().bind(currentParam);
 
     grid.add(l, 0, 0);
-    //    start.va
-    //    \\d{4}-[0-1]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\+\\d{4}
-    //    GridPane.setHgrow(start, Priority.ALWAYS);
-    final TitledPane source = new TitledPane(Messages.ParameterTabTitle, grid);
-    source.setCollapsible(false);
+    grid.add(new Copyable("PlaceHolder"), 0, 1);
+    l.getBorder().getInsets();
+    final TitledPane parametersTabView = new TitledPane(Messages.ParameterTabTitle, grid);
+    parametersTabView.setCollapsible(false);
 
-    getChildren().setAll(source);
+    getChildren().setAll(parametersTabView);
   }
 
   void configureValidators() {
