@@ -7,6 +7,7 @@ import com.windhoverlabs.yamcs.core.YamcsServer;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.logging.Logger;
@@ -104,6 +105,8 @@ public class ParameterViewerController {
   private String oldPVName = null;
 
   private @NonNull Disposable oldSub;
+
+  private HashMap<String, Disposable> oldSubs = new HashMap<String, Disposable>();
 
   private String currentPVName;
 
@@ -208,10 +211,26 @@ public class ParameterViewerController {
             while (c.next()) {
               if (c.wasUpdated()) {
                 ViewablePV item = proposalList.get(c.getFrom());
+                PV pv = null;
+                boolean newPV = false;
                 if (item.viewProperty().get()) {
-                  viewableSet.add(item.paramProperty().get());
+                  newPV = viewableSet.add(item.paramProperty().get());
+                  try {
+                    pv = PVPool.getPV(item.paramProperty().get());
+                  } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                  }
+                  if (pv != null && newPV) {
+                    oldSubs.put(
+                        item.paramProperty().get(), pvSubscription(pv, item.paramProperty().get()));
+                  }
                 } else {
                   viewableSet.remove(item.paramProperty().get());
+                  if (pv != null && !newPV) {
+                    //						pvSubscription(pv);
+                    oldSubs.get(item.paramProperty().get()).dispose();
+                  }
                 }
                 paramsView.getParameters().clear();
                 paramsView.updateParams(viewableSet);
@@ -221,46 +240,46 @@ public class ParameterViewerController {
         });
 
     tableView.setItems(proposalList);
-    tableView
-        .getSelectionModel()
-        .selectedIndexProperty()
-        .addListener(
-            (obs, oldSelection, newSelection) -> {
-              if (newSelection.intValue() == -1) {
-                return;
-              }
-              PV pv = null;
-              PV oldPV = null;
-
-              try {
-                System.out.println("newSelection-->" + newSelection);
-                System.out.println("oldSelection-->" + oldSelection);
-                currentPVName = proposalList.get((int) newSelection).paramProperty().get();
-                pv = PVPool.getPV(proposalList.get((int) newSelection).paramProperty().get());
-                if (oldPVName != null) {
-                  // TODO: Have to think about this one....
-                  oldSub.dispose();
-                  oldPV = PVPool.getPV(oldPVName);
-                  if (oldPV != null) {
-                    PVPool.releasePV(oldPV);
-                  }
-                  oldPVName = proposalList.get((int) newSelection).paramProperty().get();
-                }
-              } catch (Exception e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-              }
-
-              if (pv != null) {
-                oldSub = pvSubscription(pv);
-              }
-              //              value_flow = pv.onValueEvent()
-              //                      .throttleLatest(Preferences.update_throttle_ms,
-              // TimeUnit.MILLISECONDS)
-              //                      .subscribe(this::valueChanged);
-              //              pv.onValueEvent().
-              oldPVName = proposalList.get((int) newSelection).paramProperty().get();
-            });
+    //    tableView
+    //        .getSelectionModel()
+    //        .selectedIndexProperty()
+    //        .addListener(
+    //            (obs, oldSelection, newSelection) -> {
+    //              if (newSelection.intValue() == -1) {
+    //                return;
+    //              }
+    //              PV pv = null;
+    //              PV oldPV = null;
+    //
+    //              try {
+    //                System.out.println("newSelection-->" + newSelection);
+    //                System.out.println("oldSelection-->" + oldSelection);
+    //                currentPVName = proposalList.get((int) newSelection).paramProperty().get();
+    //                pv = PVPool.getPV(proposalList.get((int) newSelection).paramProperty().get());
+    //                if (oldPVName != null) {
+    //                  // TODO: Have to think about this one....
+    //                  oldSub.dispose();
+    //                  oldPV = PVPool.getPV(oldPVName);
+    //                  if (oldPV != null) {
+    //                    PVPool.releasePV(oldPV);
+    //                  }
+    //                  oldPVName = proposalList.get((int) newSelection).paramProperty().get();
+    //                }
+    //              } catch (Exception e1) {
+    //                // TODO Auto-generated catch block
+    //                e1.printStackTrace();
+    //              }
+    //
+    //              if (pv != null) {
+    //                oldSub = pvSubscription(pv);
+    //              }
+    //              //              value_flow = pv.onValueEvent()
+    //              //                      .throttleLatest(Preferences.update_throttle_ms,
+    //              // TimeUnit.MILLISECONDS)
+    //              //                      .subscribe(this::valueChanged);
+    //              //              pv.onValueEvent().
+    //              oldPVName = proposalList.get((int) newSelection).paramProperty().get();
+    //            });
     tableView.setEditable(true);
     gridPane.add(tableView, 0, 1);
     createParamTab();
@@ -268,7 +287,7 @@ public class ParameterViewerController {
     mainSplit.setDividerPositions(0.8);
   }
 
-  private @NonNull Disposable pvSubscription(PV pv) {
+  private @NonNull Disposable pvSubscription(PV pv, String PvName) {
     return pv.onValueEvent()
         .subscribe(
             param -> {
@@ -277,7 +296,7 @@ public class ParameterViewerController {
 
                     @Override
                     public void run() {
-                      String paramStr = "PV name:" + currentPVName;
+                      String paramStr = "PV name:" + PvName;
                       paramStr +=
                           "\nValue:"
                               + org.phoebus.ui.vtype.FormatOptionHandler.format(
@@ -368,7 +387,7 @@ public class ParameterViewerController {
                       // VDouble";
                       //                                }
                       paramsView.getCurrentParam().set(paramStr);
-                      paramsView.updateParamValue(paramStr, currentPVName);
+                      paramsView.updateParamValue(paramStr, PvName);
                       //                                param.toVType(obs);
                       //                                VType.typeOf(obs);
                     }

@@ -51,7 +51,7 @@ public class ParameterViewerView extends VBox {
 
   public void updateParams(Set<String> PVs) {
     //	  params.clear();
-//	  This impl could really use some improvements
+    //	  This impl could really use some improvements
     boolean exists = false;
     for (var pv : PVs) {
       System.out.println("updateParams***:" + pv);
