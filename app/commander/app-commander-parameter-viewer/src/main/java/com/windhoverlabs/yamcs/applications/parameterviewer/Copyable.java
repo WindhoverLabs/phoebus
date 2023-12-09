@@ -14,11 +14,13 @@ import org.controlsfx.glyphfont.GlyphFontRegistry;
 
 public class Copyable extends Label {
   public Copyable() {
+    super("");
     addCopyButton();
   }
 
   public Copyable(String text) {
     super(text);
+    //    this.textProperty().bind(null);
     addCopyButton();
   }
 

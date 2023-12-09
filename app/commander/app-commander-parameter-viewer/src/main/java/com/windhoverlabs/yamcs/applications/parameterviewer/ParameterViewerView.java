@@ -8,12 +8,12 @@
 package com.windhoverlabs.yamcs.applications.parameterviewer;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -33,6 +33,10 @@ public class ParameterViewerView extends VBox {
 
   private ObservableList<Copyable> params = FXCollections.observableArrayList();
 
+  public static final Logger log = Logger.getLogger(ParameterViewerView.class.getPackageName());
+
+  private ArrayList<String> parameters = new ArrayList<String>();
+
   public SimpleStringProperty getCurrentParam() {
     return currentParam;
   }
@@ -41,26 +45,40 @@ public class ParameterViewerView extends VBox {
     this.currentParam = currentParam;
   }
 
-  private final TextField end = new TextField();
-
-  public String getEnd() {
-    return end.getText();
-  }
-
-  void setEnd(String time) {
-    end.setText(time);
-  }
-
-  public static final Logger log = Logger.getLogger(ParameterViewerView.class.getPackageName());
-
-  private ArrayList<String> parameters = new ArrayList<String>();
-
   public ArrayList<String> getParameters() {
     return parameters;
   }
 
-  public void setParameters(ArrayList<String> parameters) {
-    this.parameters = parameters;
+  public void updateParams(Set<String> PVs) {
+    //	  params.clear();
+//	  This impl could really use some improvements
+    boolean exists = false;
+    for (var pv : PVs) {
+      System.out.println("updateParams***:" + pv);
+      for (var p : params) {
+        if (p.getText().contains(pv)) {
+          exists = true;
+          break;
+        }
+      }
+
+      if (!exists) {
+        System.out.println("Add To Params***");
+        params.add(new Copyable(pv));
+      }
+
+      exists = false;
+    }
+  }
+
+  public void updateParamValue(String value, String PV) {
+    for (var p : params) {
+      if (p.getText().contains(PV)) {
+        p.setText(value);
+        //			  ParamsTable.refresh();
+        break;
+      }
+    }
   }
 
   /** @param model Model from which to export */
@@ -68,9 +86,6 @@ public class ParameterViewerView extends VBox {
 
     ParamsTable.setItems(params);
     GridPane grid = new GridPane();
-    //    grid.setHgap(5);
-    //    grid.setVgap(5);
-    //    grid.setPadding(new Insets(5));
 
     var l = new Copyable();
 

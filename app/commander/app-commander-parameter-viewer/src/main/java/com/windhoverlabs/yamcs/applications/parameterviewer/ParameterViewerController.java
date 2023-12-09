@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -28,6 +29,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
 import org.epics.vtype.VBoolean;
 import org.epics.vtype.VInt;
 import org.epics.vtype.VNumber;
@@ -87,12 +89,12 @@ public class ParameterViewerController {
   @FXML private TextField pvTextField;
 
   private ObservableList<ViewablePV> proposalList = FXCollections.observableArrayList();
-  private LinkedHashSet<String> exportSet = new LinkedHashSet<String>();
+  private LinkedHashSet<String> viewableSet = new LinkedHashSet<String>();
 
-  private ParameterViewerView paramExportView = new ParameterViewerView();
+  private ParameterViewerView paramsView = new ParameterViewerView();
 
   public ParameterViewerView getParamExportView() {
-    return paramExportView;
+    return paramsView;
   }
 
   private Tab exportTab;
@@ -122,7 +124,7 @@ public class ParameterViewerController {
 
     pvColumn.setCellValueFactory(
         (pv) -> {
-          return new SimpleStringProperty(pv.getValue().param.get());
+          return pv.getValue().param;
         });
 
     tableView.getColumns().addAll(pvColumn, viewColumn);
@@ -178,6 +180,26 @@ public class ParameterViewerController {
           }
         });
 
+    tableView.setOnKeyPressed(
+        e -> {
+          if (e.getCode() == KeyCode.ENTER) {
+            var selection = tableView.getSelectionModel().getSelectedItem();
+            if (selection != null) {
+              selection.toggleView();
+            }
+          }
+        });
+
+    this.proposalList =
+        FXCollections.observableArrayList(
+            new Callback<ViewablePV, Observable[]>() {
+
+              @Override
+              public Observable[] call(ViewablePV param) {
+                return new Observable[] {param.viewProperty()};
+              }
+            });
+
     this.proposalList.addListener(
         new ListChangeListener<ViewablePV>() {
 
@@ -187,15 +209,12 @@ public class ParameterViewerController {
               if (c.wasUpdated()) {
                 ViewablePV item = proposalList.get(c.getFrom());
                 if (item.viewProperty().get()) {
-                  exportSet.add(item.paramProperty().get());
+                  viewableSet.add(item.paramProperty().get());
                 } else {
-                  exportSet.remove(item.paramProperty().get());
+                  viewableSet.remove(item.paramProperty().get());
                 }
-                paramExportView.getParameters().clear();
-                exportSet.forEach(
-                    p -> {
-                      paramExportView.getParameters().add(p);
-                    });
+                paramsView.getParameters().clear();
+                paramsView.updateParams(viewableSet);
               }
             }
           }
@@ -207,10 +226,15 @@ public class ParameterViewerController {
         .selectedIndexProperty()
         .addListener(
             (obs, oldSelection, newSelection) -> {
+              if (newSelection.intValue() == -1) {
+                return;
+              }
               PV pv = null;
               PV oldPV = null;
 
               try {
+                System.out.println("newSelection-->" + newSelection);
+                System.out.println("oldSelection-->" + oldSelection);
                 currentPVName = proposalList.get((int) newSelection).paramProperty().get();
                 pv = PVPool.getPV(proposalList.get((int) newSelection).paramProperty().get());
                 if (oldPVName != null) {
@@ -343,7 +367,8 @@ public class ParameterViewerController {
                       //                                    paramStr += "\nType:
                       // VDouble";
                       //                                }
-                      paramExportView.getCurrentParam().set(paramStr);
+                      paramsView.getCurrentParam().set(paramStr);
+                      paramsView.updateParamValue(paramStr, currentPVName);
                       //                                param.toVType(obs);
                       //                                VType.typeOf(obs);
                     }
@@ -363,7 +388,7 @@ public class ParameterViewerController {
       //        proposalList.add(p.getValue());
       //      }
 
-      exportSet.forEach(
+      viewableSet.forEach(
           item -> {
             proposalList.add(new ViewablePV(item, true));
           });
@@ -380,7 +405,7 @@ public class ParameterViewerController {
   }
 
   private void createParamTab() {
-    exportTab = new Tab(Messages.ParameterTabTitle, paramExportView);
+    exportTab = new Tab(Messages.ParameterTabTitle, paramsView);
     exportTab.setClosable(false);
     //    exportTab.setGraphic(Activator.getIcon("export"));
     exportTabPane.getTabs().add(exportTab);
