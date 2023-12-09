@@ -70,8 +70,6 @@ public class ParameterViewerInstance implements AppInstance {
     //    .add(ExportView.class.getResource("/text-field-red-border.css").toExternalForm());
     //
 
-    parameterExportInstanceController.getParamExportView().configureValidators();
-
     DockPane.getActiveDockPane().addTab(tab);
     tab.addCloseCheck(
         () -> {
@@ -102,9 +100,6 @@ public class ParameterViewerInstance implements AppInstance {
                   new File(Locations.user(), YAMCS_PARAMETER_EXPORT_MEMENTO_FILENAME)));
       Memento csvExporterMemento =
           csvExporterMementoTree.getChild(YAMCS_PARAMETER_EXPORT_MEMENTO_FILENAME);
-      parameterExportInstanceController
-          .getParamExportView()
-          .setStart(csvExporterMemento.getString(EXPORT_START).orElse(""));
       parameterExportInstanceController
           .getParamExportView()
           .setEnd(csvExporterMemento.getString(EXPORT_END).orElse(""));
@@ -142,8 +137,6 @@ public class ParameterViewerInstance implements AppInstance {
 
     if (isViewerValid()) {
       exportData.setString(
-          EXPORT_START, parameterExportInstanceController.getParamExportView().getStart());
-      exportData.setString(
           EXPORT_END, parameterExportInstanceController.getParamExportView().getEnd());
       saveMemento = true;
     }
@@ -157,10 +150,7 @@ public class ParameterViewerInstance implements AppInstance {
   }
 
   private boolean isViewerValid() {
-    return (!parameterExportInstanceController.getParamExportView().getStart().isBlank()
-            && !parameterExportInstanceController.getParamExportView().getStart().isEmpty())
-        && (!parameterExportInstanceController.getParamExportView().getEnd().isBlank()
-            && !parameterExportInstanceController.getParamExportView().getEnd().isEmpty());
+    return true;
   }
 
   public void raise() {

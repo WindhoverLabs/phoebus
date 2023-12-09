@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -24,21 +25,13 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import org.epics.vtype.VBoolean;
 import org.epics.vtype.VInt;
 import org.epics.vtype.VNumber;
 import org.epics.vtype.VString;
-// import org.epics.vtype.VDouble;
-// import org.epics.vtype.VEnum;
-// import org.epics.vtype.VFloat;
-// import org.epics.vtype.VInt;
-// import org.epics.vtype.VLong;
-// import org.epics.vtype.VString;
-// import org.epics.vtype.VType;
-// import org.epics.vtype.VUInt;
-// import org.epics.vtype.VULong;
 import org.phoebus.framework.autocomplete.PVProposalService;
 import org.phoebus.framework.autocomplete.Proposal;
 import org.phoebus.framework.autocomplete.ProposalService;
@@ -46,12 +39,40 @@ import org.phoebus.pv.PV;
 import org.phoebus.pv.PVPool;
 
 public class ParameterViewerController {
+  class ViewablePV {
+    private final SimpleBooleanProperty view = new SimpleBooleanProperty();
+    private final SimpleStringProperty param = new SimpleStringProperty();
+
+    ViewablePV(String pv, boolean export) {
+      this.param.set(pv);
+      this.view.set(export);
+    }
+
+    public final SimpleStringProperty paramProperty() {
+      return param;
+    }
+
+    public final SimpleBooleanProperty viewProperty() {
+      return view;
+    }
+
+    public void toggleView() {
+      if (view.get()) {
+        view.set(false);
+      } else {
+        view.set(true);
+      }
+    }
+  }
+
   public static final Logger log =
       Logger.getLogger(ParameterViewerController.class.getPackageName());
 
-  private final TableView<String> tableView = new TableView<String>();
+  private final TableView<ViewablePV> tableView = new TableView<ViewablePV>();
 
-  TableColumn<String, String> pvColumn = new TableColumn<String, String>("pv");
+  TableColumn<ViewablePV, Boolean> viewColumn = new TableColumn<ViewablePV, Boolean>("view");
+
+  TableColumn<ViewablePV, String> pvColumn = new TableColumn<ViewablePV, String>("pv");
 
   private ObservableList<CMDR_Event> data =
       FXCollections.observableArrayList(new ArrayList<CMDR_Event>());
@@ -65,7 +86,7 @@ public class ParameterViewerController {
 
   @FXML private TextField pvTextField;
 
-  private ObservableList<String> proposalList = FXCollections.observableArrayList();
+  private ObservableList<ViewablePV> proposalList = FXCollections.observableArrayList();
   private LinkedHashSet<String> exportSet = new LinkedHashSet<String>();
 
   private ParameterViewerView paramExportView = new ParameterViewerView();
@@ -90,20 +111,21 @@ public class ParameterViewerController {
 
   @FXML
   public void initialize() {
-    tableView.setId("paramExportTable");
+    tableView.setId("paramViewTable");
 
-    //    pvColumn.setCellValueFactory(new PropertyValueFactory<>("pv"));
-    //    pvColumn.setCellValueFactory(cellData -> cellData.getValue().pvProperty());
+    viewColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.5));
+    pvColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.5));
+    viewColumn.minWidthProperty().bind(tableView.widthProperty().multiply(0.5));
+    pvColumn.minWidthProperty().bind(tableView.widthProperty().multiply(0.5));
+    viewColumn.setCellValueFactory(cellData -> cellData.getValue().viewProperty());
+    viewColumn.setCellFactory(tc -> new CheckBoxTableCell<>());
 
     pvColumn.setCellValueFactory(
         (pv) -> {
-          return new SimpleStringProperty(pv.getValue().toString());
+          return new SimpleStringProperty(pv.getValue().param.get());
         });
 
-    pvColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(1));
-    pvColumn.minWidthProperty().bind(tableView.widthProperty().multiply(1));
-
-    tableView.getColumns().addAll(pvColumn);
+    tableView.getColumns().addAll(pvColumn, viewColumn);
 
     yamcsListener =
         new YamcsAware() {
@@ -155,6 +177,30 @@ public class ParameterViewerController {
             proposalService.addToHistory(text);
           }
         });
+
+    this.proposalList.addListener(
+        new ListChangeListener<ViewablePV>() {
+
+          @Override
+          public void onChanged(ListChangeListener.Change<? extends ViewablePV> c) {
+            while (c.next()) {
+              if (c.wasUpdated()) {
+                ViewablePV item = proposalList.get(c.getFrom());
+                if (item.viewProperty().get()) {
+                  exportSet.add(item.paramProperty().get());
+                } else {
+                  exportSet.remove(item.paramProperty().get());
+                }
+                paramExportView.getParameters().clear();
+                exportSet.forEach(
+                    p -> {
+                      paramExportView.getParameters().add(p);
+                    });
+              }
+            }
+          }
+        });
+
     tableView.setItems(proposalList);
     tableView
         .getSelectionModel()
@@ -165,8 +211,8 @@ public class ParameterViewerController {
               PV oldPV = null;
 
               try {
-                currentPVName = proposalList.get((int) newSelection);
-                pv = PVPool.getPV(proposalList.get((int) newSelection));
+                currentPVName = proposalList.get((int) newSelection).paramProperty().get();
+                pv = PVPool.getPV(proposalList.get((int) newSelection).paramProperty().get());
                 if (oldPVName != null) {
                   // TODO: Have to think about this one....
                   oldSub.dispose();
@@ -174,7 +220,7 @@ public class ParameterViewerController {
                   if (oldPV != null) {
                     PVPool.releasePV(oldPV);
                   }
-                  oldPVName = proposalList.get((int) newSelection);
+                  oldPVName = proposalList.get((int) newSelection).paramProperty().get();
                 }
               } catch (Exception e1) {
                 // TODO Auto-generated catch block
@@ -189,7 +235,7 @@ public class ParameterViewerController {
               // TimeUnit.MILLISECONDS)
               //                      .subscribe(this::valueChanged);
               //              pv.onValueEvent().
-              oldPVName = proposalList.get((int) newSelection);
+              oldPVName = proposalList.get((int) newSelection).paramProperty().get();
             });
     tableView.setEditable(true);
     gridPane.add(tableView, 0, 1);
@@ -313,8 +359,16 @@ public class ParameterViewerController {
       final List<Proposal> proposals) {
     synchronized (proposalList) {
       proposalList.clear();
+      //      for (Proposal p : proposals) {
+      //        proposalList.add(p.getValue());
+      //      }
+
+      exportSet.forEach(
+          item -> {
+            proposalList.add(new ViewablePV(item, true));
+          });
       for (Proposal p : proposals) {
-        proposalList.add(p.getValue());
+        proposalList.add(new ViewablePV(p.getValue(), false));
       }
     }
   }

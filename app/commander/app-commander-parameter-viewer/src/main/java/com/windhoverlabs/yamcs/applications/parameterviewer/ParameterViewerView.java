@@ -10,10 +10,13 @@ package com.windhoverlabs.yamcs.applications.parameterviewer;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.css.PseudoClass;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.phoebus.framework.persistence.Memento;
 
@@ -24,13 +27,11 @@ import org.phoebus.framework.persistence.Memento;
  */
 @SuppressWarnings("nls")
 public class ParameterViewerView extends VBox {
-  private final TextField start = new TextField();
-
-  private final String utcRegex = "d{4}-d{2}-d{2}Td{2}:d{2}:d{2}.d{3}+d{2}:d{2}";
-
-  //
+  private final ListView<Copyable> ParamsTable = new ListView<Copyable>();
 
   private SimpleStringProperty currentParam = new SimpleStringProperty("Param Value:");
+
+  private ObservableList<Copyable> params = FXCollections.observableArrayList();
 
   public SimpleStringProperty getCurrentParam() {
     return currentParam;
@@ -38,10 +39,6 @@ public class ParameterViewerView extends VBox {
 
   public void setCurrentParam(SimpleStringProperty currentParam) {
     this.currentParam = currentParam;
-  }
-
-  public String getStart() {
-    return start.getText();
   }
 
   private final TextField end = new TextField();
@@ -52,10 +49,6 @@ public class ParameterViewerView extends VBox {
 
   void setEnd(String time) {
     end.setText(time);
-  }
-
-  void setStart(String time) {
-    start.setText(time);
   }
 
   public static final Logger log = Logger.getLogger(ParameterViewerView.class.getPackageName());
@@ -72,47 +65,29 @@ public class ParameterViewerView extends VBox {
 
   /** @param model Model from which to export */
   public ParameterViewerView() {
-    // * Samples To Export *
-    // Start:  ___start_______________________________________________________________ [select]
-    // End  :  ___end_________________________________________________________________ [x] Use
-    // start/end time of Plot
-    // Source: ( ) Plot  (*) Raw Archived Data  ( ) Averaged Archived Data  __time__   ( ) Linear
-    // __linear__
 
-    configureValidators();
+    ParamsTable.setItems(params);
     GridPane grid = new GridPane();
     //    grid.setHgap(5);
     //    grid.setVgap(5);
     //    grid.setPadding(new Insets(5));
 
     var l = new Copyable();
-    //    TODO:Would be nice to make copyable somehow
-    //    l.setEditable(false);
+
+    var lContainer = new Pane(l);
 
     //   TODO:Add Border Between Labels
 
     l.textProperty().bind(currentParam);
+    l.setStyle(" -fx-border-color:black; -fx-border-width: 0.3;");
 
-    grid.add(l, 0, 0);
-    grid.add(new Copyable("PlaceHolder"), 0, 1);
-//    l.getBorder().getInsets();
-    final TitledPane parametersTabView = new TitledPane(Messages.ParameterTabTitle, grid);
+    grid.add(lContainer, 0, 0);
+    grid.add(new Pane(new Copyable("PlaceHolder")), 0, 1);
+    //    l.getBorder().getInsets();
+    final TitledPane parametersTabView = new TitledPane(Messages.ParameterTabTitle, ParamsTable);
     parametersTabView.setCollapsible(false);
 
     getChildren().setAll(parametersTabView);
-  }
-
-  void configureValidators() {
-    start
-        .textProperty()
-        .addListener(
-            event -> {
-              System.out.println("Changed:" + !start.getText().matches(utcRegex));
-              ;
-              start.pseudoClassStateChanged(
-                  PseudoClass.getPseudoClass("error"),
-                  !start.getText().isEmpty() && !start.getText().matches(utcRegex));
-            });
   }
 
   /** @param memento Where to save current state */
