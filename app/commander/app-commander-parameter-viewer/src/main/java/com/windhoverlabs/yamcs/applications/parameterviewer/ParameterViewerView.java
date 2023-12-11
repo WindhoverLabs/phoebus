@@ -100,7 +100,7 @@ public class ParameterViewerView extends VBox {
     grid.add(new Pane(new Copyable("PlaceHolder")), 0, 1);
     //    l.getBorder().getInsets();
     final TitledPane parametersTabView = new TitledPane(Messages.ParameterTabTitle, ParamsTable);
-    parametersTabView.setCollapsible(false);
+    parametersTabView.setCollapsible(true);
 
     getChildren().setAll(parametersTabView);
   }
