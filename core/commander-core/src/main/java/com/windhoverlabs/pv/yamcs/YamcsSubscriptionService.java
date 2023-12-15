@@ -1,5 +1,6 @@
 package com.windhoverlabs.pv.yamcs;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -337,7 +338,14 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
     if (!yamcsValues.isEmpty()) {
       try {
-        value = getInitialValue(yamcsValues, valueType, parameter.getAcquisitionStatus());
+        value =
+            getInitialValue(
+                yamcsValues,
+                valueType,
+                parameter.getAcquisitionStatus(),
+                Instant.ofEpochSecond(
+                    parameter.getGenerationTime().getSeconds(),
+                    parameter.getGenerationTime().getNanos()));
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -429,7 +437,10 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
    * @throws Exception on error
    */
   public static VType getInitialValue(
-      final List<String> items, Class<? extends VType> type, AcquisitionStatus status)
+      final List<String> items,
+      Class<? extends VType> type,
+      AcquisitionStatus status,
+      Instant timeStamp)
       throws Exception {
     Alarm alarm = Alarm.none();
     switch (status) {
@@ -447,65 +458,69 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
     }
 
     if (type == VDouble.class) {
-      if (items == null) return VDouble.of(0.0, alarm, Time.now(), Display.none());
+      if (items == null) return VDouble.of(0.0, alarm, Time.of(timeStamp), Display.none());
       if (items.size() == 1)
-        return VDouble.of(getInitialDoubles(items)[0], alarm, Time.now(), Display.none());
+        return VDouble.of(getInitialDoubles(items)[0], alarm, Time.of(timeStamp), Display.none());
       else throw new Exception("Expected one number, got " + items);
     }
 
     if (type == VFloat.class) {
-      if (items == null) return VFloat.of(0.0, alarm, Time.now(), Display.none());
+      if (items == null) return VFloat.of(0.0, alarm, Time.of(timeStamp), Display.none());
       if (items.size() == 1)
-        return VFloat.of(getInitialDoubles(items)[0], alarm, Time.now(), Display.none());
+        return VFloat.of(getInitialDoubles(items)[0], alarm, Time.of(timeStamp), Display.none());
       else throw new Exception("Expected one number, got " + items);
     }
 
     if (type == VLong.class) {
       if (items.size() == 1)
-        return VLong.of((long) getInitialLongs(items)[0], alarm, Time.now(), Display.none());
+        return VLong.of(
+            (long) getInitialLongs(items)[0], alarm, Time.of(timeStamp), Display.none());
       else throw new Exception("Expected one number, got " + items);
     }
 
     if (type == VULong.class) {
       if (items.size() == 1)
-        return VLong.of((long) getInitialLongs(items)[0], alarm, Time.now(), Display.none());
+        return VLong.of(
+            (long) getInitialLongs(items)[0], alarm, Time.of(timeStamp), Display.none());
       else throw new Exception("Expected one number, got " + items);
     }
 
     if (type == VInt.class) {
       if (items.size() == 1)
-        return VInt.of((long) getInitialDoubles(items)[0], alarm, Time.now(), Display.none());
+        return VInt.of(
+            (long) getInitialDoubles(items)[0], alarm, Time.of(timeStamp), Display.none());
       else throw new Exception("Expected one number, got " + items);
     }
 
     if (type == VUInt.class) {
       if (items.size() == 1)
-        return VInt.of((long) getInitialDoubles(items)[0], alarm, Time.now(), Display.none());
+        return VInt.of(
+            (long) getInitialDoubles(items)[0], alarm, Time.of(timeStamp), Display.none());
       else throw new Exception("Expected one number, got " + items);
     }
 
     if (type == VBoolean.class) {
       if (items == null || items.size() == 1)
-        return VBoolean.of(getInitialBooleans(items).get(0), alarm, Time.now());
+        return VBoolean.of(getInitialBooleans(items).get(0), alarm, Time.of(timeStamp));
       else throw new Exception("Expected one boolean, got " + items);
     }
 
     if (type == VString.class) {
       if (items == null || items.size() == 1)
-        return VString.of(getInitialStrings(items).get(0), alarm, Time.now());
+        return VString.of(getInitialStrings(items).get(0), alarm, Time.of(timeStamp));
       else throw new Exception("Expected one string, got " + items);
     }
 
     if (type == VDoubleArray.class)
       return VDoubleArray.of(
-          ArrayDouble.of(getInitialDoubles(items)), alarm, Time.now(), Display.none());
+          ArrayDouble.of(getInitialDoubles(items)), alarm, Time.of(timeStamp), Display.none());
 
     //        if (type == VBooleanArray.class)
     //            return VBooleanArray.of(ArrayBoolean.of(getInitialBooleans(items)), Alarm.none(),
-    // Time.now());
+    // Time.of(timeStamp));
 
     if (type == VStringArray.class)
-      return VStringArray.of(getInitialStrings(items), alarm, Time.now());
+      return VStringArray.of(getInitialStrings(items), alarm, Time.of(timeStamp));
 
     if (type == VEnum.class) {
       if (items.size() < 2) throw new Exception("VEnum needs at least '(index, \"Label0\")'");
@@ -519,7 +534,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
       final List<String> copy = new ArrayList<>(items.size() - 1);
       for (int i = 1; i < items.size(); ++i) copy.add(items.get(i));
       final List<String> labels = getInitialStrings(copy);
-      return VEnum.of(initial, EnumDisplay.of(labels), alarm, Time.now());
+      return VEnum.of(initial, EnumDisplay.of(labels), alarm, Time.of(timeStamp));
     }
 
     if (type == VTable.class) {
