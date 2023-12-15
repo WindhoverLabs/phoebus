@@ -311,11 +311,24 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
           valueType = VLong.class;
           break;
         }
+
       case STRING:
-      case ENUMERATED:
         {
           yamcsValues.add(parameter.getEngValue().getStringValue());
           valueType = VString.class;
+          break;
+        }
+      case ENUMERATED:
+        {
+          yamcsValues.add("0");
+          yamcsValues.add(parameter.getEngValue().getStringValue());
+          //          Enum values and labels might become relevant once Alarms are supported...
+          //          for(var i:
+          // parameter.getEngValue().getType().getDescriptorForType().getValues())
+          //          {
+          //              System.out.println( i.toString());
+          //          }
+          valueType = VEnum.class;
           break;
         }
       case TIMESTAMP:
