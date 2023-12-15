@@ -20,11 +20,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.phoebus.framework.persistence.Memento;
 
-/**
- * Panel for exporting data into files
- *
- * @author lgomez
- */
+/** @author lgomez */
 @SuppressWarnings("nls")
 public class ParameterViewerView extends VBox {
   private final ListView<Copyable> ParamsTable = new ListView<Copyable>();
@@ -54,7 +50,6 @@ public class ParameterViewerView extends VBox {
     //	  This impl could really use some improvements
     boolean exists = false;
     for (var pv : PVs) {
-      System.out.println("updateParams***:" + pv);
       for (var p : params) {
         if (p.getText().contains(pv)) {
           exists = true;
@@ -63,11 +58,24 @@ public class ParameterViewerView extends VBox {
       }
 
       if (!exists) {
-        System.out.println("Add To Params***");
         params.add(new Copyable(pv));
       }
 
       exists = false;
+    }
+  }
+
+  public void removeParam(String pvName) {
+    //	  TODO: I really need to use a HashMap, instead of using these horrid hacks.
+    int indexOfParam = -1;
+    for (var p : params) {
+      if (p.getText().contains(pvName)) {
+        indexOfParam = params.indexOf(p);
+        break;
+      }
+    }
+    if (indexOfParam != -1) {
+      params.remove(indexOfParam);
     }
   }
 

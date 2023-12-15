@@ -227,9 +227,16 @@ public class ParameterViewerController {
                   }
                 } else {
                   viewableSet.remove(item.paramProperty().get());
+                  try {
+                    pv = PVPool.getPV(item.paramProperty().get());
+                  } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                  }
                   if (pv != null && !newPV) {
                     //						pvSubscription(pv);
                     oldSubs.get(item.paramProperty().get()).dispose();
+                    paramsView.removeParam(item.paramProperty().get());
                   }
                 }
                 paramsView.getParameters().clear();
