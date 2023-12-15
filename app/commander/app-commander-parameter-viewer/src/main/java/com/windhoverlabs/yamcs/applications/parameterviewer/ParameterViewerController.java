@@ -247,46 +247,6 @@ public class ParameterViewerController {
         });
 
     tableView.setItems(proposalList);
-    //    tableView
-    //        .getSelectionModel()
-    //        .selectedIndexProperty()
-    //        .addListener(
-    //            (obs, oldSelection, newSelection) -> {
-    //              if (newSelection.intValue() == -1) {
-    //                return;
-    //              }
-    //              PV pv = null;
-    //              PV oldPV = null;
-    //
-    //              try {
-    //                System.out.println("newSelection-->" + newSelection);
-    //                System.out.println("oldSelection-->" + oldSelection);
-    //                currentPVName = proposalList.get((int) newSelection).paramProperty().get();
-    //                pv = PVPool.getPV(proposalList.get((int) newSelection).paramProperty().get());
-    //                if (oldPVName != null) {
-    //                  // TODO: Have to think about this one....
-    //                  oldSub.dispose();
-    //                  oldPV = PVPool.getPV(oldPVName);
-    //                  if (oldPV != null) {
-    //                    PVPool.releasePV(oldPV);
-    //                  }
-    //                  oldPVName = proposalList.get((int) newSelection).paramProperty().get();
-    //                }
-    //              } catch (Exception e1) {
-    //                // TODO Auto-generated catch block
-    //                e1.printStackTrace();
-    //              }
-    //
-    //              if (pv != null) {
-    //                oldSub = pvSubscription(pv);
-    //              }
-    //              //              value_flow = pv.onValueEvent()
-    //              //                      .throttleLatest(Preferences.update_throttle_ms,
-    //              // TimeUnit.MILLISECONDS)
-    //              //                      .subscribe(this::valueChanged);
-    //              //              pv.onValueEvent().
-    //              oldPVName = proposalList.get((int) newSelection).paramProperty().get();
-    //            });
     tableView.setEditable(true);
     gridPane.add(tableView, 0, 1);
     createParamTab();
@@ -332,21 +292,32 @@ public class ParameterViewerController {
                       // name:" + param.getClass());
                       if (param instanceof VInt) {
                         paramStr += "\nType:VInt";
+                        paramStr += "\nGeneration Time:" + ((VInt) param).getTime();
+                        ((VInt) param).getTime();
                       } else if (param instanceof VNumber) {
                         paramStr += "\nType:VNumber";
+                        paramStr += "\nGeneration Time:" + ((VInt) param).getTime();
+                        ((VNumber) param).getTime();
                       } else if (param instanceof VString) {
                         paramStr += "\nType:VString";
+                        paramStr += "\nGeneration Time:" + ((VInt) param).getTime();
+                        ((VString) param).getTime();
                       } else if (param instanceof VBoolean) {
                         paramStr += "\nType:VBoolean";
+                        paramStr += "\nGeneration Time:" + ((VInt) param).getTime();
+                        ((VBoolean) param).getTime();
                       }
-                      if (param instanceof com.windhoverlabs.data.yamcs.YamcsVType) {
-                        paramStr += "\nType:VNumber";
-                        System.out.println("YamcsVType***");
-                      }
-
-                      if (param instanceof com.windhoverlabs.data.yamcs.YamcsVType) {
-                        System.out.println("com.windhoverlabs.data.yamcs.YamcsVType");
-                      }
+                      //                      if (param instanceof
+                      // com.windhoverlabs.data.yamcs.YamcsVType) {
+                      //                        paramStr += "\nType:VNumber";
+                      //                        System.out.println("YamcsVType***");
+                      //                      }
+                      //
+                      //                      if (param instanceof
+                      // com.windhoverlabs.data.yamcs.YamcsVType) {
+                      //
+                      // System.out.println("com.windhoverlabs.data.yamcs.YamcsVType");
+                      //                      }
 
                       //                                TODO:Would be nice to get mdb
                       // data
@@ -395,6 +366,7 @@ public class ParameterViewerController {
                       //                                }
                       paramsView.getCurrentParam().set(paramStr);
                       paramsView.updateParamValue(paramStr, PvName);
+
                       //                                param.toVType(obs);
                       //                                VType.typeOf(obs);
                     }
