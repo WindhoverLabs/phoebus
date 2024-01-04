@@ -273,28 +273,6 @@ public class ParameterViewerController {
                           "\nValue:"
                               + org.phoebus.ui.vtype.FormatOptionHandler.format(
                                   param, org.phoebus.ui.vtype.FormatOption.DEFAULT, -1, true);
-
-                      //                                    System.out.println(
-                      //                                        "VType Format:"
-                      //                                            +
-                      // org.phoebus.ui.vtype.FormatOptionHandler.format(
-                      //                                                param,
-                      //
-                      // org.phoebus.ui.vtype.FormatOption.DEFAULT,
-                      //                                                -1,
-                      //                                                true));
-                      //                            	  paramStr += "PV Name:";
-                      //                            	  paramStr += "PV Name:" +
-                      // VType.class;
-                      //                            	  switch(param.getClass())
-                      //                            	  {
-                      //
-                      //                            	  }
-                      //                                Object pType =
-
-                      // VType.typeOf(param);
-                      //                                    System.out.println("class
-                      // name:" + param.getClass());
                       if (param instanceof VInt) {
                         paramStr += "\nType:Int";
                         paramStr += "\nGeneration Time:" + ((VInt) param).getTime();
