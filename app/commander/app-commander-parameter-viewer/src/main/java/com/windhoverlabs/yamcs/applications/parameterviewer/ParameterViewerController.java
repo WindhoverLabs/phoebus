@@ -31,6 +31,7 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
+import org.epics.vtype.TimeProvider;
 import org.epics.vtype.VBoolean;
 import org.epics.vtype.VDouble;
 import org.epics.vtype.VEnum;
@@ -276,39 +277,33 @@ public class ParameterViewerController {
                       if (param instanceof VInt) {
                         paramStr += "\nType:Int";
                         paramStr += "\nGeneration Time:" + ((VInt) param).getTime();
-                        ((VInt) param).getTime();
                       } else if (param instanceof VDouble) {
                         paramStr += "\nType:VDouble";
                         paramStr += "\nGeneration Time:" + ((VDouble) param).getTime();
-                        ((VDouble) param).getTime();
                       } else if (param instanceof VString) {
                         paramStr += "\nType:VString";
                         paramStr += "\nGeneration Time:" + ((VString) param).getTime();
-                        ((VString) param).getTime();
                       } else if (param instanceof VBoolean) {
-                        paramStr += "\nType:VBoolean";
+                        paramStr += "\nType:Boolean";
                         paramStr += "\nGeneration Time:" + ((VBoolean) param).getTime();
-                        ((VBoolean) param).getTime();
                       } else if (param instanceof VEnum) {
                         paramStr += "\nType:Enum";
                         paramStr += "\nGeneration Time:" + ((VEnum) param).getTime();
-                        ((VEnum) param).getTime();
                       } else if (param instanceof VFloat) {
                         paramStr += "\nType:Float";
                         paramStr += "\nGeneration Time:" + ((VFloat) param).getTime();
-                        ((VFloat) param).getTime();
                       } else if (param instanceof VLong) {
                         paramStr += "\nType:Long";
                         paramStr += "\nGeneration Time:" + ((VLong) param).getTime();
-                        ((VLong) param).getTime();
                       } else if (param instanceof VUInt) {
                         paramStr += "\nType:UInt";
                         paramStr += "\nGeneration Time:" + ((VUInt) param).getTime();
-                        ((VUInt) param).getTime();
                       } else if (param instanceof VULong) {
                         paramStr += "\nType:UInt";
                         paramStr += "\nGeneration Time:" + ((VULong) param).getTime();
-                        ((VULong) param).getTime();
+                      } else {
+                        paramStr += "\nType:UNKNOWN" + "(" + param.toString() + ")";
+                        paramStr += "\nGeneration Time:" + ((TimeProvider) param).getTime();
                       }
                       paramsView.getCurrentParam().set(paramStr);
                       paramsView.updateParamValue(paramStr, PvName);
