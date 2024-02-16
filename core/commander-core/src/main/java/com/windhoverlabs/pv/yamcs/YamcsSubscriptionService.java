@@ -432,6 +432,28 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
     return values;
   }
 
+  public static long[] getInitiaUnsignedlLongs(List<?> items) throws Exception {
+    final long[] values = new long[items.size()];
+    for (int i = 0; i < values.length; ++i) {
+      try {
+        final String text = Objects.toString(items.get(i));
+        //	        if (text.startsWith("0x")) {
+        //	          values[i] = Integer.parseInt(text.substring(2), 16);
+        //	          System.out.println("1********");
+        //	        } else {
+        //	          System.out.println("2***************");
+        //	          values[i] = Long.parseLong(text);
+        //	        }
+
+        values[i] = Long.parseUnsignedLong(text);
+      } catch (NumberFormatException ex) {
+        throw new Exception("Cannot parse number from " + items.get(i));
+      }
+    }
+
+    return values;
+  }
+
   /**
    * @param items Items from <code>splitInitialItems</code>
    * @return Boolean list of all items
@@ -497,7 +519,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
     if (type == VULong.class) {
       if (items.size() == 1)
         return VULong.of(
-            (long) getInitialLongs(items)[0], alarm, Time.of(timeStamp), Display.none());
+            (long) getInitiaUnsignedlLongs(items)[0], alarm, Time.of(timeStamp), Display.none());
       else throw new Exception("Expected one number, got " + items);
     }
 
