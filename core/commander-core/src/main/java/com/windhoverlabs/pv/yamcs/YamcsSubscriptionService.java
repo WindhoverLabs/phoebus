@@ -263,7 +263,8 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
     switch (parameter.getEngValue().getType()) {
       case AGGREGATE:
-        // TODO Implement
+        //    	  TODO: Need to add special VTypes such as VAggregate Type, since I don't think
+        //    	  anything like that exists in the Epics Core API.
         break;
       case ARRAY:
         // TODO Implement
@@ -363,6 +364,8 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
+    } else {
+      //    	TODO:Add special type such as VUnknown/VNULL if it does not exist in the EPICS core API
     }
 
     return value;
@@ -493,7 +496,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
     if (type == VULong.class) {
       if (items.size() == 1)
-        return VLong.of(
+        return VULong.of(
             (long) getInitialLongs(items)[0], alarm, Time.of(timeStamp), Display.none());
       else throw new Exception("Expected one number, got " + items);
     }
@@ -507,7 +510,7 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
 
     if (type == VUInt.class) {
       if (items.size() == 1)
-        return VInt.of(
+        return VUInt.of(
             (long) getInitialDoubles(items)[0], alarm, Time.of(timeStamp), Display.none());
       else throw new Exception("Expected one number, got " + items);
     }
@@ -568,10 +571,14 @@ public class YamcsSubscriptionService implements YamcsAware, ParameterSubscripti
     // TODO
     for (ParameterValue p : values) {
       try {
-        pvsById.get(p.getId()).iterator().next().updateValue(getVType(p));
+        var pv = pvsById.get(p.getId()).iterator().next();
+        if (pv != null) {
+          pv.updateValue(getVType(p));
+        }
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
+        log.warning("Error processing PV:" + p.getId());
       }
       ;
     }
