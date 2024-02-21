@@ -124,10 +124,10 @@ public class ParameterViewerController {
   public void initialize() {
     tableView.setId("paramViewTable");
 
-    viewColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.5));
-    pvColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.5));
-    viewColumn.minWidthProperty().bind(tableView.widthProperty().multiply(0.5));
-    pvColumn.minWidthProperty().bind(tableView.widthProperty().multiply(0.5));
+    viewColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.1));
+    pvColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.9));
+    viewColumn.minWidthProperty().bind(tableView.widthProperty().multiply(0.1));
+    pvColumn.minWidthProperty().bind(tableView.widthProperty().multiply(0.9));
     viewColumn.setCellValueFactory(cellData -> cellData.getValue().viewProperty());
     viewColumn.setCellFactory(tc -> new CheckBoxTableCell<>());
 
