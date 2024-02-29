@@ -86,7 +86,7 @@
 			<groupId>org.yamcs</groupId>
 			<artifactId>yamcs-api</artifactId>
 			<!--scope>test</scope-->
-			<version>5.7.9</version>
+			<version>5.8.7</version>
 		</dependency>
 	</dependencies>
 </project>
