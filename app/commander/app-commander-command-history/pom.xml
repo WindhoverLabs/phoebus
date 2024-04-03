@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.windhoverlabs</groupId>
 		<artifactId>app-commander</artifactId>
-		<version>0.3.0-SNAPSHOT</version>
+		<version>0.3.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>app-commander-command-history</artifactId>
 	<profiles>
@@ -50,7 +50,7 @@
 		<dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>commander-core</artifactId>
-			<version>0.3.0-SNAPSHOT</version>
+			<version>0.3.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
