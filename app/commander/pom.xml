@@ -176,6 +176,7 @@
 		<module>app-commander-links</module>
 		<module>app-commander-packets</module>
 		<module>app-commander-command-history</module>	
+		<module>app-commander-xtce-export</module>
 	</modules>
 	<version>0.3.1-SNAPSHOT</version>
 	<groupId>com.windhoverlabs</groupId>
