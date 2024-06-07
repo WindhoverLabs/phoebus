@@ -2,20 +2,19 @@ package com.windhoverlabs.yamcs.applications.xtce;
 
 import com.windhoverlabs.pv.yamcs.YamcsAware;
 import com.windhoverlabs.yamcs.core.CMDR_Event;
+import com.windhoverlabs.yamcs.core.CMDR_YamcsInstance;
 import com.windhoverlabs.yamcs.core.YamcsObjectManager;
-import com.windhoverlabs.yamcs.core.YamcsServer;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -82,6 +81,8 @@ public class XTCEExportController {
   private Tab exportTab;
   @FXML private Pane mainPane;
 
+  @FXML private Button exportXTCEButton;
+
   public Node getRootPane() {
     return mainPane;
   }
@@ -89,48 +90,56 @@ public class XTCEExportController {
   @FXML
   public void initialize() {
     mainPane.setId("mainExportXTCEPane");
-    ;
 
-    yamcsListener =
-        new YamcsAware() {
-          public void changeDefaultInstance() {
-            //            tableView.refresh();
-          }
-
-          public void onYamcsConnected() {
-            if (YamcsObjectManager.getDefaultInstance() != null) {
-              YamcsObjectManager.getDefaultInstance()
-                  .getEvents()
-                  .addListener(
-                      new ListChangeListener<Object>() {
-                        @Override
-                        public void onChanged(Change<?> c) {
-                          Platform.runLater(() -> {});
-                        }
-                      });
-              //              tableView.refresh();
-            }
-          }
-
-          public void onInstancesReady(YamcsServer s) {
-            if (s.getDefaultInstance() != null) {
-              s.getDefaultInstance()
-                  .getEvents()
-                  .addListener(
-                      new ListChangeListener<Object>() {
-                        @Override
-                        public void onChanged(Change<?> c) {
-                          Platform.runLater(() -> {});
-                        }
-                      });
-              //              tableView.refresh();
-            }
-          }
-        };
+    //    yamcsListener =
+    //        new YamcsAware() {
+    //          public void changeDefaultInstance() {
+    //            //            tableView.refresh();
+    //          }
+    //
+    //          public void onYamcsConnected() {
+    //            if (YamcsObjectManager.getDefaultInstance() != null) {
+    //              YamcsObjectManager.getDefaultInstance()
+    //                  .getEvents()
+    //                  .addListener(
+    //                      new ListChangeListener<Object>() {
+    //                        @Override
+    //                        public void onChanged(Change<?> c) {
+    //                          Platform.runLater(() -> {});
+    //                        }
+    //                      });
+    //              //              tableView.refresh();
+    //            }
+    //          }
+    //
+    //          public void onInstancesReady(YamcsServer s) {
+    //            if (s.getDefaultInstance() != null) {
+    //              s.getDefaultInstance()
+    //                  .getEvents()
+    //                  .addListener(
+    //                      new ListChangeListener<Object>() {
+    //                        @Override
+    //                        public void onChanged(Change<?> c) {
+    //                          Platform.runLater(() -> {});
+    //                        }
+    //                      });
+    //              //              tableView.refresh();
+    //            }
+    //          }
+    //        };
 
     YamcsObjectManager.addYamcsListener(yamcsListener);
     //    gridPane.add(tableView, 0, 1);
     createExportTab();
+
+    exportXTCEButton.setOnAction(
+        e -> {
+          CMDR_YamcsInstance instance = YamcsObjectManager.getDefaultInstance();
+
+          if (instance != null) {
+            instance.getXTCE();
+          }
+        });
     //    mainPane.setOrientation(Orientation.VERTICAL);
     //    mainPane.setDividerPositions(0.8);
   }
