@@ -23,6 +23,7 @@ public class WHBaseWidgetsService implements WidgetsService {
     return List.of(
         WHTextUpdateWidget.WIDGET_DESCRIPTOR,
         CommanderCommandActionButtonWidget.WIDGET_DESCRIPTOR,
+        CommanderVideoWidget.WIDGET_DESCRIPTOR,
         WaypointModel.WIDGET_DESCRIPTOR);
   }
 }

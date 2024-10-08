@@ -41,6 +41,11 @@ public class BaseWidgetRepresentations implements WidgetRepresentationsService {
             () -> (WidgetRepresentation) new CommanderActionButtonRepresentation()),
         entry(
             WaypointModel.WIDGET_DESCRIPTOR,
-            () -> (WidgetRepresentation) new WaypointRepresentation()));
+            () -> (WidgetRepresentation) new WaypointRepresentation())
+        //        entry(
+        //            CommanderVideoWidget.WIDGET_DESCRIPTOR,
+        //            () -> (WidgetRepresentation) new CommanderVideoRepresentation())
+
+        );
   }
 }
