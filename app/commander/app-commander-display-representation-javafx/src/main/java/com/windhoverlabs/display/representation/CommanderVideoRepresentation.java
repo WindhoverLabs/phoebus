@@ -56,10 +56,8 @@ import org.phoebus.framework.macros.MacroHandler;
 import org.phoebus.framework.macros.MacroValueProvider;
 import org.phoebus.ui.javafx.Styles;
 import org.phoebus.ui.javafx.TextUtils;
-// import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
-// import uk.co.caprica.vlcj.player.base.MediaPlayer;
-// import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
-// import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 /**
  * Creates JavaFX item for model widget
@@ -134,16 +132,16 @@ public class CommanderVideoRepresentation
   private final WidgetPropertyListener<Boolean> enablementChangedListener = this::enablementChanged;
   private final UntypedWidgetPropertyListener pvsListener = this::pvsChanged;
 
-  //  private MediaPlayerFactory mediaPlayerFactory;
-  //
-  //  private EmbeddedMediaPlayer embeddedMediaPlayer;
-  //
-  //  private ImageView videoImageView;
+  private MediaPlayerFactory mediaPlayerFactory;
+
+  private EmbeddedMediaPlayer embeddedMediaPlayer;
+
+  private ImageView videoImageView;
 
   private void meidiaPlayerInit() {
 
-    //    System.out.println("meidiaPlayerInit");
-    //    this.mediaPlayerFactory = new MediaPlayerFactory();
+        System.out.println("meidiaPlayerInit");
+        this.mediaPlayerFactory = new MediaPlayerFactory();
     //    this.embeddedMediaPlayer = mediaPlayerFactory.mediaPlayers().newEmbeddedMediaPlayer();
     //    this.embeddedMediaPlayer
     //        .events()
@@ -173,7 +171,7 @@ public class CommanderVideoRepresentation
     updateColors();
     base = makeBaseButton();
 
-    meidiaPlayerInit();
+        meidiaPlayerInit();
 
     pane = new Pane();
     pane.getChildren().add(base);
