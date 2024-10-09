@@ -1,0 +1,178 @@
+package com.windhoverlabs.yamcs.applications.xtce;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import org.phoebus.framework.nls.NLS;
+import org.phoebus.framework.persistence.Memento;
+import org.phoebus.framework.persistence.MementoTree;
+import org.phoebus.framework.persistence.XMLMementoTree;
+import org.phoebus.framework.spi.AppDescriptor;
+import org.phoebus.framework.spi.AppInstance;
+import org.phoebus.framework.workbench.Locations;
+import org.phoebus.ui.docking.DockItem;
+import org.phoebus.ui.docking.DockPane;
+
+/** @author lgomez */
+@SuppressWarnings("nls")
+public class XTCEExportViewerInstance implements AppInstance {
+  private static final String YAMCS_PARAMETER_EXPORT_MEMENTO_FILENAME =
+      "yamcs_parameter_export_memento";
+
+  /** Logger for all file browser code */
+  public static final Logger logger =
+      Logger.getLogger(XTCEExportViewerInstance.class.getPackageName());
+
+  /** Memento tags */
+  private static final String EXPORT_START = "yamcs_export_start", EXPORT_END = "yamcs_export_end";
+
+  static XTCEExportViewerInstance INSTANCE;
+
+  private FXMLLoader loader;
+
+  private XTCEExportController parameterExportInstanceController = null;
+
+  private final AppDescriptor app;
+
+  private DockItem tab = null;
+
+  public XTCEExportViewerInstance(AppDescriptor app) {
+    this.app = app;
+    Node content = null;
+    ResourceBundle resourceBundle = NLS.getMessages(Messages.class);
+    FXMLLoader loader = new FXMLLoader();
+    loader.setResources(resourceBundle);
+    loader.setLocation(this.getClass().getResource("ExportView.fxml"));
+
+    try {
+      content = loader.load();
+      parameterExportInstanceController = loader.getController();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    tab = new DockItem(this, content);
+
+    //    start
+    //    .getScene()
+    //    .getStylesheets()
+    //    .add(ExportView.class.getResource("/text-field-red-border.css").toExternalForm());
+    //
+
+    parameterExportInstanceController.getParamExportView().configureValidators();
+
+    DockPane.getActiveDockPane().addTab(tab);
+    tab.addCloseCheck(
+        () -> {
+          INSTANCE = null;
+          parameterExportInstanceController.unInit();
+          return CompletableFuture.completedFuture(true);
+        });
+
+    //    tab.addClosedNotification(
+    //        () -> {
+    //          INSTANCE = null;
+    //          parameterExportInstanceController.unInit();
+    //        });
+  }
+
+  @Override
+  public AppDescriptor getAppDescriptor() {
+    return app;
+  }
+
+  @Override
+  public void restore(final Memento memento) {
+
+    try {
+      final XMLMementoTree csvExporterMementoTree =
+          XMLMementoTree.read(
+              new FileInputStream(
+                  new File(Locations.user(), YAMCS_PARAMETER_EXPORT_MEMENTO_FILENAME)));
+      Memento csvExporterMemento =
+          csvExporterMementoTree.getChild(YAMCS_PARAMETER_EXPORT_MEMENTO_FILENAME);
+      parameterExportInstanceController
+          .getParamExportView()
+          .setStart(csvExporterMemento.getString(EXPORT_START).orElse(""));
+      parameterExportInstanceController
+          .getParamExportView()
+          .setEnd(csvExporterMemento.getString(EXPORT_END).orElse(""));
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  @Override
+  public void save(final Memento memento) {
+    // TODO:Implement memento pattern
+    try {
+    } catch (Exception e) {
+      logger.warning("Error saving Events    connections...:" + e.toString());
+    }
+    logger.info("Saving Yamcs Events...");
+
+    // Save yamcs connections
+    try {
+      createParameterExportMemento();
+    } catch (Exception ex) {
+      logger.log(Level.WARNING, "Error writing saved state to " + "", ex);
+    }
+  }
+
+  private void createParameterExportMemento() throws Exception, FileNotFoundException {
+
+    logger.info("Saving CSV Exporter state...");
+    final XMLMementoTree csvExporterMemento = XMLMementoTree.create();
+    MementoTree exportData =
+        csvExporterMemento.createChild(YAMCS_PARAMETER_EXPORT_MEMENTO_FILENAME);
+
+    boolean saveMemento = false;
+
+    if (isViewerValid()) {
+      exportData.setString(
+          EXPORT_START, parameterExportInstanceController.getParamExportView().getStart());
+      exportData.setString(
+          EXPORT_END, parameterExportInstanceController.getParamExportView().getEnd());
+      saveMemento = true;
+    }
+    if (saveMemento) {
+      csvExporterMemento.write(
+          new FileOutputStream(
+              new File(Locations.user(), YAMCS_PARAMETER_EXPORT_MEMENTO_FILENAME)));
+    } else {
+      logger.info("Ignoring invalid fields. Only the last valid state will be saved.");
+    }
+  }
+
+  private boolean isViewerValid() {
+    return (!parameterExportInstanceController.getParamExportView().getStart().isBlank()
+            && !parameterExportInstanceController.getParamExportView().getStart().isEmpty())
+        && (!parameterExportInstanceController.getParamExportView().getEnd().isBlank()
+            && !parameterExportInstanceController.getParamExportView().getEnd().isEmpty());
+  }
+
+  public void raise() {
+    tab.select();
+  }
+
+  public XTCEExportController getController() {
+    return parameterExportInstanceController;
+  }
+
+  private static ObservableList<String> restoreEvents() {
+    // TODO:Implement memento pattern
+    return FXCollections.observableArrayList(new ArrayList<String>());
+  }
+}

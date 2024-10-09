@@ -65,7 +65,20 @@ public class EventViewerController {
           return new SimpleStringProperty(event.getValue().getMessage());
         });
 
-    messageCol.setCellFactory(
+    generationTimeCol.setCellValueFactory(
+        (event) -> {
+          return new SimpleStringProperty(event.getValue().getGenerationTime().toString());
+        });
+    receptionTimeCol.setCellValueFactory(
+        (event) -> {
+          return new SimpleStringProperty(event.getValue().getReceptionTime().toString());
+        });
+    severityCol.setCellValueFactory(
+        (event) -> {
+          return new SimpleStringProperty(event.getValue().getSeverity().toString());
+        });
+
+    severityCol.setCellFactory(
         column -> {
           return new TableCell<CMDR_Event, String>() {
             @Override
@@ -77,8 +90,9 @@ public class EventViewerController {
                 setStyle("");
               } else { // If the cell is not empty
                 // We get here all the info of the event of this row
-                CMDR_Event event = getTableView().getItems().get(getIndex());
-                switch (event.getSeverity()) {
+
+                this.getStyleClass().clear();
+                switch (EventSeverity.valueOf(item)) {
                   case CRITICAL:
                     this.getStyleClass().add("critical");
                     break;
@@ -108,19 +122,6 @@ public class EventViewerController {
               }
             }
           };
-        });
-
-    generationTimeCol.setCellValueFactory(
-        (event) -> {
-          return new SimpleStringProperty(event.getValue().getGenerationTime().toString());
-        });
-    receptionTimeCol.setCellValueFactory(
-        (event) -> {
-          return new SimpleStringProperty(event.getValue().getReceptionTime().toString());
-        });
-    severityCol.setCellValueFactory(
-        (event) -> {
-          return new SimpleStringProperty(event.getValue().getSeverity().toString());
         });
     typeCol.setCellValueFactory(
         (event) -> {

@@ -1,2 +1,5 @@
 build:
-	 mvn -DskipTests   install -T6
+	 mvn -DskipTests clean   install -T6
+dev-build:
+	mvn -Dfmt.skip -DskipTests  install -T6
+

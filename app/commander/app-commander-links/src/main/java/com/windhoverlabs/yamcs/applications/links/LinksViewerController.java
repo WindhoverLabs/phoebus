@@ -6,9 +6,6 @@ import com.windhoverlabs.yamcs.core.YamcsObjectManager;
 import com.windhoverlabs.yamcs.core.YamcsServer;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -37,22 +34,10 @@ public class LinksViewerController {
       new TableColumn<org.yamcs.protobuf.links.LinkInfo, String>("In");
   TableColumn<org.yamcs.protobuf.links.LinkInfo, String> outCount =
       new TableColumn<org.yamcs.protobuf.links.LinkInfo, String>("Out");
-  TableColumn<CMDR_Event, String> annotationCol = new TableColumn<CMDR_Event, String>();
-  TableColumn<CMDR_Event, String> generationTimeCol =
-      new TableColumn<CMDR_Event, String>("Generation Time");
-  TableColumn<CMDR_Event, String> receptionTimeCol =
-      new TableColumn<CMDR_Event, String>("Reception Time");
   TableColumn<org.yamcs.protobuf.links.LinkInfo, String> nameCol =
       new TableColumn<org.yamcs.protobuf.links.LinkInfo, String>("Name");
-  TableColumn<CMDR_Event, String> typeCol = new TableColumn<CMDR_Event, String>("Type");
-  TableColumn<CMDR_Event, String> sourceCol = new TableColumn<CMDR_Event, String>("Source");
-  TableColumn<CMDR_Event, String> instanceCol = new TableColumn<CMDR_Event, String>("Instance");
-
-  private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-  private ObservableList<CMDR_Event> data =
-      FXCollections.observableArrayList(new ArrayList<CMDR_Event>());
-  private static final int dataSize = 10_023;
+  TableColumn<org.yamcs.protobuf.links.LinkInfo, String> detailCol =
+      new TableColumn<org.yamcs.protobuf.links.LinkInfo, String>("Details");
 
   // TODO:Eventually these will be in spinner nodes. These are the event filters.
   private String currentServer = "sitl";
@@ -100,34 +85,7 @@ public class LinksViewerController {
               if (item == null || empty) { // If the cell is empty
                 setText(null);
                 setStyle("");
-              } else { // If the cell is not empty
-                // We get here all the info of the event of this row
-                //                CMDR_Event event = getTableView().getItems().get(getIndex());
-                //                switch (event.getSeverity()) {
-                //                  case CRITICAL:
-                //                    this.getStyleClass().add("critical");
-                //                    break;
-                //                  case DISTRESS:
-                //                    this.getStyleClass().add("distress");
-                //                    break;
-                //                  case ERROR:
-                //                    this.getStyleClass().add("error");
-                //                    break;
-                //                  case INFO:
-                //                    this.getStyleClass().add("info");
-                //                    break;
-                //                  case SEVERE:
-                //                    this.getStyleClass().add("severe");
-                //                    break;
-                //                  case WARNING:
-                //                    this.getStyleClass().add("warning");
-                //                    break;
-                //                  case WATCH:
-                //                    this.getStyleClass().add("watch");
-                //                    break;
-                //                  default:
-                //                    setTextFill(Color.BLACK);
-                //                    break;
+              } else {
                 //                }
                 setText(item); // Put the String data in the cell
                 Circle circle = new Circle();
@@ -168,7 +126,34 @@ public class LinksViewerController {
           }
         });
 
-    tableView.getColumns().addAll(nameCol, inCount, outCount);
+    detailCol.setCellValueFactory(
+        (link) -> {
+          SimpleStyleableStringProperty s = new javafx.css.SimpleStyleableStringProperty(null);
+          if (link != null && link.getValue() != null) {
+            s.set(link.getValue().getDetailedStatus());
+          }
+          return s;
+        });
+
+    detailCol.setCellFactory(
+        column -> {
+          return new TableCell<org.yamcs.protobuf.links.LinkInfo, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+              super.updateItem(item, empty); // This is mandatory
+              setTextFill(Color.BLACK);
+              if (item == null || empty) { // If the cell is empty
+                setText(null);
+                setStyle("");
+              } else {
+                //                }
+                setText(item); // Put the String data in the cell
+              }
+            }
+          };
+        });
+
+    tableView.getColumns().addAll(nameCol, inCount, outCount, detailCol);
 
     yamcsListener =
         new YamcsAware() {
