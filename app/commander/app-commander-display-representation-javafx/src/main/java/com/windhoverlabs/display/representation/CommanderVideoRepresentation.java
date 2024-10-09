@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import javafx.application.Platform;
-import javafx.geometry.Dimension2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -36,8 +35,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.shape.StrokeType;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
 import org.csstudio.display.builder.model.DirtyFlag;
 import org.csstudio.display.builder.model.UntypedWidgetPropertyListener;
 import org.csstudio.display.builder.model.WidgetProperty;
@@ -57,13 +54,11 @@ import org.csstudio.display.builder.representation.javafx.widgets.TooltipSupport
 import org.phoebus.framework.macros.MacroHandler;
 import org.phoebus.framework.macros.MacroValueProvider;
 import org.phoebus.ui.javafx.Styles;
-import org.phoebus.ui.javafx.TextUtils;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
-import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
-
 import uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurface;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 /**
  * Creates JavaFX item for model widget
@@ -146,68 +141,63 @@ public class CommanderVideoRepresentation
 
   private Node meidiaPlayerInit() {
 
-        System.out.println("meidiaPlayerInit**");
-        this.mediaPlayerFactory = new MediaPlayerFactory();
-        this.embeddedMediaPlayer = mediaPlayerFactory.mediaPlayers().newEmbeddedMediaPlayer();
-        this.embeddedMediaPlayer
-            .events()
-            .addMediaPlayerEventListener(
-                new MediaPlayerEventAdapter() {
-                  @Override
-                  public void playing(MediaPlayer mediaPlayer) {}
-    
-                  @Override
-                  public void paused(MediaPlayer mediaPlayer) {}
-    
-                  @Override
-                  public void stopped(MediaPlayer mediaPlayer) {}
-    
-                  @Override
-                  public void timeChanged(MediaPlayer mediaPlayer, long newTime) {}
-                });
-        
-//        ------------------------------
-        this.videoImageView = new ImageView();
-        this.videoImageView.setPreserveRatio(true);
+    System.out.println("meidiaPlayerInit**");
+    this.mediaPlayerFactory = new MediaPlayerFactory();
+    this.embeddedMediaPlayer = mediaPlayerFactory.mediaPlayers().newEmbeddedMediaPlayer();
+    this.embeddedMediaPlayer
+        .events()
+        .addMediaPlayerEventListener(
+            new MediaPlayerEventAdapter() {
+              @Override
+              public void playing(MediaPlayer mediaPlayer) {}
 
-        embeddedMediaPlayer.videoSurface().set(new ImageViewVideoSurface(this.videoImageView));
-        
-//        ---------------------------------
-        
-        
-        
-        
-        BorderPane root = new BorderPane();
-        root.setStyle("-fx-background-color: black;");
-        
-        root.setStyle("-fx-background-color: black;"
-        		+ "-fx-border-width: 2px;");
+              @Override
+              public void paused(MediaPlayer mediaPlayer) {}
 
-        videoImageView.fitWidthProperty().bind(root.widthProperty());
-        videoImageView.fitHeightProperty().bind(root.heightProperty());
-        
-        root.setPrefSize(400, 300);
+              @Override
+              public void stopped(MediaPlayer mediaPlayer) {}
 
-        root.widthProperty().addListener((observableValue, oldValue, newValue) -> {
-            // If you need to know about resizes
-        });
+              @Override
+              public void timeChanged(MediaPlayer mediaPlayer, long newTime) {}
+            });
 
-        root.heightProperty().addListener((observableValue, oldValue, newValue) -> {
-            // If you need to know about resizes
-        });
+    //        ------------------------------
+    this.videoImageView = new ImageView();
+    this.videoImageView.setPreserveRatio(true);
 
-        root.setCenter(videoImageView);
-        
-        
-        
-        embeddedMediaPlayer.media().play("tcp://172.16.100.208:8080");
+    embeddedMediaPlayer.videoSurface().set(new ImageViewVideoSurface(this.videoImageView));
 
-        embeddedMediaPlayer.controls().setPosition(0.4f);
-        
-        
-        return root;
-        
-        
+    //        ---------------------------------
+
+    BorderPane root = new BorderPane();
+    root.setStyle("-fx-background-color: black;");
+
+    root.setStyle("-fx-background-color: black;" + "-fx-border-width: 2px;");
+
+    videoImageView.fitWidthProperty().bind(root.widthProperty());
+    videoImageView.fitHeightProperty().bind(root.heightProperty());
+
+    root.setPrefSize(400, 300);
+
+    root.widthProperty()
+        .addListener(
+            (observableValue, oldValue, newValue) -> {
+              // If you need to know about resizes
+            });
+
+    root.heightProperty()
+        .addListener(
+            (observableValue, oldValue, newValue) -> {
+              // If you need to know about resizes
+            });
+
+    root.setCenter(videoImageView);
+
+    embeddedMediaPlayer.media().play("tcp://172.16.100.208:8080");
+
+    embeddedMediaPlayer.controls().setPosition(0.4f);
+
+    return root;
   }
 
   @Override
@@ -218,9 +208,9 @@ public class CommanderVideoRepresentation
   @Override
   public Pane createJFXNode() throws Exception {
     updateColors();
-//    base = makeBaseButton();
+    //    base = makeBaseButton();
 
-   base = meidiaPlayerInit();
+    base = meidiaPlayerInit();
 
     pane = new Pane();
     pane.getChildren().add(base);
@@ -230,28 +220,30 @@ public class CommanderVideoRepresentation
 
   /** @param event Mouse event to check for target modifier keys */
   private void checkModifiers(final MouseEvent event) {
-//    if (!enabled) {
-//      // Do not let the user click a disabled button
-//      event.consume();
-//      base.disarm();
-//      return;
-//    }
-//
-//    // 'control' ('command' on Mac OS X)
-//    if (event.isShortcutDown()) target_modifier = Optional.of(OpenDisplayActionInfo.Target.TAB);
-//    else if (event.isShiftDown())
-//      target_modifier = Optional.of(OpenDisplayActionInfo.Target.WINDOW);
-//    else target_modifier = Optional.empty();
-//
-//    // At least on Linux, a Control-click or Shift-click
-//    // will not 'arm' the button, so the click is basically ignored.
-//    // Force the 'arm', so user can Control-click or Shift-click to
-//    // invoke the button
-//    if (target_modifier.isPresent()) {
-//      logger.log(
-//          Level.FINE, "{0} modifier: {1}", new Object[] {model_widget, target_modifier.get()});
-//      base.arm();
-//    }
+    //    if (!enabled) {
+    //      // Do not let the user click a disabled button
+    //      event.consume();
+    //      base.disarm();
+    //      return;
+    //    }
+    //
+    //    // 'control' ('command' on Mac OS X)
+    //    if (event.isShortcutDown()) target_modifier =
+    // Optional.of(OpenDisplayActionInfo.Target.TAB);
+    //    else if (event.isShiftDown())
+    //      target_modifier = Optional.of(OpenDisplayActionInfo.Target.WINDOW);
+    //    else target_modifier = Optional.empty();
+    //
+    //    // At least on Linux, a Control-click or Shift-click
+    //    // will not 'arm' the button, so the click is basically ignored.
+    //    // Force the 'arm', so user can Control-click or Shift-click to
+    //    // invoke the button
+    //    if (target_modifier.isPresent()) {
+    //      logger.log(
+    //          Level.FINE, "{0} modifier: {1}", new Object[] {model_widget,
+    // target_modifier.get()});
+    //      base.arm();
+    //    }
   }
 
   //    private int calls = 0;
@@ -371,9 +363,11 @@ public class CommanderVideoRepresentation
    */
   private void sendCommand() {
     System.out.println("sendCommand");
-//    System.out.println("command name:" + model_widget.propCommand().getValue());
-//    System.out.println("pv name :" + model_widget.propPvs().getValue().get(0).pv().getValue());
-//    System.out.println("pv value:" + model_widget.propPvs().getValue().get(0).value().getValue());
+    //    System.out.println("command name:" + model_widget.propCommand().getValue());
+    //    System.out.println("pv name :" +
+    // model_widget.propPvs().getValue().get(0).pv().getValue());
+    //    System.out.println("pv value:" +
+    // model_widget.propPvs().getValue().get(0).value().getValue());
   }
 
   /** @return Should 'label' show the PV's current value? */
@@ -561,23 +555,24 @@ public class CommanderVideoRepresentation
   public void updateChanges() {
     super.updateChanges();
     if (dirty_actionls.checkAndClear()) {
-//      base = meidiaPlayerInit();
-//      jfx_node.getChildren().setAll(base);
+      //      base = meidiaPlayerInit();
+      //      jfx_node.getChildren().setAll(base);
     }
     if (dirty_representation.checkAndClear()) {
       button_text = makeButtonText();
-//      base.setText(button_text);
-//      base.setTextFill(foreground);
-//      base.setFont(JFXUtil.convert(model_widget.propFont().getValue()));
+      //      base.setText(button_text);
+      //      base.setTextFill(foreground);
+      //      base.setFont(JFXUtil.convert(model_widget.propFont().getValue()));
 
       // If widget is not wide enough to show the label, hide menu button 'arrow'.
-//      if (base instanceof MenuButton) {
-//        // Assume that desired gap and arrow occupy similar space as "__VV_".
-//        // Check if the text exceeds the width.
-//        final Dimension2D size = TextUtils.computeTextSize(base.getFont(), button_text + "__VV_");
-//        final boolean hide = size.getWidth() >= model_widget.propWidth().getValue();
-//        Styles.update(base, "hide_arrow", hide);
-//      }
+      //      if (base instanceof MenuButton) {
+      //        // Assume that desired gap and arrow occupy similar space as "__VV_".
+      //        // Check if the text exceeds the width.
+      //        final Dimension2D size = TextUtils.computeTextSize(base.getFont(), button_text +
+      // "__VV_");
+      //        final boolean hide = size.getWidth() >= model_widget.propWidth().getValue();
+      //        Styles.update(base, "hide_arrow", hide);
+      //      }
 
       final RotationStep rotation = model_widget.propRotationStep().getValue();
       final int width = model_widget.propWidth().getValue(),
@@ -589,33 +584,33 @@ public class CommanderVideoRepresentation
       // it will still remain sensitive to mouse clicks in the
       // original, un-transformed rectangle. Unclear why.
       // Applying the transformation to the Pane does not exhibit this problem.
-//      switch (rotation) {
-//        case NONE:
-//          base.setPrefSize(width, height);
-//          if (was_ever_transformed) jfx_node.getTransforms().clear();
-//          break;
-//        case NINETY:
-//          base.setPrefSize(height, width);
-//          jfx_node
-//              .getTransforms()
-//              .setAll(new Rotate(-rotation.getAngle()), new Translate(-height, 0));
-//          was_ever_transformed = true;
-//          break;
-//        case ONEEIGHTY:
-//          base.setPrefSize(width, height);
-//          jfx_node
-//              .getTransforms()
-//              .setAll(new Rotate(-rotation.getAngle()), new Translate(-width, -height));
-//          was_ever_transformed = true;
-//          break;
-//        case MINUS_NINETY:
-//          base.setPrefSize(height, width);
-//          jfx_node
-//              .getTransforms()
-//              .setAll(new Rotate(-rotation.getAngle()), new Translate(0, -width));
-//          was_ever_transformed = true;
-//          break;
-//     }
+      //      switch (rotation) {
+      //        case NONE:
+      //          base.setPrefSize(width, height);
+      //          if (was_ever_transformed) jfx_node.getTransforms().clear();
+      //          break;
+      //        case NINETY:
+      //          base.setPrefSize(height, width);
+      //          jfx_node
+      //              .getTransforms()
+      //              .setAll(new Rotate(-rotation.getAngle()), new Translate(-height, 0));
+      //          was_ever_transformed = true;
+      //          break;
+      //        case ONEEIGHTY:
+      //          base.setPrefSize(width, height);
+      //          jfx_node
+      //              .getTransforms()
+      //              .setAll(new Rotate(-rotation.getAngle()), new Translate(-width, -height));
+      //          was_ever_transformed = true;
+      //          break;
+      //        case MINUS_NINETY:
+      //          base.setPrefSize(height, width);
+      //          jfx_node
+      //              .getTransforms()
+      //              .setAll(new Rotate(-rotation.getAngle()), new Translate(0, -width));
+      //          was_ever_transformed = true;
+      //          break;
+      //     }
     }
     if (dirty_enablement.checkAndClear()) {
       // Don't disable the widget, because that would also remove the
