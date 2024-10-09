@@ -25,53 +25,65 @@
 		<dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>app-commander-connections</artifactId>
-			<version>0.2.6-SNAPSHOT</version>
+			<version>0.3.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>app-commander-events</artifactId>
-			<version>0.2.6-SNAPSHOT</version>
+			<version>0.3.1-SNAPSHOT</version>
 		</dependency>
 				<dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>app-commander-links</artifactId>
-			<version>0.2.6-SNAPSHOT</version>
+			<version>0.3.1-SNAPSHOT</version>
 		</dependency>
 	    <dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>app-commander-packets</artifactId>
-			<version>0.2.6-SNAPSHOT</version>
+			<version>0.3.1-SNAPSHOT</version>
 		</dependency>
+           <dependency>
+                        <groupId>com.windhoverlabs</groupId>
+                        <artifactId>app-commander-parameter-viewer</artifactId>
+                        <version>0.3.1-SNAPSHOT</version>
+                </dependency>
+
 	    <dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>app-commander-command-history</artifactId>
-			<version>0.2.6-SNAPSHOT</version>
+			<version>0.3.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>app-commander-command-options</artifactId>
-			<version>0.2.6-SNAPSHOT</version>
+			<version>0.3.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.windhoverlabs</groupId>
 			<artifactId>commander-core</artifactId>
-			<version>0.2.6-SNAPSHOT</version>
+			<version>0.3.1-SNAPSHOT</version>
 		</dependency>
 		 <dependency>
       <groupId>com.windhoverlabs</groupId>
       <artifactId>app-commander-display-model</artifactId>
-      <version>0.2.6-SNAPSHOT</version>
+      <version>0.3.1-SNAPSHOT</version>
     	</dependency>
     			 <dependency>
       <groupId>com.windhoverlabs</groupId>
       <artifactId>app-commander-display-representation-javafx</artifactId>
-      <version>0.2.6-SNAPSHOT</version>
+      <version>0.3.1-SNAPSHOT</version>
     	</dependency>
     	
     	    			 <dependency>
       <groupId>com.windhoverlabs</groupId>
       <artifactId>app-commander-display-runtime</artifactId>
-      <version>0.2.6-SNAPSHOT</version>
+      <version>0.3.1-SNAPSHOT</version>
+    	</dependency>
+    	
+    	    	    			 <dependency>
+      <groupId>com.windhoverlabs</groupId>
+      <artifactId>app-commander-xtce-export</artifactId>
+      <version>0.3.1-SNAPSHOT</version>
     	</dependency>
 		<dependency>
 			<groupId>org.phoebus</groupId>

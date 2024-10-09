@@ -3,6 +3,10 @@ package com.windhoverlabs.yamcs.core;
 import com.windhoverlabs.pv.yamcs.YamcsPV;
 import com.windhoverlabs.pv.yamcs.YamcsSubscriptionService;
 import com.windhoverlabs.yamcs.core.YamcsWebSocketClient.TmStatistics;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -614,5 +618,41 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
 
   public boolean isLinkActive(String linkName) {
     return Duration.between(Instant.now(), LastUpdateLinks.get(linkName)).toMillis() < 1000;
+  }
+
+  public String getXTCE() {
+    String xtce = "";
+
+    try {
+      String url = "http://localhost:8090/api/mdb/fsw/space-systems//instruments:exportXTCE";
+      URL obj = new URL(url);
+      HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+      con.setRequestMethod("GET");
+
+      int responseCode = con.getResponseCode();
+      System.out.println("Response Code: " + responseCode);
+
+      if (responseCode == HttpURLConnection.HTTP_OK) { // success
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+          response.append(inputLine);
+        }
+        in.close();
+
+        // print result
+        System.out.println(response.toString());
+
+        xtce = response.toString();
+      } else {
+        System.out.println("GET request not worked");
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return xtce;
   }
 }

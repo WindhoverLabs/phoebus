@@ -1,0 +1,53 @@
+diff --git a/app/commander/app-commander-parameter-export/src/main/java/com/windhoverlabs/yamcs/applications/parameter/ExportView.java b/app/commander/app-commander-parameter-export/src/main/java/com/windhoverlabs/yamcs/applications/parameter/ExportView.java
+index 7d1f1596a..c572ed574 100644
+--- a/app/commander/app-commander-parameter-export/src/main/java/com/windhoverlabs/yamcs/applications/parameter/ExportView.java
++++ b/app/commander/app-commander-parameter-export/src/main/java/com/windhoverlabs/yamcs/applications/parameter/ExportView.java
+@@ -40,7 +40,6 @@ import org.csstudio.trends.databrowser3.export.Source;
+ import org.csstudio.trends.databrowser3.model.Model;
+ import org.csstudio.trends.databrowser3.ui.TimeRangePopover;
+ import org.phoebus.archive.vtype.Style;
+-import org.phoebus.framework.jobs.JobManager;
+ import org.phoebus.framework.persistence.Memento;
+ import org.phoebus.ui.dialog.DialogHelper;
+ import org.phoebus.ui.dialog.ExceptionDetailsErrorDialog;
+@@ -117,6 +116,8 @@ public class ExportView extends VBox {
+ 
+   private ArrayList<String> parameters = new ArrayList<String>();
+ 
++  private Thread javaJob;
++
+   public ArrayList<String> getParameters() {
+     return parameters;
+   }
+@@ -395,7 +396,7 @@ public class ExportView extends VBox {
+       }
+ 
+       // Construct appropriate export job
+-      final ExportCSVJob export;
++      final ExportCSVJavaJob export;
+       //      TimeInterval start_end = range.toAbsoluteInterval();
+       //      if (type_matlab.isSelected()) { // Matlab file export
+       //        if (filename.endsWith(".m"))
+@@ -455,7 +456,7 @@ public class ExportView extends VBox {
+         //                      precision);
+ 
+         export =
+-            new ExportCSVJob(
++            new ExportCSVJavaJob(
+                 Instant.parse(start.getText()),
+                 Instant.parse(end.getText()),
+                 filename,
+@@ -495,9 +496,11 @@ public class ExportView extends VBox {
+         //                          filename,
+         //                          this::handleError,
+         //                          unixTimeStamp.get());
++        javaJob = new Thread(export);
++        javaJob.setName("Custom_Java_Job");
++        javaJob.start();
+       }
+-
+-      JobManager.schedule(filename, export);
++      //      JobManager.schedule(filename, export);
+       //      export.
+     } catch (Exception ex) {
+       handleError(ex);
