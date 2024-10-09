@@ -101,19 +101,6 @@ public class ExportView extends VBox {
   private Model model = new org.csstudio.trends.databrowser3.model.Model();
   public static final Logger log = Logger.getLogger(ExportView.class.getPackageName());
 
-  //  UnaryOperator<TextFormatter.Change> numberValidationFormatter = change -> {
-  //	    if(change.getText().matches("\\d+")){
-  //	        return change; //if change is a number
-  //	    } else {
-  //	        change.setText(""); //else make no change
-  //	        change.setRange(    //don't remove any selected text either.
-  //	                change.getRangeStart(),
-  //	                change.getRangeStart()
-  //	        );
-  //	        return change;
-  //	    }
-  //	};
-
   private ArrayList<String> parameters = new ArrayList<String>();
 
   public ArrayList<String> getParameters() {
