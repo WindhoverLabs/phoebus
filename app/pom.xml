@@ -22,7 +22,6 @@
     <module>databrowser</module>
     <module>databrowser-timescale</module>
     <module>display</module>
-    <module>alarm</module>
     <module>scan</module>
     <module>channel</module>
     <module>3d-viewer</module>

@@ -30,7 +30,7 @@
     <version>1.2.0</version>
 </dependency>
 
-            <dependency>
+<!--            <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>14</version>
@@ -39,7 +39,7 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
             <version>14</version>
-        </dependency>
+        </dependency>-->
 
 <!--     <dependency>
             <groupId>org.openjfx</groupId>
@@ -52,8 +52,8 @@
     <groupId>net.java.dev.jna</groupId>
     <artifactId>jna</artifactId>
     <version>5.14.0</version>
-</dependency>-->
-
+</dependency>
+-->
 
     
     </dependencies>
