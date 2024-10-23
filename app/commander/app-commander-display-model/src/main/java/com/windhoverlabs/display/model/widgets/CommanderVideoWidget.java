@@ -18,6 +18,7 @@ import static org.csstudio.display.builder.model.properties.CommonWidgetProperti
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propPassword;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propRotationStep;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propText;
+import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propTooltip;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propTransparent;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.runtimePropPVWritable;
 
@@ -45,8 +46,10 @@ import org.csstudio.display.builder.model.persist.WidgetFontService;
 import org.csstudio.display.builder.model.persist.XMLTags;
 import org.csstudio.display.builder.model.properties.CommonWidgetProperties;
 import org.csstudio.display.builder.model.properties.RotationStep;
+import org.csstudio.display.builder.model.properties.StringWidgetProperty;
 import org.csstudio.display.builder.model.properties.WidgetColor;
 import org.csstudio.display.builder.model.properties.WidgetFont;
+import org.csstudio.display.builder.model.widgets.PVWidget;
 import org.csstudio.display.builder.model.widgets.VisibleWidget;
 import org.epics.vtype.VType;
 import org.phoebus.framework.persistence.XMLUtil;
@@ -64,7 +67,7 @@ import org.w3c.dom.Text;
  * @author Lorenzo Gomez
  */
 @SuppressWarnings("nls")
-public class CommanderVideoWidget extends VisibleWidget {
+public class CommanderVideoWidget extends PVWidget {
   public static final int DEFAULT_WIDTH = 100, DEFAULT_HEIGHT = 30;
 
   // Elements of Plot Marker
@@ -77,6 +80,20 @@ public class CommanderVideoWidget extends VisibleWidget {
 
   /** When "text" has this value, it will reflect the primary PV's value */
   public static final String VALUE_LABEL = "$(pv_value)";
+  
+  /** 'tooltip' property: Text to display in tooltip */
+  public static final WidgetPropertyDescriptor<String> propVideoURL =
+          new WidgetPropertyDescriptor<>(WidgetPropertyCategory.BEHAVIOR, "Video URL", Messages.WidgetProperties_Tooltip)
+  {
+      @Override
+      public WidgetProperty<String> createProperty(final Widget widget, final String value)
+      {
+          return new StringWidgetProperty(this, widget, value);
+      }
+  };
+  
+  
+  private WidgetProperty<String> videoURL;
 
   /** Structure for Plot Marker */
   public static class PvArgProperty extends StructuredWidgetProperty {
@@ -159,6 +176,8 @@ public class CommanderVideoWidget extends VisibleWidget {
     // while Action Button would do nothing at all.
     return true;
   }
+  
+  
 
   /** Custom configurator to read legacy *.opi files */
   private static class ActionButtonConfigurator extends WidgetConfigurator {
@@ -288,6 +307,9 @@ public class CommanderVideoWidget extends VisibleWidget {
     properties.add(PVs = propPVs.createProperty(this, Collections.emptyList()));
     properties.add(
         command = CommonWidgetProperties.propCommand.createProperty(this, "command_name"));
+    
+    properties.add(videoURL = propVideoURL.createProperty(this, "tcp://172.16.100.179:1235"));
+
   }
 
   @Override

@@ -12,6 +12,7 @@ import static org.csstudio.display.builder.representation.ToolkitRepresentation.
 import com.windhoverlabs.display.model.widgets.CommanderVideoWidget;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import javafx.application.Platform;
@@ -46,14 +47,19 @@ import org.csstudio.display.builder.model.properties.RotationStep;
 import org.csstudio.display.builder.model.properties.StringWidgetProperty;
 import org.csstudio.display.builder.model.properties.WritePVActionInfo;
 import org.csstudio.display.builder.model.widgets.ActionButtonWidget;
+import org.csstudio.display.builder.model.widgets.PVWidget;
 import org.csstudio.display.builder.representation.javafx.Cursors;
 import org.csstudio.display.builder.representation.javafx.JFXUtil;
 import org.csstudio.display.builder.representation.javafx.Messages;
 import org.csstudio.display.builder.representation.javafx.widgets.RegionBaseRepresentation;
 import org.csstudio.display.builder.representation.javafx.widgets.TooltipSupport;
+import org.epics.vtype.VType;
 import org.phoebus.framework.macros.MacroHandler;
 import org.phoebus.framework.macros.MacroValueProvider;
 import org.phoebus.ui.javafx.Styles;
+import org.phoebus.ui.vtype.FormatOption;
+import org.phoebus.ui.vtype.FormatOptionHandler;
+
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurface;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
@@ -83,6 +89,10 @@ public class CommanderVideoRepresentation
   private final DirtyFlag dirty_representation = new DirtyFlag();
   private final DirtyFlag dirty_enablement = new DirtyFlag();
   private final DirtyFlag dirty_actionls = new DirtyFlag();
+  
+  private final DirtyFlag dirty_content = new DirtyFlag();
+  
+  private volatile String value_text_video_url = "<?>";
 
   private volatile Node base;
   private volatile String background;
@@ -132,6 +142,10 @@ public class CommanderVideoRepresentation
       this::representationChanged;
   private final WidgetPropertyListener<Boolean> enablementChangedListener = this::enablementChanged;
   private final UntypedWidgetPropertyListener pvsListener = this::pvsChanged;
+  
+  private final WidgetPropertyListener<String> pvNameListener = this::pvnameChanged;
+  private final UntypedWidgetPropertyListener contentListener = this::contentChanged;
+
 
   private MediaPlayerFactory mediaPlayerFactory;
 
@@ -193,7 +207,12 @@ public class CommanderVideoRepresentation
 
     root.setCenter(videoImageView);
 
-    embeddedMediaPlayer.media().play("tcp://172.16.100.208:8080");
+    embeddedMediaPlayer.media().play("udp://@0.0.0.0:5000");
+//    embeddedMediaPlayer.media().play("tcp://172.16.100.208:8080");
+    
+//    model_widget.
+    
+//    model_widget.get
 
     embeddedMediaPlayer.controls().setPosition(0.4f);
 
@@ -217,6 +236,30 @@ public class CommanderVideoRepresentation
 
     return pane;
   }
+  
+  private String computeURLText(final VType value) {
+	    Objects.requireNonNull(model_widget, "No widget");
+	    if (value == null) return "<" + model_widget.propPVName().getValue() + ">";
+	    if (value == PVWidget.RUNTIME_VALUE_NO_PV) return "";
+	    return FormatOptionHandler.format(
+	        value,
+	        FormatOption.STRING,
+	        -1,
+	        false);
+	  }
+  
+  private void pvnameChanged(
+	      final WidgetProperty<String> property,
+	      final String old_value,
+	      final String new_value) { // PV name typically changes in edit mode.
+	    // -> Show new PV name.
+	    // Runtime could deal with disconnect/reconnect for new PV name
+	    // -> Also OK to show disconnected state until runtime
+	    //    subscribes to new PV, so we eventually get values from new PV.
+	    value_text_video_url = computeURLText(null);
+	    dirty_content.mark();
+	    toolkit.scheduleUpdate(this);
+	  }
 
   /** @param event Mouse event to check for target modifier keys */
   private void checkModifiers(final MouseEvent event) {
@@ -475,10 +518,31 @@ public class CommanderVideoRepresentation
 
     //        if (! toolkit.isEditMode()  &&  isLabelValue())
     //
-    // model_widget.runtimePropValue().addUntypedPropertyListener(representationChangedListener);
+     model_widget.runtimePropValue().addUntypedPropertyListener(representationChangedListener);
+    
+
+    model_widget.propPVName().addPropertyListener(pvNameListener);
+
+    // Initial update in case runtimePropValue already has value before we registered listener
+    contentChanged(null, null, model_widget.runtimePropValue().getValue());
 
     enablementChanged(null, null, null);
   }
+  
+  private void contentChanged(
+	      final WidgetProperty<?> property, final Object old_value, final Object new_value) {
+	    final String new_text = computeURLText(model_widget.runtimePropValue().getValue());
+	    // Skip update if it's the same text
+	    System.out.println("new URL1:" + value_text_video_url);
+
+	    if (value_text_video_url.equals(new_text)) return;
+	    
+	    System.out.println("new URL2:" + value_text_video_url);
+	    value_text_video_url = new_text;
+	    dirty_content.mark();
+	    toolkit.scheduleUpdate(this);
+	  }
+
 
   @Override
   protected void unregisterListeners() {
@@ -513,10 +577,58 @@ public class CommanderVideoRepresentation
     representationChanged(property, old_value, new_value);
   }
 
-  /** Only details of the existing button need to be updated */
+  /**
+   * Updates video with new URL
+   * @param property
+   * @param old_value
+   * @param new_value
+   */
   private void representationChanged(
       final WidgetProperty<?> property, final Object old_value, final Object new_value) {
     updateColors();
+    
+    System.out.println("old value:" + old_value);
+    System.out.println("new_value:" + new_value);
+    if(new_value != null) 
+    {
+    	
+    	String new_value_string = FormatOptionHandler.format(
+    			(VType) new_value,
+    	        FormatOption.STRING,
+    	        -1,
+    	        false);
+    	
+//    	System.out.println("Val:" + val);
+    	if(old_value != null) 
+    	{
+        	String old_value_string = FormatOptionHandler.format(
+        			(VType) old_value,
+        	        FormatOption.STRING,
+        	        -1,
+        	        false);
+            if(!old_value_string.equals(new_value_string)) 
+            {
+//            	If URL has changed, stream from new URL
+            	System.out.println("New video feed.");
+            }
+            else 
+            {
+            	System.out.println("same old video feed. Do nothing");
+            }
+    	}
+    	else 
+    	{
+//    		
+    		/**
+    		 *We only have a the new video URL.
+    		 *Check  videostarted flag.
+    		 *If false, start video at new URL 
+    		 */
+    		System.out.println("New video feed (if videostarted flag is false)");
+    	}
+
+    }
+
     dirty_representation.mark();
     toolkit.scheduleUpdate(this);
   }
