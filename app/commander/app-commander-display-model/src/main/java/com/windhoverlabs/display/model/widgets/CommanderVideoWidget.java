@@ -16,9 +16,7 @@ import static org.csstudio.display.builder.model.properties.CommonWidgetProperti
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propTransparent;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.runtimePropPVWritable;
 
-import com.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget.PvArgProperty;
 import java.util.List;
-import org.csstudio.display.builder.model.ArrayWidgetProperty;
 import org.csstudio.display.builder.model.MacroizedWidgetProperty;
 import org.csstudio.display.builder.model.Messages;
 import org.csstudio.display.builder.model.StructuredWidgetProperty;
@@ -82,15 +80,6 @@ public class CommanderVideoWidget extends PVWidget {
       };
 
   private WidgetProperty<String> videoURL;
-
-  /** 'Arguments' array */
-  private static final ArrayWidgetProperty.Descriptor<PvArgProperty> propPVs =
-      new ArrayWidgetProperty.Descriptor<>(
-          WidgetPropertyCategory.MISC,
-          "argument",
-          "Arguments",
-          (widget, index) -> new PvArgProperty(widget, "Argument " + index),
-          0);
 
   /** Widget descriptor */
   public static final WidgetDescriptor WIDGET_DESCRIPTOR =

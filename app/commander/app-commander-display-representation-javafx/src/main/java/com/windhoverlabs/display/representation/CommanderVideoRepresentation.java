@@ -59,12 +59,8 @@ import org.phoebus.framework.macros.MacroValueProvider;
 import org.phoebus.ui.javafx.Styles;
 import org.phoebus.ui.vtype.FormatOption;
 import org.phoebus.ui.vtype.FormatOptionHandler;
-import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurface;
 import uk.co.caprica.vlcj.player.base.MediaApi;
-import uk.co.caprica.vlcj.player.base.MediaPlayer;
-import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
-import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 /**
  * Creates JavaFX item for model widget
@@ -146,41 +142,21 @@ public class CommanderVideoRepresentation
   private final WidgetPropertyListener<String> pvNameListener = this::pvnameChanged;
   private final UntypedWidgetPropertyListener contentListener = this::contentChanged;
 
-  private MediaPlayerFactory mediaPlayerFactory;
+  private static MediaApi videoMedia;
 
-  private EmbeddedMediaPlayer embeddedMediaPlayer;
-
-  private MediaApi videoMedia;
-
-  private ImageView videoImageView;
+  private static ImageView videoImageView;
 
   private Node mediaPlayerInit(String mediaURL) {
 
     System.out.println("meidiaPlayerInit**");
-    this.mediaPlayerFactory = new MediaPlayerFactory();
-    this.embeddedMediaPlayer = mediaPlayerFactory.mediaPlayers().newEmbeddedMediaPlayer();
-    this.embeddedMediaPlayer
-        .events()
-        .addMediaPlayerEventListener(
-            new MediaPlayerEventAdapter() {
-              @Override
-              public void playing(MediaPlayer mediaPlayer) {}
 
-              @Override
-              public void paused(MediaPlayer mediaPlayer) {}
-
-              @Override
-              public void stopped(MediaPlayer mediaPlayer) {}
-
-              @Override
-              public void timeChanged(MediaPlayer mediaPlayer, long newTime) {}
-            });
-
-    //        ------------------------------
     this.videoImageView = new ImageView();
     this.videoImageView.setPreserveRatio(true);
 
-    embeddedMediaPlayer.videoSurface().set(new ImageViewVideoSurface(this.videoImageView));
+    VideoSingleton.getInstance()
+        .getEmbeddedMediaPlayer()
+        .videoSurface()
+        .set(new ImageViewVideoSurface(this.videoImageView));
 
     //        ---------------------------------
 
@@ -209,14 +185,14 @@ public class CommanderVideoRepresentation
     root.setCenter(videoImageView);
 
     //    embeddedMediaPlayer.media().play("udp://@0.0.0.0:5000");
-    videoMedia = embeddedMediaPlayer.media();
+    videoMedia = VideoSingleton.getInstance().getEmbeddedMediaPlayer().media();
     updateVideo(mediaURL);
 
     //    model_widget.
 
     //    model_widget.get
 
-    embeddedMediaPlayer.controls().setPosition(0.4f);
+    VideoSingleton.getInstance().getEmbeddedMediaPlayer().controls().setPosition(0.4f);
 
     return root;
   }
