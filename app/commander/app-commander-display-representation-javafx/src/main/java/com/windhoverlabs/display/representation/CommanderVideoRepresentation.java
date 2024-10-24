@@ -60,7 +60,6 @@ import org.phoebus.ui.javafx.Styles;
 import org.phoebus.ui.vtype.FormatOption;
 import org.phoebus.ui.vtype.FormatOptionHandler;
 import uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurface;
-import uk.co.caprica.vlcj.player.base.MediaApi;
 
 /**
  * Creates JavaFX item for model widget
@@ -137,12 +136,10 @@ public class CommanderVideoRepresentation
   private final UntypedWidgetPropertyListener representationChangedListener =
       this::representationChanged;
   private final WidgetPropertyListener<Boolean> enablementChangedListener = this::enablementChanged;
-  private final UntypedWidgetPropertyListener pvsListener = this::pvsChanged;
+  private final UntypedWidgetPropertyListener pvsListener = this::urlPVUpdate;
 
   private final WidgetPropertyListener<String> pvNameListener = this::pvnameChanged;
   private final UntypedWidgetPropertyListener contentListener = this::contentChanged;
-
-  private static MediaApi videoMedia;
 
   private static ImageView videoImageView;
 
@@ -168,7 +165,7 @@ public class CommanderVideoRepresentation
     videoImageView.fitWidthProperty().bind(root.widthProperty());
     videoImageView.fitHeightProperty().bind(root.heightProperty());
 
-    root.setPrefSize(400, 300);
+    root.setPrefSize(model_widget.propWidth().getValue(), model_widget.propHeight().getValue());
 
     root.widthProperty()
         .addListener(
@@ -182,15 +179,11 @@ public class CommanderVideoRepresentation
               // If you need to know about resizes
             });
 
+    //    videoImageView
+
     root.setCenter(videoImageView);
 
-    //    embeddedMediaPlayer.media().play("udp://@0.0.0.0:5000");
-    videoMedia = VideoSingleton.getInstance().getEmbeddedMediaPlayer().media();
     updateVideo(mediaURL);
-
-    //    model_widget.
-
-    //    model_widget.get
 
     VideoSingleton.getInstance().getEmbeddedMediaPlayer().controls().setPosition(0.4f);
 
@@ -472,7 +465,7 @@ public class CommanderVideoRepresentation
 
     //        if (! toolkit.isEditMode()  &&  isLabelValue())
     //
-    model_widget.runtimePropValue().addUntypedPropertyListener(representationChangedListener);
+    model_widget.runtimePropValue().addUntypedPropertyListener(pvsListener);
 
     model_widget.propPVName().addPropertyListener(pvNameListener);
 
@@ -529,6 +522,46 @@ public class CommanderVideoRepresentation
     representationChanged(property, old_value, new_value);
   }
 
+  public void urlPVUpdate(
+      final WidgetProperty<?> property, final Object old_value, final Object new_value) {
+
+    String new_value_string =
+        FormatOptionHandler.format((VType) new_value, FormatOption.STRING, -1, false);
+
+    //    	System.out.println("Val:" + val);
+    if (old_value != null) {
+      String old_value_string =
+          FormatOptionHandler.format((VType) old_value, FormatOption.STRING, -1, false);
+      if (!old_value_string.equals(new_value_string)) {
+        //            	If URL has changed, stream from new URL
+        System.out.println("New video feed.");
+        boolean success = updateVideo(new_value_string);
+        if (success) {
+          System.out.println("Play returned success");
+        } else {
+          System.out.println("Play returned error");
+        }
+      } else {
+        System.out.println("Same old video feed. Do nothing");
+      }
+    } else {
+      //
+      /**
+       * We only have a the new video URL. Check videostarted flag. If false, start video at new URL
+       */
+      System.out.println("New video feed (if videostarted flag is false)");
+
+      boolean success = updateVideo(new_value_string);
+      if (success) {
+        System.out.println("Play returned success");
+      } else {
+        System.out.println("Play returned error");
+      }
+
+      //    		embeddedMediaPlayer.media().info().type()
+    }
+  }
+
   /**
    * Updates video with new URL
    *
@@ -540,54 +573,12 @@ public class CommanderVideoRepresentation
       final WidgetProperty<?> property, final Object old_value, final Object new_value) {
     updateColors();
 
-    System.out.println("old value:" + old_value);
-    System.out.println("new_value:" + new_value);
-    if (new_value != null) {
-
-      String new_value_string =
-          FormatOptionHandler.format((VType) new_value, FormatOption.STRING, -1, false);
-
-      //    	System.out.println("Val:" + val);
-      if (old_value != null) {
-        String old_value_string =
-            FormatOptionHandler.format((VType) old_value, FormatOption.STRING, -1, false);
-        if (!old_value_string.equals(new_value_string)) {
-          //            	If URL has changed, stream from new URL
-          System.out.println("New video feed.");
-          boolean success = updateVideo(new_value_string);
-          if (success) {
-            System.out.println("Play returned success");
-          } else {
-            System.out.println("Play returned error");
-          }
-        } else {
-          System.out.println("Same old video feed. Do nothing");
-        }
-      } else {
-        //
-        /**
-         * We only have a the new video URL. Check videostarted flag. If false, start video at new
-         * URL
-         */
-        System.out.println("New video feed (if videostarted flag is false)");
-
-        boolean success = updateVideo(new_value_string);
-        if (success) {
-          System.out.println("Play returned success");
-        } else {
-          System.out.println("Play returned error");
-        }
-
-        //    		embeddedMediaPlayer.media().info().type()
-      }
-    }
-
     dirty_representation.mark();
     toolkit.scheduleUpdate(this);
   }
 
   private boolean updateVideo(String new_value_string) {
-    return videoMedia.play(new_value_string);
+    return VideoSingleton.getInstance().getEmbeddedMediaPlayer().media().play(new_value_string);
   }
 
   /** Only details of the existing button need to be updated */

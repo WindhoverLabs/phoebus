@@ -6,6 +6,11 @@ import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
+/**
+ * FIXME: The way this is written at the moment it will only allow for one stream at a time. Will
+ * have to implement an array of of the native objects and essentially manage the alloc/dealloc of
+ * the objects, will have to be tied to the lifetime of Phoebus unfortunately...
+ */
 public class VideoSingleton {
 
   private MediaPlayerFactory mediaPlayerFactory;
