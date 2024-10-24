@@ -210,7 +210,7 @@ public class CommanderVideoRepresentation
 
     //    embeddedMediaPlayer.media().play("udp://@0.0.0.0:5000");
     videoMedia = embeddedMediaPlayer.media();
-    videoMedia.play(mediaURL);
+    updateVideo(mediaURL);
 
     //    model_widget.
 
@@ -230,7 +230,10 @@ public class CommanderVideoRepresentation
   public Pane createJFXNode() throws Exception {
     updateColors();
 
-    base = mediaPlayerInit("tcp://172.16.100.208:8080");
+    base = mediaPlayerInit(model_widget.propVideoURl().getValue());
+
+    System.out.println(
+        "model_widget.propVideoURl().getValue()-->" + model_widget.propVideoURl().getValue());
 
     pane = new Pane();
     pane.getChildren().add(base);
@@ -305,7 +308,6 @@ public class CommanderVideoRepresentation
     if (actions.isExecutedAsOne() || actions.getActions().size() < 2) {
       final Button button = new Button();
       button.setGraphic(new ImageView("/icons/video.png"));
-      button.setOnAction(event -> sendCommand());
       result = button;
     } else {
       // If there is at least one non-WritePVActionInfo then is_writePV should be false
@@ -384,30 +386,9 @@ public class CommanderVideoRepresentation
     Platform.runLater(
         () -> {
           // If confirmation is requested..
-          if (model_widget.propConfirmDialog().getValue()) {
-            final String message = model_widget.propConfirmMessage().getValue();
-            final String password = model_widget.propPassword().getValue();
-            // .. check either with password or generic Ok/Cancel prompt
-            if (password.length() > 0) {
-              if (toolkit.showPasswordDialog(model_widget, message, password) == null) return;
-            } else if (!toolkit.showConfirmationDialog(model_widget, message)) return;
-          }
 
           action.run();
         });
-  }
-
-  /**
-   * Triggered by button click. It will gather command arguments(if any) and send the specified
-   * command to commander.
-   */
-  private void sendCommand() {
-    System.out.println("sendCommand");
-    //    System.out.println("command name:" + model_widget.propCommand().getValue());
-    //    System.out.println("pv name :" +
-    // model_widget.propPvs().getValue().get(0).pv().getValue());
-    //    System.out.println("pv value:" +
-    // model_widget.propPvs().getValue().get(0).value().getValue());
   }
 
   /** @return Should 'label' show the PV's current value? */
@@ -597,7 +578,7 @@ public class CommanderVideoRepresentation
         if (!old_value_string.equals(new_value_string)) {
           //            	If URL has changed, stream from new URL
           System.out.println("New video feed.");
-          boolean success = videoMedia.play(new_value_string);
+          boolean success = updateVideo(new_value_string);
           if (success) {
             System.out.println("Play returned success");
           } else {
@@ -614,7 +595,7 @@ public class CommanderVideoRepresentation
          */
         System.out.println("New video feed (if videostarted flag is false)");
 
-        boolean success = videoMedia.play(new_value_string);
+        boolean success = updateVideo(new_value_string);
         if (success) {
           System.out.println("Play returned success");
         } else {
@@ -627,6 +608,10 @@ public class CommanderVideoRepresentation
 
     dirty_representation.mark();
     toolkit.scheduleUpdate(this);
+  }
+
+  private boolean updateVideo(String new_value_string) {
+    return videoMedia.play(new_value_string);
   }
 
   /** Only details of the existing button need to be updated */

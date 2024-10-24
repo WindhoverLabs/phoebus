@@ -8,21 +8,15 @@
 package com.windhoverlabs.display.model.widgets;
 
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propBackgroundColor;
-import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propCommandArgument;
-import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propConfirmDialog;
-import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propConfirmMessage;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propEnabled;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propFont;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propForegroundColor;
-import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propPVName;
-import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propPassword;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propRotationStep;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propText;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.propTransparent;
 import static org.csstudio.display.builder.model.properties.CommonWidgetProperties.runtimePropPVWritable;
 
-import java.util.Arrays;
-import java.util.Collections;
+import com.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget.PvArgProperty;
 import java.util.List;
 import org.csstudio.display.builder.model.ArrayWidgetProperty;
 import org.csstudio.display.builder.model.MacroizedWidgetProperty;
@@ -49,7 +43,6 @@ import org.csstudio.display.builder.model.properties.StringWidgetProperty;
 import org.csstudio.display.builder.model.properties.WidgetColor;
 import org.csstudio.display.builder.model.properties.WidgetFont;
 import org.csstudio.display.builder.model.widgets.PVWidget;
-import org.epics.vtype.VType;
 import org.phoebus.framework.persistence.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -81,8 +74,7 @@ public class CommanderVideoWidget extends PVWidget {
 
   /** 'tooltip' property: Text to display in tooltip */
   public static final WidgetPropertyDescriptor<String> propVideoURL =
-      new WidgetPropertyDescriptor<>(
-          WidgetPropertyCategory.BEHAVIOR, "Video URL", Messages.WidgetProperties_Tooltip) {
+      new WidgetPropertyDescriptor<>(WidgetPropertyCategory.BEHAVIOR, "Video URL", "Video URL") {
         @Override
         public WidgetProperty<String> createProperty(final Widget widget, final String value) {
           return new StringWidgetProperty(this, widget, value);
@@ -90,32 +82,6 @@ public class CommanderVideoWidget extends PVWidget {
       };
 
   private WidgetProperty<String> videoURL;
-
-  /** Structure for Plot Marker */
-  public static class PvArgProperty extends StructuredWidgetProperty {
-    protected PvArgProperty(final Widget widget, final String name) {
-      super(
-          propPv,
-          widget,
-          Arrays.asList(
-              propPVName.createProperty(widget, ""),
-              propValue.createProperty(widget, ""),
-              propCommandArgument.createProperty(widget, "")));
-    }
-
-    public WidgetProperty<String> pv() {
-      return getElement(0);
-    }
-
-    public WidgetProperty<VType> value() {
-      return getElement(1);
-    }
-
-    public WidgetProperty<String> argumentName() {
-      return getElement(2);
-    }
-  }
-  ;
 
   /** 'Arguments' array */
   private static final ArrayWidgetProperty.Descriptor<PvArgProperty> propPVs =
@@ -216,15 +182,7 @@ public class CommanderVideoWidget extends PVWidget {
         // so move the (last) confirm message from action(s) to the button.
         final Element actions =
             XMLUtil.getChildElement(xml, CommonWidgetProperties.propActions.getName());
-        if (actions != null)
-          for (Element action : XMLUtil.getChildElements(actions, XMLTags.ACTION)) {
-            final String message =
-                XMLUtil.getChildString(action, propConfirmMessage.getName()).orElse("");
-            if (!message.isBlank()) {
-              button.propConfirmMessage().setValue(message);
-              button.propConfirmDialog().setValue(true);
-            }
-          }
+        if (actions != null) {}
       }
       // If there is no pv_name, remove from tool tip ..
       //            if (
@@ -256,11 +214,6 @@ public class CommanderVideoWidget extends PVWidget {
   private volatile WidgetProperty<Boolean> transparent;
   private volatile WidgetProperty<RotationStep> rotation_step;
   private volatile WidgetProperty<Boolean> pv_writable;
-  private volatile WidgetProperty<Boolean> confirm_dialog;
-  private volatile WidgetProperty<String> confirm_message;
-  private volatile WidgetProperty<String> password;
-  private volatile ArrayWidgetProperty<PvArgProperty> PVs;
-  private volatile WidgetProperty<String> command;
 
   public CommanderVideoWidget() {
     super(WIDGET_DESCRIPTOR.getType(), DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -293,16 +246,8 @@ public class CommanderVideoWidget extends PVWidget {
     properties.add(rotation_step = propRotationStep.createProperty(this, RotationStep.NONE));
     properties.add(enabled = propEnabled.createProperty(this, true));
     properties.add(pv_writable = runtimePropPVWritable.createProperty(this, true));
-    properties.add(confirm_dialog = propConfirmDialog.createProperty(this, false));
-    properties.add(
-        confirm_message =
-            propConfirmMessage.createProperty(this, "Are your sure you want to do this?"));
-    properties.add(password = propPassword.createProperty(this, ""));
-    properties.add(PVs = propPVs.createProperty(this, Collections.emptyList()));
-    properties.add(
-        command = CommonWidgetProperties.propCommand.createProperty(this, "command_name"));
 
-    properties.add(videoURL = propVideoURL.createProperty(this, "tcp://172.16.100.179:1235"));
+    properties.add(videoURL = propVideoURL.createProperty(this, "tcp://examplevideo.com:1235"));
   }
 
   @Override
@@ -352,26 +297,7 @@ public class CommanderVideoWidget extends PVWidget {
     return pv_writable;
   }
 
-  /** @return 'confirm_dialog' property */
-  public WidgetProperty<Boolean> propConfirmDialog() {
-    return confirm_dialog;
-  }
-
-  /** @return 'confirm_message' property */
-  public WidgetProperty<String> propConfirmMessage() {
-    return confirm_message;
-  }
-
-  public WidgetProperty<String> propCommand() {
-    return command;
-  }
-
-  /** @return 'password' property */
-  public WidgetProperty<String> propPassword() {
-    return password;
-  }
-
-  public ArrayWidgetProperty<PvArgProperty> propPvs() {
-    return PVs;
+  public WidgetProperty<String> propVideoURl() {
+    return videoURL;
   }
 }
