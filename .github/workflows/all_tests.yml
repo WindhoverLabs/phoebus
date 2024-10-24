@@ -11,7 +11,7 @@ jobs:
     container:
       image: lgomezwhl/phoebus-ci:whl-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Check coding style
       run: |
         cd core/commander-core
