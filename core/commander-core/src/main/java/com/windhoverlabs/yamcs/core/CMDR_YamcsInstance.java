@@ -187,11 +187,13 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     linkSubscription = yamcsClient.createLinkSubscription();
     linkSubscription.addMessageListener(
         linkEvent -> {
-          switch (linkEvent.getType()) {
-            case REGISTERED:
-            case UPDATED:
-              {
-                var link = linkEvent.getLinkInfo();
+        	var yamcsLinks = linkEvent.getLinksList();
+        	
+        	for(var yL: yamcsLinks) 
+        	{
+                var link = yL;
+                
+
                 LinkInfo linkFromList = null;
 
                 LastUpdateLinks.put(link.getName(), Instant.now());
@@ -213,12 +215,7 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
                   links.remove(linkFromList);
                 }
                 links.add(linksMap.get(link.getName()));
-              }
-
-              break;
-            case UNREGISTERED:
-              //               TODO but not currently sent by Yamcs
-          }
+        	}
         });
 
     linkSubscription.sendMessage(SubscribeLinksRequest.newBuilder().setInstance(getName()).build());
