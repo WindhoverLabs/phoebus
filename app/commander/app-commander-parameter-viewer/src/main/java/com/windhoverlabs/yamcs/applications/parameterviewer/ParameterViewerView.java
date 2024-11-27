@@ -7,7 +7,6 @@
  ******************************************************************************/
 package com.windhoverlabs.yamcs.applications.parameterviewer;
 
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
@@ -31,18 +30,12 @@ public class ParameterViewerView extends VBox {
 
   public static final Logger log = Logger.getLogger(ParameterViewerView.class.getPackageName());
 
-  private ArrayList<String> parameters = new ArrayList<String>();
-
   public SimpleStringProperty getCurrentParam() {
     return currentParam;
   }
 
   public void setCurrentParam(SimpleStringProperty currentParam) {
     this.currentParam = currentParam;
-  }
-
-  public ArrayList<String> getParameters() {
-    return parameters;
   }
 
   public void updateParams(Set<String> PVs) {

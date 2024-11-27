@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import org.controlsfx.glyphfont.FontAwesome;
@@ -43,8 +44,9 @@ public class Copyable extends Label {
         });
     GlyphFont fontAwesome = GlyphFontRegistry.font("FontAwesome");
     Glyph clipboardIcon = fontAwesome.create(FontAwesome.Glyph.CLIPBOARD);
-    clipboardIcon.setFontSize(8.0);
+    clipboardIcon.setFontSize(10.0);
     button.setGraphic(clipboardIcon);
+    button.setTooltip(new Tooltip("Copy to clipboard"));
     setGraphic(button);
     setContentDisplay(ContentDisplay.RIGHT);
   }

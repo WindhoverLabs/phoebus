@@ -48,6 +48,8 @@ import org.phoebus.pv.PV;
 import org.phoebus.pv.PVPool;
 
 public class ParameterViewerController {
+  LinkedHashSet<PV> subscribedPVs = new LinkedHashSet<PV>();
+
   class ViewablePV {
     private final SimpleBooleanProperty view = new SimpleBooleanProperty();
     private final SimpleStringProperty param = new SimpleStringProperty();
@@ -71,6 +73,26 @@ public class ParameterViewerController {
       } else {
         view.set(true);
       }
+    }
+  }
+
+  /**
+   * Encapsulation class to encapsulate all resources used by PV (including PV itself). Similar to
+   * org.csstudio.display.builder.runtime.pv.RuntimePV, but meant to be simpler.
+   */
+  class ParameterPV {
+    private PV pv;
+    private Disposable pvSubscription;
+
+    public ParameterPV(PV newPV, Disposable newPVSubscription) {
+      pv = newPV;
+      pvSubscription = newPVSubscription;
+    }
+
+    /** Cleanup all resources used by PV (including PV itself). */
+    public void close() {
+      pvSubscription.dispose();
+      PVPool.releasePV(pv);
     }
   }
 
@@ -112,7 +134,7 @@ public class ParameterViewerController {
 
   private @NonNull Disposable oldSub;
 
-  private HashMap<String, Disposable> oldSubs = new HashMap<String, Disposable>();
+  private HashMap<String, ParameterPV> oldSubs = new HashMap<String, ParameterPV>();
 
   private String currentPVName;
 
@@ -157,6 +179,27 @@ public class ParameterViewerController {
                       });
               tableView.refresh();
             }
+          }
+
+          public void onYamcsDisconnected() {
+
+            /**
+             * Cleanup PV resources. This is important since the PV references are shared across
+             * plugins(e.g. display runtime).
+             */
+            for (var paramPV : oldSubs.values()) {
+              paramPV.close();
+            }
+
+            for (var paramPVName : oldSubs.keySet()) {
+              paramsView.removeParam(paramPVName);
+            }
+
+            viewableSet.clear();
+            oldSubs.clear();
+
+            paramsView.updateParams(viewableSet);
+            proposalList.clear();
           }
 
           public void onInstancesReady(YamcsServer s) {
@@ -223,29 +266,24 @@ public class ParameterViewerController {
                   newPV = viewableSet.add(item.paramProperty().get());
                   try {
                     pv = PVPool.getPV(item.paramProperty().get());
+                    subscribedPVs.add(pv);
+
                   } catch (Exception e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                   }
+
                   if (pv != null && newPV) {
                     oldSubs.put(
-                        item.paramProperty().get(), pvSubscription(pv, item.paramProperty().get()));
+                        item.paramProperty().get(),
+                        new ParameterPV(pv, pvSubscription(pv, item.paramProperty().get())));
                   }
                 } else {
                   viewableSet.remove(item.paramProperty().get());
-                  try {
-                    pv = PVPool.getPV(item.paramProperty().get());
-                  } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                  }
-                  if (pv != null && !newPV) {
-                    //						pvSubscription(pv);
-                    oldSubs.get(item.paramProperty().get()).dispose();
-                    paramsView.removeParam(item.paramProperty().get());
-                  }
+                  oldSubs.get(item.paramProperty().get()).close();
+                  oldSubs.remove(item.paramProperty().get());
+                  paramsView.removeParam(item.paramProperty().get());
                 }
-                paramsView.getParameters().clear();
                 paramsView.updateParams(viewableSet);
               }
             }
