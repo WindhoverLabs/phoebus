@@ -226,17 +226,21 @@ public final class YamcsObjectManager {
         case onYamcsDisconnected:
           {
             l.onYamcsDisconnected();
+            break;
           }
-          break;
+
         case changeDefaultInstance:
-          l.changeDefaultInstance();
-          ;
-          break;
+          {
+            l.changeDefaultInstance();
+            break;
+          }
+
         case onYamcsConnected:
           {
             l.onYamcsConnected();
+            break;
           }
-          break;
+
         default:
           break;
       }
