@@ -187,35 +187,33 @@ public class CMDR_YamcsInstance extends YamcsObject<YamcsObject<?>> {
     linkSubscription = yamcsClient.createLinkSubscription();
     linkSubscription.addMessageListener(
         linkEvent -> {
-        	var yamcsLinks = linkEvent.getLinksList();
-        	
-        	for(var yL: yamcsLinks) 
-        	{
-                var link = yL;
-                
+          var yamcsLinks = linkEvent.getLinksList();
 
-                LinkInfo linkFromList = null;
+          for (var yL : yamcsLinks) {
+            var link = yL;
 
-                LastUpdateLinks.put(link.getName(), Instant.now());
+            LinkInfo linkFromList = null;
 
-                linksMap.put(link.getName(), link);
+            LastUpdateLinks.put(link.getName(), Instant.now());
 
-                boolean linkExistsInlList = false;
+            linksMap.put(link.getName(), link);
 
-                for (var l : links) {
-                  if (l != null) {
-                    if (l.getName().equals(link.getName())) {
-                      linkFromList = l;
-                      linkExistsInlList = true;
-                    }
-                  }
+            boolean linkExistsInlList = false;
+
+            for (var l : links) {
+              if (l != null) {
+                if (l.getName().equals(link.getName())) {
+                  linkFromList = l;
+                  linkExistsInlList = true;
                 }
+              }
+            }
 
-                if (linkExistsInlList) {
-                  links.remove(linkFromList);
-                }
-                links.add(linksMap.get(link.getName()));
-        	}
+            if (linkExistsInlList) {
+              links.remove(linkFromList);
+            }
+            links.add(linksMap.get(link.getName()));
+          }
         });
 
     linkSubscription.sendMessage(SubscribeLinksRequest.newBuilder().setInstance(getName()).build());
