@@ -10,6 +10,7 @@ package com.windhoverlabs.display.representation;
 import static java.util.Map.entry;
 
 import com.windhoverlabs.display.model.widgets.CommanderCommandActionButtonWidget;
+import com.windhoverlabs.display.model.widgets.CommanderVideoWidget;
 import com.windhoverlabs.display.model.widgets.WHTextUpdateWidget;
 import com.windhoverlabs.display.model.widgets.WaypointModel;
 import java.util.Map;
@@ -41,6 +42,9 @@ public class BaseWidgetRepresentations implements WidgetRepresentationsService {
             () -> (WidgetRepresentation) new CommanderActionButtonRepresentation()),
         entry(
             WaypointModel.WIDGET_DESCRIPTOR,
-            () -> (WidgetRepresentation) new WaypointRepresentation()));
+            () -> (WidgetRepresentation) new WaypointRepresentation()),
+        entry(
+            CommanderVideoWidget.WIDGET_DESCRIPTOR,
+            () -> (WidgetRepresentation) new CommanderVideoRepresentation()));
   }
 }
