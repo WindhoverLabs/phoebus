@@ -147,6 +147,15 @@ public class Tree {
     SeparatorMenuItem sep = new SeparatorMenuItem();
     MenuItem connectAllServers = new MenuItem(Messages.ConnectAll);
 
+//    FIXME:Should be made configurable
+    if (true) {
+        System.out.println("Connect here********************");
+        for (YamcsServer s : YamcsObjectManager.getRoot().getItems()) {
+          attemptToConnect(s);
+        }
+      }
+
+
     connectAllServers.setOnAction(
         e -> {
           TreeItem<YamcsObject<?>> selectedItem = treeView.getSelectionModel().getSelectedItem();
