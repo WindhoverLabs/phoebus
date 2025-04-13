@@ -316,3 +316,7 @@ The following table has all the yamcs versions that have been _tested_, along wi
 | `0.1.1` | `5.6.0` `5.6.2`|
 | `0.2.2` | `yamcs-5.7.9-whl-rc2`|
 
+## Processors
+
+
+![Switch Processor](images/current_processor_phoebus.png "Switch Processor")

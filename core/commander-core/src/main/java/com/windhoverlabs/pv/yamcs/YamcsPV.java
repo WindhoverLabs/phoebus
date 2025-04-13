@@ -79,6 +79,16 @@ public class YamcsPV extends PV {
               e.printStackTrace();
             }
           }
+
+          public void changeProcessor(String instance, String processor) {
+            try {
+              notifyListenersOfDisconnect();
+              //               this.not
+            } catch (Exception e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+          }
         };
 
     YamcsObjectManager.addYamcsListener(yamcsListener);

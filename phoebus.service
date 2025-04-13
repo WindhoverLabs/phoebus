@@ -1,0 +1,18 @@
+[Unit]
+Description=My GUI App
+After=default.target
+
+[Service]
+#Type=simple
+ExecStart=/usr/bin/env DISPLAY=:0 XAUTHORITY=/home/pi/.Xauthority  /bin/bash /home/pi/phoebus/phoebus-product/phoebus.sh
+#Restart=on-failure
+#User=pi
+#Environment=DISPLAY=:0
+#Environment=XAUTHORITY=/home/pi/.Xauthority
+StandardOutput=append:/home/pi/phoebus/phoebus.log
+[Install]
+WantedBy=default.target
+
+#ExecStart=/bin/bash /home/pi/phoebus/phoebus-product/phoebus.sh
+
+

@@ -4,10 +4,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import org.phoebus.framework.preferences.AnnotatedPreferences;
 import org.phoebus.framework.preferences.Preference;
 import org.phoebus.framework.spi.AppDescriptor;
 import org.phoebus.framework.spi.AppInstance;
+import org.phoebus.ui.statusbar.StatusBar;
 
 @SuppressWarnings("nls")
 public class ConnectionsManagerApp implements AppDescriptor {
@@ -15,6 +17,8 @@ public class ConnectionsManagerApp implements AppDescriptor {
   public static final String Name = "Connections";
 
   public static final String DisplayName = Messages.DisplayName;
+
+  private StatusBarConnectionsIndicator statusIndicator = new StatusBarConnectionsIndicator();
 
   /** Initial root directory for newly opened file browser */
   @Preference public static File default_root;
@@ -49,6 +53,12 @@ public class ConnectionsManagerApp implements AppDescriptor {
     } else ConnectionsManagerInstance.INSTANCE.raise();
 
     return ConnectionsManagerInstance.INSTANCE;
+  }
+
+  @Override
+  public void start() {
+    Platform.runLater(
+        () -> StatusBar.getInstance().addItem(statusIndicator.getConnectionsStatus()));
   }
 
   @Override

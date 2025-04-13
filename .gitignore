@@ -88,7 +88,7 @@ local.properties
 # and other tools (mvn, ant, ..) don't care
 #**/.classpath
 #**/.project
-
+**/.classpath
 # Annotation Processing
 .apt_generated
 

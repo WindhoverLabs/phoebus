@@ -1,37 +1,7 @@
 package com.windhoverlabs.pv.yamcs;
 
-import com.windhoverlabs.data.yamcs.AggregateArrayVType;
-import com.windhoverlabs.data.yamcs.AggregateVType;
-import com.windhoverlabs.data.yamcs.ArrayArrayVType;
-import com.windhoverlabs.data.yamcs.BinaryVType;
-import com.windhoverlabs.data.yamcs.BooleanArrayVType;
-import com.windhoverlabs.data.yamcs.BooleanVType;
-import com.windhoverlabs.data.yamcs.DoubleArrayVType;
-import com.windhoverlabs.data.yamcs.DoubleVType;
-import com.windhoverlabs.data.yamcs.EnumeratedArrayVType;
-import com.windhoverlabs.data.yamcs.EnumeratedVType;
-import com.windhoverlabs.data.yamcs.FloatArrayVType;
-import com.windhoverlabs.data.yamcs.FloatVType;
-import com.windhoverlabs.data.yamcs.Sint32ArrayVType;
-import com.windhoverlabs.data.yamcs.Sint32VType;
-import com.windhoverlabs.data.yamcs.Sint64ArrayVType;
-import com.windhoverlabs.data.yamcs.Sint64VType;
-import com.windhoverlabs.data.yamcs.StringArrayVType;
-import com.windhoverlabs.data.yamcs.StringVType;
-import com.windhoverlabs.data.yamcs.TimestampVType;
-import com.windhoverlabs.data.yamcs.Uint32ArrayVType;
-import com.windhoverlabs.data.yamcs.Uint32VType;
-import com.windhoverlabs.data.yamcs.Uint64ArrayVType;
-import com.windhoverlabs.data.yamcs.Uint64VType;
 import com.windhoverlabs.yamcs.core.MissionDatabase;
-import com.windhoverlabs.yamcs.studio.data.vtype.Alarm;
-import com.windhoverlabs.yamcs.studio.data.vtype.AlarmSeverity;
-import com.windhoverlabs.yamcs.studio.data.vtype.Display;
-import com.windhoverlabs.yamcs.studio.data.vtype.NumberFormats;
-import com.windhoverlabs.yamcs.studio.data.vtype.Time;
 import java.text.NumberFormat;
-import java.time.Instant;
-import java.util.List;
 import org.epics.vtype.VType;
 import org.yamcs.protobuf.Mdb.AlarmLevelType;
 import org.yamcs.protobuf.Mdb.AlarmRange;
@@ -40,7 +10,7 @@ import org.yamcs.protobuf.Pvalue.ParameterValue;
 import org.yamcs.protobuf.Yamcs.NamedObjectId;
 import org.yamcs.protobuf.Yamcs.Value;
 
-public class YamcsVType extends VType implements Alarm, Time, Display {
+public class YamcsVType extends VType implements Alarm, Display {
 
   private ParameterValue pval;
   private YamcsAware yamcsListener;
@@ -92,26 +62,6 @@ public class YamcsVType extends VType implements Alarm, Time, Display {
   @Override
   public String getAlarmName() {
     return "";
-  }
-
-  @Override
-  public Instant getTimestamp() {
-    if (pval != null && pval.hasGenerationTime()) {
-      return Instant.ofEpochSecond(
-          pval.getGenerationTime().getSeconds(), pval.getGenerationTime().getNanos());
-    } else {
-      return null;
-    }
-  }
-
-  @Override
-  public Integer getTimeUserTag() {
-    return null;
-  }
-
-  @Override
-  public boolean isTimeValid() {
-    return true;
   }
 
   @Override
@@ -237,83 +187,91 @@ public class YamcsVType extends VType implements Alarm, Time, Display {
     return NumberFormats.toStringFormat();
   }
 
-  /** Converts a yamcs ParameterValue to a VType. */
-  public static VType fromYamcs(ParameterValue pval, boolean raw) {
-    Value value;
-    if (raw) {
-      if (!pval.hasRawValue()) {
-        return null;
-      }
-      value = pval.getRawValue();
-    } else {
-      if (!pval.hasEngValue()) {
-        return null;
-      }
-      value = pval.getEngValue();
-    }
+  //  /** Converts a yamcs ParameterValue to a VType. */
+  //  public static VType fromYamcs(ParameterValue pval, boolean raw) {
+  //    Value value;
+  //    if (raw) {
+  //      if (!pval.hasRawValue()) {
+  //        return null;
+  //      }
+  //      value = pval.getRawValue();
+  //    } else {
+  //      if (!pval.hasEngValue()) {
+  //        return null;
+  //      }
+  //      value = pval.getEngValue();
+  //    }
+  //
+  //    switch (value.getType()) {
+  //      case UINT32:
+  //        return new Uint32VType(pval, raw);
+  //      case SINT32:
+  //        return new Sint32VType(pval, raw);
+  //      case UINT64:
+  //        return new Uint64VType(pval, raw);
+  //      case SINT64:
+  //        return new Sint64VType(pval, raw);
+  //      case FLOAT:
+  //        return new FloatVType(pval, raw);
+  //      case DOUBLE:
+  //        return new DoubleVType(pval, raw);
+  //      case BOOLEAN:
+  //        return new BooleanVType(pval, raw);
+  //      case STRING:
+  //        return new StringVType(pval, raw);
+  //      case BINARY:
+  //        return new BinaryVType(pval, raw);
+  //      case TIMESTAMP:
+  //        return new TimestampVType(pval, raw);
+  //      case ENUMERATED:
+  //        return new EnumeratedVType(pval, raw);
+  //      case AGGREGATE:
+  //        return new AggregateVType(pval, raw);
+  //      case ARRAY:
+  //        List<Value> arrayValues = value.getArrayValueList();
+  //        if (arrayValues.isEmpty()) {
+  //          return null; // TODO
+  //        } else {
+  //          switch (arrayValues.get(0).getType()) {
+  //            case UINT32:
+  //              return new Uint32ArrayVType(pval, raw);
+  //            case SINT32:
+  //              return new Sint32ArrayVType(pval, raw);
+  //            case UINT64:
+  //              return new Uint64ArrayVType(pval, raw);
+  //            case SINT64:
+  //              return new Sint64ArrayVType(pval, raw);
+  //            case FLOAT:
+  //              return new FloatArrayVType(pval, raw);
+  //            case DOUBLE:
+  //              return new DoubleArrayVType(pval, raw);
+  //            case BOOLEAN:
+  //              return new BooleanArrayVType(pval, raw);
+  //            case STRING:
+  //              return new StringArrayVType(pval, raw);
+  //            case ENUMERATED:
+  //              return new EnumeratedArrayVType(pval, raw);
+  //            case AGGREGATE:
+  //              return new AggregateArrayVType(pval, raw);
+  //            case ARRAY:
+  //              return new ArrayArrayVType(pval, raw);
+  //            default:
+  //              throw new IllegalStateException(
+  //                  "Unexpected type for parameter array value. Got: "
+  //                      + arrayValues.get(0).getType());
+  //          }
+  //        }
+  //      default:
+  //        throw new IllegalStateException(
+  //            "Unexpected type for parameter value. Got: " + value.getType());
+  //    }
+  //  }
 
-    switch (value.getType()) {
-      case UINT32:
-        return new Uint32VType(pval, raw);
-      case SINT32:
-        return new Sint32VType(pval, raw);
-      case UINT64:
-        return new Uint64VType(pval, raw);
-      case SINT64:
-        return new Sint64VType(pval, raw);
-      case FLOAT:
-        return new FloatVType(pval, raw);
-      case DOUBLE:
-        return new DoubleVType(pval, raw);
-      case BOOLEAN:
-        return new BooleanVType(pval, raw);
-      case STRING:
-        return new StringVType(pval, raw);
-      case BINARY:
-        return new BinaryVType(pval, raw);
-      case TIMESTAMP:
-        return new TimestampVType(pval, raw);
-      case ENUMERATED:
-        return new EnumeratedVType(pval, raw);
-      case AGGREGATE:
-        return new AggregateVType(pval, raw);
-      case ARRAY:
-        List<Value> arrayValues = value.getArrayValueList();
-        if (arrayValues.isEmpty()) {
-          return null; // TODO
-        } else {
-          switch (arrayValues.get(0).getType()) {
-            case UINT32:
-              return new Uint32ArrayVType(pval, raw);
-            case SINT32:
-              return new Sint32ArrayVType(pval, raw);
-            case UINT64:
-              return new Uint64ArrayVType(pval, raw);
-            case SINT64:
-              return new Sint64ArrayVType(pval, raw);
-            case FLOAT:
-              return new FloatArrayVType(pval, raw);
-            case DOUBLE:
-              return new DoubleArrayVType(pval, raw);
-            case BOOLEAN:
-              return new BooleanArrayVType(pval, raw);
-            case STRING:
-              return new StringArrayVType(pval, raw);
-            case ENUMERATED:
-              return new EnumeratedArrayVType(pval, raw);
-            case AGGREGATE:
-              return new AggregateArrayVType(pval, raw);
-            case ARRAY:
-              return new ArrayArrayVType(pval, raw);
-            default:
-              throw new IllegalStateException(
-                  "Unexpected type for parameter array value. Got: "
-                      + arrayValues.get(0).getType());
-          }
-        }
-      default:
-        throw new IllegalStateException(
-            "Unexpected type for parameter value. Got: " + value.getType());
-    }
-  }
+  //  @Override
+  //  public   Time getTime()
+  //  {
+  //	  return Time.of(Instant.ofEpochSecond(
+  //			            pval.getGenerationTime().getSeconds(), pval.getGenerationTime().getNanos()));
+  //
+  //  }
 }

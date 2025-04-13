@@ -67,9 +67,10 @@ public class CommandOptionsController {
     yamcsListener =
         new YamcsAware() {
           public void changeDefaultInstance() {
-
-            tableView.setItems(YamcsObjectManager.getDefaultInstance().getOptionsList());
-            tableView.refresh();
+            if (YamcsObjectManager.getDefaultInstance() != null) {
+              tableView.setItems(YamcsObjectManager.getDefaultInstance().getOptionsList());
+              tableView.refresh();
+            }
           }
 
           public void onYamcsConnected() {
